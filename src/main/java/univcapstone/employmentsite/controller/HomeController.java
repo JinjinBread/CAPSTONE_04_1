@@ -1,12 +1,14 @@
-package univcapstone.employmentsite;
+package univcapstone.employmentsite.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import univcapstone.employmentsite.dto.UserDTO;
 
 @Controller
-@RequestMapping(value = "/jobhak.univ",method = RequestMethod.GET)
+@RequestMapping(value = "/jobhak.univ")
 public class HomeController {
     @RequestMapping(method = RequestMethod.GET)
     public String home(){
@@ -21,9 +23,11 @@ public class HomeController {
     public String join(
             @RequestParam("id") String id,
             @RequestParam("pw") String pw,
+            @RequestParam("name") String name,
             @RequestParam("nickname") String nickname,
             @RequestParam("email") String email) {
         //회원가입에 대한 로직
+        UserDTO user=new UserDTO(id,pw,email,name,nickname);
         return "redirect:/jobhak.univ"; // 회원가입 성공 후 메인 페이지로 리다이렉트
     }
 
