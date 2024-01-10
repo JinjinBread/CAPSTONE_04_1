@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import univcapstone.employmentsite.dto.UserDTO;
-
+/*
 @Controller
 @RequestMapping(value = "/jobhak.univ/login")
 public class LoginController {
@@ -18,3 +18,4 @@ public class LoginController {
             return "redirect:/jobhak.univ";
     }
 }
+*/
