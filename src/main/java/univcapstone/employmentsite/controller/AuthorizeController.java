@@ -1,12 +1,11 @@
 package univcapstone.employmentsite.controller;
 
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import univcapstone.employmentsite.dto.UserDTO;
 
 @RestController
 @RequestMapping(value = "/jobhak.univ")
-public class HomeController {
+public class AuthorizeController {
     @GetMapping
     public String home(){
         return "index.html";
