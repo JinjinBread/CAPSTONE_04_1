@@ -1,30 +1,34 @@
 package univcapstone.employmentsite.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import univcapstone.employmentsite.domain.User;
+import univcapstone.employmentsite.service.UserService;
 
 @Slf4j
-@Controller
+@RestController
 public class UserController {
 
-    //UserService
+    private final UserService userService;
+
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping("/join")
     public String joinForm() {
-        return "join.html"; // 회원가입 폼을 보여주는 뷰 이름으로 변경
+        return "join form"; // 회원가입 폼
     }
 
     @PostMapping("/join")
-    public String join(
-            @RequestParam("id") String id,
-            @RequestParam("pw") String pw,
-            @RequestParam("nickname") String nickname,
-            @RequestParam("email") String email) {
+    public String join(@RequestBody User user) {
         //회원가입에 대한 로직
-        return "redirect:/jobhak.univ"; // 회원가입 성공 후 메인 페이지로 리다이렉트
+        userService.join(user);
+        log.info("[{}] loginId={}, password={}, name={}, email={}, nickname={}",
+                user.getId(), user.getLoginId(), user.getPassword(), user.getName(), user.getEmail(), user.getNickname());
+        return "saved ok";
     }
 
     @PostMapping("/confirm/email")

@@ -1,27 +1,26 @@
 package univcapstone.employmentsite.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import univcapstone.employmentsite.dto.UserLoginForm;
 
 @Slf4j
-@Controller
+@RestController
 public class LoginController {
 
     //UserService
 
     @GetMapping("/login")
     public String loginForm() {
-        return "login/loginForm"; // 로그인 페이지
+        return "login form"; // 로그인 페이지
     }
     @PostMapping("/login")
-    public String login(
-            @RequestParam("id") String id,
-            @RequestParam("pw") String password) {
+    public String login(UserLoginForm form) {
         //로그인에 대한 로직
-        return "redirect:/"; // 로그인 성공 후 메인 페이지로 리다이렉트
+
+        return "ok"; // 로그인 성공 후 메인 페이지로 리다이렉트
     }
 
     @GetMapping("/logout")
