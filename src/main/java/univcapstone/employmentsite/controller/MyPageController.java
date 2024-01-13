@@ -5,41 +5,31 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping(value = "/jobhak.univ")
 public class MyPageController {
-    @GetMapping
-    public String home(){
-        return "index.html";
-    }
-
-    @RequestMapping(value = "/user/myinfo")
-    @GetMapping
+    @GetMapping("/user/myinfo")
     public String myInfo(){
         //개인정보 화면
         return "";
     }
 
-    @RequestMapping(value="user/picture")
-    @GetMapping
+    @GetMapping("user/picture")
     public String myPicture(){
         //나의 사진 화면
         return "";
     }
-    
-    @RequestMapping(value = "user/bookmark")
-    @GetMapping
+
+    @GetMapping("user/bookmark")
     public String myBookmark(){
         //나의 북마크
         return "";
     }
-    
-    @RequestMapping(value = "user/delete")
-    @DeleteMapping
+
+    @DeleteMapping("user/delete")
     public String deleteUser(@RequestParam("id") String id){
         //회원 탈퇴
         return "";
     }
 
-    @RequestMapping(value = "user/edit")
-    @PatchMapping
+    @PatchMapping("user/edit")
     public String edit(
             @RequestParam("id") String id,
             @RequestParam("pw") String pw,
@@ -51,8 +41,7 @@ public class MyPageController {
         return "";
     }
 
-    @RequestMapping(value = "user/bookmark/delete")
-    @DeleteMapping
+    @DeleteMapping("user/bookmark/delete")
     public String deleteBookmark(
             @RequestParam("id") String id,
             @RequestParam("bookmark_id") String bookmark_id

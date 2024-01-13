@@ -5,27 +5,19 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping(value = "/jobhak.univ")
 public class BoardController {
-    @GetMapping
-    public String home(){
-        return "index.html";
-    }
-
-    @RequestMapping(value = "/boardlist")
-    @GetMapping
+    @GetMapping("/boardlist")
     public String boardMain(){
         //게시글 메인화면 보기
         return "";
     }
 
-    @RequestMapping(value = "/boardlist/{board_id}")
-    @GetMapping
+    @GetMapping("/boardlist/{board_id}")
     public String board(@PathVariable int board_id){
         //클릭한 게시글의 상세내용을 보여주기(게시글 보기)
         return "";
     }
 
-    @RequestMapping(value = "/boardlist/write")
-    @PostMapping
+    @PostMapping("/boardlist/write")
     public String boardWrite(
             @RequestParam("post_id") String post_id,
             @RequestParam("user_id") String user_id,
@@ -38,8 +30,7 @@ public class BoardController {
         return "";
     }
 
-    @RequestMapping(value = "/boardlist/edit/{board_id}")
-    @PostMapping
+    @PostMapping("/boardlist/edit/{board_id}")
     public String edit(
             @RequestParam("post_id") String post_id,
             @RequestParam("user_id") String user_id,
@@ -51,22 +42,20 @@ public class BoardController {
         return "";
     }
 
-    @RequestMapping(value="/boardlist/delete/{board_id}")
-    @DeleteMapping
+    @DeleteMapping("/boardlist/delete/{board_id}")
     public String delete(@RequestParam("post_id") String post_id){
         //게시글 삭제
         return "";
     }
 
-    @RequestMapping(value="/boardlist/delete/{board_title}")
-    @GetMapping
+
+    @GetMapping("/boardlist/delete/{board_title}")
     public String search(@PathVariable String board_title){
         //게시글 검색 (제목으로)
         return "";
     }
 
-    @RequestMapping(value="/boardlist/{board_id}/bookmark")
-    @GetMapping
+    @GetMapping("/boardlist/{board_id}/bookmark")
     public String bookmark(
             @RequestParam("post_id") String post_id,
             @RequestParam("user_id") String user_id,
@@ -76,8 +65,7 @@ public class BoardController {
         return "";
     }
 
-    @RequestMapping(value = "/boardlist/{board_id}/{reply_id}")
-    @PostMapping
+    @PostMapping("/boardlist/{board_id}/{reply_id}")
     public String reply(
             @RequestParam("post_id") String post_id,
             @RequestParam("user_id") String user_id,
@@ -89,9 +77,12 @@ public class BoardController {
         return "";
     }
 
-    @RequestMapping(value = "/boardlist/{board_id}/{reply_id}")
-    @DeleteMapping
-    public String replyDelete(){
+
+    @DeleteMapping("/boardlist/{board_id}/{reply_id}")
+    public String replyDelete(
+            @PathVariable int board_id,
+            @PathVariable int reply_id
+    ){
         //댓글삭제.. 대댓글이 있다면 삭제안되도록 해야하나?..
         return "";
     }

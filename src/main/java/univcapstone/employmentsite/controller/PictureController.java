@@ -5,41 +5,31 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping(value = "/jobhak.univ")
 public class PictureController {
-    @GetMapping
-    public String home(){
-        return "index.html";
-    }
-
-    @RequestMapping(value = "/profile/male")
-    @GetMapping
+    @GetMapping("/profile/male")
     public String malePicture(){
         //취업사진 남성용
         return "";
     }
 
-    @RequestMapping(value = "/profile/female")
-    @GetMapping
+    @GetMapping("/profile/female")
     public String femalePicture(){
         //취업사진 여성용
         return "";
     }
-    
-    @RequestMapping(value="/profile/edit")
-    @PostMapping
+
+    @PostMapping("/profile/edit")
     public String editPicture(@RequestParam("photo_id") String photo_id){
         //사진 합성하기
         return "";
     }
-    
-    @RequestMapping(value = "/profile/guide")
-    @GetMapping
+
+    @GetMapping("/profile/guide")
     public String editGuide(){
         //합성 가이드
         return "";
     }
 
-    @RequestMapping(value = "/profile/save")
-    @GetMapping
+    @GetMapping("/profile/save")
     public String save(){
         //이미지 저장
         return "";

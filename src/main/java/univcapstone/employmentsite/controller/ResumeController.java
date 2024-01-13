@@ -5,11 +5,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping(value = "/jobhak.univ")
 public class ResumeController {
-    @GetMapping
-    public String home(){
-        return "index.html";
-    }
-
     @RequestMapping(value = "/resume")
     @GetMapping
     public String resume(){

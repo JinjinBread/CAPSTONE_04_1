@@ -6,18 +6,13 @@ import univcapstone.employmentsite.dto.UserDTO;
 @RestController
 @RequestMapping(value = "/jobhak.univ")
 public class AuthorizeController {
-    @GetMapping
-    public String home(){
-        return "index.html";
-    }
-    @RequestMapping(value = "/join")
-    @PostMapping
-    public String joinForm() {
-        return "join.html"; // 회원가입 폼을 보여주는 뷰 이름으로 변경
-    }
 
-    @RequestMapping(value = "/join")
-    @PostMapping
+    @GetMapping("/join")
+    public String joinPage(){
+        //회원가입 페이지
+        return "";
+    }
+    @PostMapping("/join")
     public String join(
             @RequestParam("id") String id,
             @RequestParam("pw") String pw,
@@ -29,13 +24,12 @@ public class AuthorizeController {
         return "redirect:"; // 회원가입 성공 후 메인 페이지로 리다이렉트
     }
 
-    @RequestMapping(value = "/login")
-    @GetMapping
-    public String loginForm() {
-        return "login.html"; // 로그인 페이지
+    @GetMapping("/login")
+    public String loginPage(){
+        //로그인 페이지
+        return "";
     }
-    @RequestMapping(value = "/login")
-    @PostMapping
+    @PostMapping("/login")
     public String login(
             @RequestParam("id") String id,
             @RequestParam("pw") String pw ){
@@ -63,23 +57,18 @@ public class AuthorizeController {
         //아이디 중복 확인에 대한 로직
         return ""; //아이디 중복확인
     }
-
-    @RequestMapping(value = "/find/id")
-    @GetMapping
-    public String findID() {
-        //아이디 찾기 페이지
-        return "findID.html"; //아이디 찾기 페이지
-    }
-    @RequestMapping(value = "/find/id")
-    @PostMapping
+    @PostMapping("/find/id")
     public String findID(@RequestParam("name") String name,
                          @RequestParam("email") String email) {
         //아이디 찾기에 대한 로직
-        return "findID.html"; //아이디 찾기 페이지
+        return ""; //아이디 찾기 페이지
     }
 
-    @RequestMapping(value = "/find/pw")
-    @PostMapping
+    @GetMapping("/find/pw")
+    public String findIdPage(){
+        return "";
+    }
+    @PostMapping("/find/pw")
     public String findID(@RequestParam("id") String id,
                          @RequestParam("name") String name,
                          @RequestParam("email") String email) {
@@ -87,3 +76,4 @@ public class AuthorizeController {
         return "findPW.html"; //비밀번호 찾기 페이지
     }
 }
+
