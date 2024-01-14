@@ -1,7 +1,6 @@
 package univcapstone.employmentsite.controller;
 
 import org.springframework.web.bind.annotation.*;
-import univcapstone.employmentsite.dto.UserDTO;
 
 @RestController
 @RequestMapping(value = "/jobhak.univ")
@@ -20,7 +19,6 @@ public class AuthorizeController {
             @RequestParam("nickname") String nickname,
             @RequestParam("email") String email) {
         //회원가입에 대한 로직
-        UserDTO user=new UserDTO(id,pw,email,name,nickname);
         return "redirect:"; // 회원가입 성공 후 메인 페이지로 리다이렉트
     }
 
