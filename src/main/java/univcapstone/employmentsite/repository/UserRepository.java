@@ -6,7 +6,7 @@ public interface UserRepository {
     //유저 회원가입
     User regist(User user);
     //유저 회원탈퇴
-    int withdrawal(User user);
+    int withdrawal(int user_id);
     //유저 로그인
     int login(String loginId,String password);
     //유저 로그아웃
