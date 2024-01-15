@@ -27,6 +27,16 @@ public class UserService {
         return user.getId();
     }
 
+    /**
+     * 로그인
+     */
+
+    public User login(String loginId, String password) {
+        return userRepository.findByLoginId(loginId)
+                .filter(u -> u.getPassword().equals(password))
+                .orElse(null);
+    }
+
     private void validateDuplicateLoginId(User user) {
         userRepository.findByLoginId(user.getLoginId())
                 .ifPresent(u -> {
