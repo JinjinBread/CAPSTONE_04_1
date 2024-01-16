@@ -6,17 +6,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public class ConcreteUserRepository implements UserRepository{
+public class ConcreteUserRepository {
     private static Map<Long,User> storage=new HashMap<>();
     private static long seqeunce=0L;
-    @Override
     public User save(User user) {
         user.setId(++seqeunce);
         storage.put(user.getId(),user);
         return null;
     }
 
-    @Override
     public Optional<User> findById(String loginId) {
          return storage.values().stream()
                 .filter(user -> user.getLoginId().equals(loginId))
@@ -24,18 +22,15 @@ public class ConcreteUserRepository implements UserRepository{
 
     }
 
-    @Override
     public int delete(Long user_id) {
         storage.remove("user_id",user_id);
         return 0;
     }
 
-    @Override
     public int changePassword(User user) {
         return 0;
     }
 
-    @Override
     public User login(String loginId, String password) {
         Optional<User> matchingUser = storage.values().stream()
                 .filter(user -> user != null && user.getLoginId().equals(loginId) && user.getPassword().equals(password))
