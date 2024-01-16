@@ -13,7 +13,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserRepository {
 
-    private final EntityManager em;
+    private final EntityManager em; //JPA
 
     @Transactional
     public void save(User user) {
@@ -35,6 +35,17 @@ public class UserRepository {
     public List<User> findAll() {
         return em.createQuery("select u from User u", User.class)
                 .getResultList();
+    }
+
+    public void delete(Long id) {
+        User findUser = em.find(User.class, id);
+        em.remove(findUser);
+    }
+
+    public void updatePassword(Long id, String password) {
+        em.createQuery("update User u set u.password = :password where u.id = :id")
+                .setParameter("password", password)
+                .executeUpdate();
     }
 
 }
