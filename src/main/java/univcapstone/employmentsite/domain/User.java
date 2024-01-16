@@ -1,5 +1,6 @@
 package univcapstone.employmentsite.domain;
 
+<<<<<<< HEAD
 public class User {
     private Long id;
     private String name;
@@ -55,4 +56,37 @@ public class User {
     public void setNickname(String nickname) {
         this.nickname = nickname;
     }
+=======
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+@Entity
+@Getter @Setter
+@ToString
+public class User {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
+    private Long id;
+
+    @NotEmpty
+    private String loginId;
+
+    @NotEmpty
+    private String name;
+
+    @NotEmpty
+    private String password;
+
+    @NotEmpty
+    private String email;
+
+    @NotEmpty
+    private String nickname;
+
+>>>>>>> 8c17459dc5b763643558a8152485d0f74f3e0d54
 }
