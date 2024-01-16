@@ -15,4 +15,5 @@ public interface UserRepository {
     public User login(String loginId, String password);
     //비밀번호 변경
     int changePassword(User user);
+
 }
