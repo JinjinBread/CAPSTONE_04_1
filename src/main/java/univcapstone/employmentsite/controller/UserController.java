@@ -18,8 +18,8 @@ public class UserController {
     }
 
     @GetMapping("/join")
-    public String joinForm() {
-        return "join form"; // 회원가입 폼
+    public String join() {
+        return "Hello join page"; // 회원가입 폼
     }
 
     @PostMapping("/join")
@@ -32,7 +32,7 @@ public class UserController {
     }
 
     @PostMapping("/verify/id")
-    public String verifyID(@RequestParam("id") String id) {
+    public String verifyID() {
         //아이디 중복 확인에 대한 로직
         return ""; //아이디 중복확인
     }
@@ -40,20 +40,17 @@ public class UserController {
     @GetMapping("/find/id")
     public String findID() {
         //아이디 찾기 페이지
-        return "findID.html"; //아이디 찾기 페이지
+        return "findID"; //아이디 찾기 페이지
     }
     @PostMapping("/find/id")
-    public String findID(@RequestParam("name") String name,
-                         @RequestParam("email") String email) {
+    public String findID(String email) {
         //아이디 찾기에 대한 로직
-        return "findID.html"; //아이디 찾기 페이지
+        return "findID"; //아이디 찾기 페이지
     }
 
     @PostMapping("/find/pw")
-    public String findID(@RequestParam("id") String id,
-                         @RequestParam("name") String name,
-                         @RequestParam("email") String email) {
+    public String findPassword() {
         //비밀번호 찾기에 대한 로직
-        return "findPW.html"; //비밀번호 찾기 페이지
+        return "findPW"; //비밀번호 찾기 페이지
     }
 }

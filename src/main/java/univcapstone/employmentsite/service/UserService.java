@@ -1,13 +1,10 @@
 package univcapstone.employmentsite.service;
 
 import univcapstone.employmentsite.domain.User;
-import univcapstone.employmentsite.repository.ConcreteUserRepository;
 import univcapstone.employmentsite.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import univcapstone.employmentsite.domain.User;
-import univcapstone.employmentsite.repository.UserRepository;
 
 @Slf4j
 @Service
