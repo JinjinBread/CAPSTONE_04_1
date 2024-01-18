@@ -1,8 +1,6 @@
 package univcapstone.employmentsite.controller;
 
 import jakarta.persistence.PersistenceException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.constraints.Null;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,6 +10,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import univcapstone.employmentsite.domain.User;
+import univcapstone.employmentsite.dto.UserFindDto;
 import univcapstone.employmentsite.util.SessionConst;
 import univcapstone.employmentsite.util.response.BasicResponse;
 import univcapstone.employmentsite.util.response.ErrorResponse;
@@ -58,9 +57,11 @@ public class UserController {
     }
 
     @PostMapping("/verify/id")
-    public ResponseEntity<? extends BasicResponse> verifyID(@RequestBody String userId) {
+    public ResponseEntity<? extends BasicResponse> verifyID(
+            @RequestBody @Validated UserFindDto userFindData
+    ) {
         try {
-            userService.validateDuplicateLoginId(userId);
+            userService.validateDuplicateLoginId(userFindData.getLoginId());
             // 중복이 없는 경우, 사용 가능한 ID로 간주
             DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
                     .code(HttpStatus.OK.value())
@@ -83,8 +84,11 @@ public class UserController {
     }
 
     @PostMapping("/find/id")
-    public ResponseEntity<? extends BasicResponse> findID(@RequestBody String name, @RequestBody String email) {
-        User user = userService.findId(name, email);
+    public ResponseEntity<? extends BasicResponse> findID(
+            @RequestBody @Validated UserFindDto userFindData
+    ) {
+        User user = userService.findId(userFindData.getName(),
+                userFindData.getEmail());
 
         if (user == null) {
             return ResponseEntity.badRequest()
@@ -105,12 +109,12 @@ public class UserController {
 
     @PostMapping("/find/pw")
     public ResponseEntity<? extends BasicResponse> findPassword(
-            @RequestBody String userId,
-            @RequestBody String name,
-            @RequestBody String email
+            @RequestBody @Validated UserFindDto userFindData
     ) {
         //비밀번호 찾기에 대한 로직
-        User user = userService.findPassword(userId, name, email);
+        User user = userService.findPassword(userFindData.getLoginId(),
+                userFindData.getName(),
+                userFindData.getEmail());
 
         if (user == null) {
             return ResponseEntity.badRequest()
