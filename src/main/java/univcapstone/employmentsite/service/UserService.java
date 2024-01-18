@@ -79,10 +79,14 @@ public class UserService {
 
     /**
      * 비밀번호 변경
-     * @param id
+     * @param loginId
      * @param newPassword
      */
-    public void updatePassword(Long id,String newPassword){
-        userRepository.updatePassword(id,newPassword);
+    public void updatePassword(String loginId,String newPassword){
+        userRepository.findByLoginId(loginId)
+                .ifPresent(u->{
+                    userRepository.updatePassword(u.getId(),newPassword);
+                });
+        //
     }
 }

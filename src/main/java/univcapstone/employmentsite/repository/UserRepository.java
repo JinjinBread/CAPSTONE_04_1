@@ -53,6 +53,7 @@ public class UserRepository {
     public void updatePassword(Long id, String password) {
         em.createQuery("update User u set u.password = :password where u.id = :id")
                 .setParameter("password", password)
+                .setParameter("id",id)
                 .executeUpdate();
     }
 

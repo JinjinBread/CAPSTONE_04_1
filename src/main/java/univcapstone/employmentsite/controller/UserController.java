@@ -129,7 +129,7 @@ public class UserController {
     @PostMapping("/reset/pw")
     public ResponseEntity<? extends BasicResponse> resetPassword(@RequestBody String password) {
         try{
-            userService.updatePassword(SessionConst.LOGIN_USER_ID,password);
+            userService.updatePassword(SessionConst.LOGIN_USER,password);
             DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
                     .code(HttpStatus.OK.value())
                     .httpStatus(HttpStatus.OK)
