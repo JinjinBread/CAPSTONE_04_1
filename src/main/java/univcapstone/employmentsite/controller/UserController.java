@@ -57,7 +57,7 @@ public class UserController {
     }
 
     @PostMapping("/verify/id")
-    public ResponseEntity<? extends BasicResponse> verifyID(@RequestBody String userId, HttpServletRequest request) {
+    public ResponseEntity<? extends BasicResponse> verifyID(@RequestBody String userId) {
         try {
             userService.validateDuplicateLoginId(userId);
             // 중복이 없는 경우, 사용 가능한 ID로 간주
