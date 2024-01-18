@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Null;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -80,15 +81,16 @@ public class UserController {
     public String findID() {
         return "findID"; //아이디 찾기 페이지
     }
-    @PostMapping("/find/id")
-    public ResponseEntity<? extends BasicResponse> findID(@RequestBody String name,@RequestBody String email) {
-        User user=userService.findId(name,email);
 
-        if(user==null){
+    @PostMapping("/find/id")
+    public ResponseEntity<? extends BasicResponse> findID(@RequestBody String name, @RequestBody String email) {
+        User user = userService.findId(name, email);
+
+        if (user == null) {
             return ResponseEntity.badRequest()
                     .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(),
                             "해당하는 이름과 Email의 계정이 없습니다."));
-        } else{
+        } else {
             DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
                     .code(HttpStatus.OK.value())
                     .httpStatus(HttpStatus.OK)
@@ -108,13 +110,13 @@ public class UserController {
             @RequestBody String email
     ) {
         //비밀번호 찾기에 대한 로직
-        User user=userService.findPassword(userId,name,email);
-        if(user==null){
+        User user = userService.findPassword(userId, name, email);
+
+        if (user == null) {
             return ResponseEntity.badRequest()
                     .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(),
                             "비밀번호를 찾을 수 없습니다."));
-        }
-        else{
+        } else {
             DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
                     .code(HttpStatus.OK.value())
                     .httpStatus(HttpStatus.OK)
@@ -126,19 +128,25 @@ public class UserController {
         }
     }
 
-    @PostMapping("/reset/pw")
-    public ResponseEntity<? extends BasicResponse> resetPassword(@RequestBody String password) {
-        try{
-            userService.updatePassword(SessionConst.LOGIN_USER,password);
-            DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
+    @PostMapping(value = "/reset/pw", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<? extends BasicResponse> resetPassword(
+            @SessionAttribute(name = SessionConst.LOGIN_USER, required = false) User loginUser,
+            @RequestBody User user) {
+
+        try {
+            Long userId = loginUser.getId();
+
+            userService.updatePassword(userId, user.getPassword());
+
+            DefaultResponse<User> defaultResponse = DefaultResponse.<User>builder()
                     .code(HttpStatus.OK.value())
                     .httpStatus(HttpStatus.OK)
                     .message("비밀번호 변경완료.")
-                    .result(password)
+                    .result(user)
                     .build();
 
             return ResponseEntity.ok().body(defaultResponse);
-        }catch (PersistenceException e){
+        } catch (PersistenceException e) {
             return ResponseEntity.badRequest()
                     .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(),
                             "비밀번호 변경실패"));

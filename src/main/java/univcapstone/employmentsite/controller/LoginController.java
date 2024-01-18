@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +13,8 @@ import univcapstone.employmentsite.dto.UserLoginDto;
 import univcapstone.employmentsite.ex.custom.UserAuthenticationException;
 import univcapstone.employmentsite.service.UserService;
 import univcapstone.employmentsite.util.SessionConst;
+import univcapstone.employmentsite.util.response.BasicResponse;
+import univcapstone.employmentsite.util.response.DefaultResponse;
 
 @Slf4j
 @RestController
@@ -41,7 +44,7 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<User> login(@RequestBody @Validated UserLoginDto userDto, HttpServletRequest request) {
+    public ResponseEntity<? extends BasicResponse> login(@RequestBody @Validated UserLoginDto userDto, HttpServletRequest request) {
 
         //로그인에 대한 로직
         User loginUser = userService.login(userDto.getLoginId(), userDto.getPassword());
@@ -53,8 +56,15 @@ public class LoginController {
         HttpSession session = request.getSession();
         session.setAttribute(SessionConst.LOGIN_USER, loginUser);
 
+        DefaultResponse<User> defaultResponse = DefaultResponse.<User>builder()
+                .code(HttpStatus.OK.value())
+                .httpStatus(HttpStatus.OK)
+                .message("로그인 성공!")
+                .result(loginUser)
+                .build();
+
         return ResponseEntity.ok()
-                .body(loginUser);
+                .body(defaultResponse);
     }
 
 }
