@@ -2,6 +2,7 @@ package univcapstone.employmentsite.controller;
 
 import jakarta.persistence.PersistenceException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.constraints.Null;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -56,14 +57,22 @@ public class UserController {
     }
 
     @PostMapping("/verify/id")
-    public ResponseEntity<String> verifyID(@RequestBody String userId, HttpServletRequest request) {
+    public ResponseEntity<? extends BasicResponse> verifyID(@RequestBody String userId, HttpServletRequest request) {
         try {
             userService.validateDuplicateLoginId(userId);
             // 중복이 없는 경우, 사용 가능한 ID로 간주
-            return ResponseEntity.ok().body("사용 가능한 ID");
+            DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
+                    .code(HttpStatus.OK.value())
+                    .httpStatus(HttpStatus.OK)
+                    .message("ID 사용 가능")
+                    .result(null)
+                    .build();
+
+            return ResponseEntity.ok()
+                    .body(defaultResponse);
         } catch (IllegalStateException e) {
-            // 중복이 있는 경우, 예외가 발생하면 이 부분이 실행됨
-            return ResponseEntity.ok().body("이미 사용중인 ID 입니다.");
+            return ResponseEntity.badRequest()
+                    .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "이미 ID가 존재합니다."));
         }
     }
 
@@ -72,18 +81,28 @@ public class UserController {
         return "findID"; //아이디 찾기 페이지
     }
     @PostMapping("/find/id")
-    public ResponseEntity<String> findID(@RequestBody String name,@RequestBody String email) {
+    public ResponseEntity<? extends BasicResponse> findID(@RequestBody String name,@RequestBody String email) {
         User user=userService.findId(name,email);
+
         if(user==null){
-            return ResponseEntity.ok().body("해당하는 이름과 Email의 계정이 없습니다.");
-        }
-        else{
-            return ResponseEntity.ok().body(user.getLoginId());
+            return ResponseEntity.badRequest()
+                    .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(),
+                            "해당하는 이름과 Email의 계정이 없습니다."));
+        } else{
+            DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
+                    .code(HttpStatus.OK.value())
+                    .httpStatus(HttpStatus.OK)
+                    .message("ID를 찾았습니다.")
+                    .result(user.getLoginId())
+                    .build();
+
+            return ResponseEntity.ok()
+                    .body(defaultResponse);
         }
     }
 
     @PostMapping("/find/pw")
-    public ResponseEntity<String> findPassword(
+    public ResponseEntity<? extends BasicResponse> findPassword(
             @RequestBody String userId,
             @RequestBody String name,
             @RequestBody String email
@@ -91,20 +110,38 @@ public class UserController {
         //비밀번호 찾기에 대한 로직
         User user=userService.findPassword(userId,name,email);
         if(user==null){
-            return ResponseEntity.ok().body("해당하는 이름과 Email의 계정이 없습니다.");
+            return ResponseEntity.badRequest()
+                    .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(),
+                            "비밀번호를 찾을 수 없습니다."));
         }
         else{
-            return ResponseEntity.ok().body(user.getPassword());
+            DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
+                    .code(HttpStatus.OK.value())
+                    .httpStatus(HttpStatus.OK)
+                    .message("비밀번호를 찾았습니다.")
+                    .result(user.getPassword())
+                    .build();
+
+            return ResponseEntity.ok().body(defaultResponse);
         }
     }
 
     @PostMapping("/reset/pw")
-    public ResponseEntity<String> resetPassword(@RequestBody String password) {
+    public ResponseEntity<? extends BasicResponse> resetPassword(@RequestBody String password) {
         try{
             userService.updatePassword(SessionConst.LOGIN_USER_ID,password);
-            return ResponseEntity.ok().body("비밀번호 변경완료");
+            DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
+                    .code(HttpStatus.OK.value())
+                    .httpStatus(HttpStatus.OK)
+                    .message("비밀번호를 찾았습니다.")
+                    .result(password)
+                    .build();
+
+            return ResponseEntity.ok().body(defaultResponse);
         }catch (PersistenceException e){
-            return ResponseEntity.ok().body("비밀번호 변경실패");
+            return ResponseEntity.badRequest()
+                    .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(),
+                            "비밀번호 변경실패"));
         }
     }
 }
