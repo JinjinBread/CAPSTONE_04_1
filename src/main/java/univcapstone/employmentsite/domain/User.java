@@ -17,6 +17,7 @@ public class User {
     private Long id;
 
     @NotEmpty
+    @Column(name = "login_id")
     private String loginId;
 
     @NotEmpty

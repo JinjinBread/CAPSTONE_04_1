@@ -1,5 +1,7 @@
 package univcapstone.employmentsite.controller;
 
+import jakarta.persistence.PersistenceException;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -8,6 +10,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import univcapstone.employmentsite.domain.User;
+import univcapstone.employmentsite.util.SessionConst;
 import univcapstone.employmentsite.util.response.BasicResponse;
 import univcapstone.employmentsite.util.response.ErrorResponse;
 import univcapstone.employmentsite.service.UserService;
@@ -53,25 +56,55 @@ public class UserController {
     }
 
     @PostMapping("/verify/id")
-    public String verifyID() {
-        //아이디 중복 확인에 대한 로직
-        return ""; //아이디 중복확인
+    public ResponseEntity<String> verifyID(@RequestBody String userId, HttpServletRequest request) {
+        try {
+            userService.validateDuplicateLoginId(userId);
+            // 중복이 없는 경우, 사용 가능한 ID로 간주
+            return ResponseEntity.ok().body("사용 가능한 ID");
+        } catch (IllegalStateException e) {
+            // 중복이 있는 경우, 예외가 발생하면 이 부분이 실행됨
+            return ResponseEntity.ok().body("이미 사용중인 ID 입니다.");
+        }
     }
 
     @GetMapping("/find/id")
     public String findID() {
-        //아이디 찾기 페이지
         return "findID"; //아이디 찾기 페이지
     }
     @PostMapping("/find/id")
-    public String findID(String email) {
-        //아이디 찾기에 대한 로직
-        return "findID";
+    public ResponseEntity<String> findID(@RequestBody String name,@RequestBody String email) {
+        User user=userService.findId(name,email);
+        if(user==null){
+            return ResponseEntity.ok().body("해당하는 이름과 Email의 계정이 없습니다.");
+        }
+        else{
+            return ResponseEntity.ok().body(user.getLoginId());
+        }
     }
 
     @PostMapping("/find/pw")
-    public String findPassword() {
+    public ResponseEntity<String> findPassword(
+            @RequestBody String userId,
+            @RequestBody String name,
+            @RequestBody String email
+    ) {
         //비밀번호 찾기에 대한 로직
-        return "findPW"; //비밀번호 찾기 페이지
+        User user=userService.findPassword(userId,name,email);
+        if(user==null){
+            return ResponseEntity.ok().body("해당하는 이름과 Email의 계정이 없습니다.");
+        }
+        else{
+            return ResponseEntity.ok().body(user.getPassword());
+        }
+    }
+
+    @PostMapping("/reset/pw")
+    public ResponseEntity<String> resetPassword(@RequestBody String password) {
+        try{
+            userService.updatePassword(SessionConst.LOGIN_USER_ID,password);
+            return ResponseEntity.ok().body("비밀번호 변경완료");
+        }catch (PersistenceException e){
+            return ResponseEntity.ok().body("비밀번호 변경실패");
+        }
     }
 }

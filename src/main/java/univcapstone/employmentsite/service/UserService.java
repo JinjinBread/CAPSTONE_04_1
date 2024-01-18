@@ -35,11 +35,54 @@ public class UserService {
                 .orElse(null);
     }
 
-    private void validateDuplicateLoginId(User user) {
+    /**
+     * 로그인 ID 중복 검사 함수
+     */
+    public void validateDuplicateLoginId(User user) {
         userRepository.findByLoginId(user.getLoginId())
                 .ifPresent(u -> {
                     throw new IllegalStateException(u + "은(는) 이미 존재하는 아이디입니다.");
                 });
     }
+    public void validateDuplicateLoginId(String userId) {
+        userRepository.findByLoginId(userId)
+                .ifPresent(u -> {
+                    throw new IllegalStateException(u + "은(는) 이미 존재하는 아이디입니다.");
+                });
+    }
 
+    /**
+     * ID 찾기
+     * @param name
+     * @param email
+     * @return
+     */
+    public User findId(String name,String email){
+        return userRepository.findByEmail(email)
+                .filter(u->u.getName().equals(name))
+                .orElse(null);
+    }
+
+    /**
+     * 비밀번호 찾기
+     * @param userId
+     * @param name
+     * @param email
+     * @return
+     */
+    public User findPassword(String userId,String name,String email){
+        return userRepository.findByLoginId(userId)
+                .filter(u->u.getName().equals(name))
+                .filter(u->u.getEmail().equals(email))
+                .orElse(null);
+    }
+
+    /**
+     * 비밀번호 변경
+     * @param id
+     * @param newPassword
+     */
+    public void updatePassword(Long id,String newPassword){
+        userRepository.updatePassword(id,newPassword);
+    }
 }

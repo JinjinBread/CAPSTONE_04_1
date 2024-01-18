@@ -37,6 +37,14 @@ public class UserRepository {
                 .getResultList();
     }
 
+    public Optional<User> findByEmail(String email){
+        List<User> users = em.createQuery("select u from User u where u.email=:email",User.class)
+                .setParameter("email",email)
+                .getResultList();
+
+        return users.stream().findAny();
+    }
+
     public void delete(Long id) {
         User findUser = em.find(User.class, id);
         em.remove(findUser);
