@@ -133,7 +133,7 @@ public class UserController {
             DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
                     .code(HttpStatus.OK.value())
                     .httpStatus(HttpStatus.OK)
-                    .message("비밀번호를 찾았습니다.")
+                    .message("비밀번호 변경완료.")
                     .result(password)
                     .build();
 
