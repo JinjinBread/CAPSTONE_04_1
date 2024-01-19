@@ -2,6 +2,7 @@ package univcapstone.employmentsite.service;
 
 import org.springframework.transaction.annotation.Transactional;
 import univcapstone.employmentsite.domain.User;
+import univcapstone.employmentsite.dto.UserEditDto;
 import univcapstone.employmentsite.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,5 +91,28 @@ public class UserService {
      */
     public void updatePassword(Long id, String newPassword) {
         userRepository.updatePassword(id, newPassword);
+    }
+
+    /**
+     * 계정 삭제
+     * @param loginId
+     */
+    public void deleteUser(String loginId){
+        userRepository.findByLoginId(loginId)
+                .ifPresent(u->{
+                    userRepository.delete(u.getId());
+                });
+
+        userRepository.findByLoginId(loginId)
+                .orElseThrow(()-> new IllegalStateException("삭제하려는 계정을 찾을 수 없습니다."));
+    }
+
+    public void editUser(UserEditDto editDto){
+        userRepository.findByLoginId(editDto.getLoginId())
+                .ifPresent(u->{
+                    userRepository.editUser(u.getId(),editDto);
+                });
+        userRepository.findByLoginId(editDto.getLoginId())
+                .orElseThrow(()-> new IllegalStateException("수정하려는 계정을 찾을 수 없습니다."));
     }
 }

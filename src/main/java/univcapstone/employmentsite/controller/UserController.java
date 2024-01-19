@@ -10,6 +10,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import univcapstone.employmentsite.domain.User;
+import univcapstone.employmentsite.dto.BookmarkDeleteDto;
+import univcapstone.employmentsite.dto.UserEditDto;
 import univcapstone.employmentsite.dto.UserFindDto;
 import univcapstone.employmentsite.util.SessionConst;
 import univcapstone.employmentsite.util.response.BasicResponse;
@@ -155,5 +157,77 @@ public class UserController {
                     .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(),
                             "비밀번호 변경실패"));
         }
+    }
+    // ======================== ( Here is MyPage Controller Code  ) ============================
+
+    @GetMapping("/user/myinfo")
+    public String myInfo(){
+        //개인정보 화면
+        return "";
+    }
+
+    @GetMapping("/user/picture")
+    public String myPicture(){
+        //나의 사진 화면
+        return "";
+    }
+
+    @GetMapping("/user/bookmark")
+    public String myBookmark(){
+        //나의 북마크
+        return "";
+    }
+
+    @DeleteMapping(value = "/user/delete")
+    public ResponseEntity<? extends BasicResponse> deleteUser(
+            @RequestBody @Validated UserFindDto userFindData
+    ){
+        try{
+            userService.deleteUser(userFindData.getLoginId());
+
+            DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
+                    .code(HttpStatus.OK.value())
+                    .httpStatus(HttpStatus.OK)
+                    .message("계정 삭제 완료")
+                    .result("")
+                    .build();
+
+            return ResponseEntity.ok().body(defaultResponse);
+        }catch (IllegalStateException e){
+            return ResponseEntity.badRequest()
+                    .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(),
+                            "잘못된 삭제 요청입니다."));
+        }
+
+    }
+
+    @PatchMapping(value="/user/edit")
+    public ResponseEntity<? extends BasicResponse> editUser(
+            @RequestBody @Validated UserEditDto userEditData
+    ){
+        try{
+            userService.editUser(userEditData);
+
+            DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
+                    .code(HttpStatus.OK.value())
+                    .httpStatus(HttpStatus.OK)
+                    .message("계정 편집 완료")
+                    .result("")
+                    .build();
+
+            return ResponseEntity.ok().body(defaultResponse);
+        }catch (IllegalStateException e){
+            return ResponseEntity.badRequest()
+                    .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(),
+                            "잘못된 수정 요청입니다."));
+        }
+        
+    }
+
+    @DeleteMapping(value="/user/bookmark/delete")
+    public ResponseEntity<? extends BasicResponse> editUser(
+            @RequestBody @Validated BookmarkDeleteDto bookmarkData
+    ){
+        return null;
     }
 }

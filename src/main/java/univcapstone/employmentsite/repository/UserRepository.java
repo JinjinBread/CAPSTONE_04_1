@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import univcapstone.employmentsite.domain.User;
+import univcapstone.employmentsite.dto.UserEditDto;
 
 import java.util.List;
 import java.util.Optional;
@@ -54,4 +55,9 @@ public class UserRepository {
         user.setPassword(password);
     }
 
+    public void editUser(Long id,UserEditDto userData){
+        User user=em.find(User.class,id);
+        user.setNickname(userData.getNickname());
+        user.setPassword(userData.getPw());
+    }
 }
