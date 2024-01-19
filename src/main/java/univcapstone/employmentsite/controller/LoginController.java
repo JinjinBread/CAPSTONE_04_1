@@ -31,6 +31,7 @@ public class LoginController {
     public String loginForm() {
         return "login form"; // 로그인 페이지
     }
+
     @GetMapping("/logout")
     public String logout(HttpServletRequest request) {
         //로그아웃에 대한 로직
