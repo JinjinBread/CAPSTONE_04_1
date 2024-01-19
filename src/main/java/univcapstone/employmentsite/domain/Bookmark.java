@@ -1,31 +1,23 @@
 package univcapstone.employmentsite.domain;
 
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotEmpty;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+@Entity
+@Getter
+@Setter
+@ToString
 public class Bookmark {
+    @Id
     private Long bookmark_id;
-    private Long userId;
+    @NotEmpty
+    public Long userId;
+    @NotEmpty
     private Long postId;
-
-    public Long getBookmark_id() {
-        return bookmark_id;
-    }
-
-    public void setBookmark_id(Long bookmark_id) {
-        this.bookmark_id = bookmark_id;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public Long getPostId() {
-        return postId;
-    }
-
-    public void setPostId(Long postId) {
-        this.postId = postId;
-    }
 }

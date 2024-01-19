@@ -223,11 +223,4 @@ public class UserController {
         }
         
     }
-
-    @DeleteMapping(value="/user/bookmark/delete")
-    public ResponseEntity<? extends BasicResponse> editUser(
-            @RequestBody @Validated BookmarkDeleteDto bookmarkData
-    ){
-        return null;
-    }
 }

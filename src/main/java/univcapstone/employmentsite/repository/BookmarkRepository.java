@@ -1,14 +1,28 @@
 package univcapstone.employmentsite.repository;
 
+
+import jakarta.persistence.EntityManager;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 import univcapstone.employmentsite.domain.Bookmark;
 
-import java.util.List;
+@Repository
+@RequiredArgsConstructor
+public class BookmarkRepository {
+    private final EntityManager em; //JPA
 
-public interface BookmarkRepository {
-    //북마크 추가
-    Bookmark addBookmark(Bookmark bookmark);
-    //북마크 삭제
-    int deleteBookmark();
-    //자신의 북마크 보여주기
-    List<Bookmark> showMyBookmark();
+    public void save(Bookmark bookmark) {
+        em.persist(bookmark);
+    }
+
+    public void delete(Bookmark bookmark){
+        em.remove(bookmark);
+    }
+
+    public Bookmark findByBookmarkId(Long bookmarkId){
+        return em.find(Bookmark.class,bookmarkId);
+    }
+
 }
+
+

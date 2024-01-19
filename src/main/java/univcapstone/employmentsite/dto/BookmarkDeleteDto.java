@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Setter
 public class BookmarkDeleteDto {
     @NotEmpty
-    private String id;
+    private Long id;
     @NotEmpty
-    private String bookmark_id;
+    private Long bookmark_id;
 }
