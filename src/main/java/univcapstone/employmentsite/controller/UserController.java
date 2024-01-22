@@ -10,7 +10,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import univcapstone.employmentsite.domain.User;
-import univcapstone.employmentsite.dto.BookmarkDeleteDto;
 import univcapstone.employmentsite.dto.UserEditDto;
 import univcapstone.employmentsite.dto.UserFindDto;
 import univcapstone.employmentsite.util.SessionConst;
@@ -18,6 +17,8 @@ import univcapstone.employmentsite.util.response.BasicResponse;
 import univcapstone.employmentsite.util.response.ErrorResponse;
 import univcapstone.employmentsite.service.UserService;
 import univcapstone.employmentsite.util.response.DefaultResponse;
+
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -39,6 +40,7 @@ public class UserController {
     public ResponseEntity<? extends BasicResponse> join(@RequestBody @Validated User user, BindingResult bindingResult) {
         //회원가입에 대한 로직
         if (bindingResult.hasErrors()) {
+            log.error("join binding fail = {}");
             return ResponseEntity.badRequest()
                     .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "회원가입 실패"));
         }
@@ -58,17 +60,14 @@ public class UserController {
                 .body(defaultResponse);
     }
 
-    @GetMapping("/verify/id")
-    public String verifyIdPage(){
-        return "";
-    }
-
     @PostMapping("/verify/id")
     public ResponseEntity<? extends BasicResponse> verifyID(
             @RequestBody @Validated UserFindDto userFindData
     ) {
         try {
             userService.validateDuplicateLoginId(userFindData.getLoginId());
+
+            log.info("사용 가능한 아이디 = {}", userFindData.getLoginId());
             // 중복이 없는 경우, 사용 가능한 ID로 간주
             DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
                     .code(HttpStatus.OK.value())
@@ -81,6 +80,7 @@ public class UserController {
                     .body(defaultResponse);
 
         } catch (IllegalStateException e) {
+            log.error("중복된 아이디 존재 = {}");
             return ResponseEntity.badRequest()
                     .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "이미 ID가 존재합니다."));
         }
@@ -97,6 +97,8 @@ public class UserController {
     ) {
         User user = userService.findId(userFindData.getName(),
                 userFindData.getEmail());
+
+        log.info("이름과 이메일로 찾은 아이디 = {}", user);
 
         if (user == null) {
             return ResponseEntity.badRequest()
@@ -124,6 +126,8 @@ public class UserController {
                 userFindData.getName(),
                 userFindData.getEmail());
 
+        log.info("아이디와 이름, 이메일로 찾은 비밀번호 = {}", user);
+
         if (user == null) {
             return ResponseEntity.badRequest()
                     .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(),
@@ -145,41 +149,42 @@ public class UserController {
             @SessionAttribute(name = SessionConst.LOGIN_USER, required = false) User loginUser,
             @RequestBody User user) {
 
-        try {
-            Long userId = loginUser.getId();
+        Long userId = loginUser.getId();
 
-            userService.updatePassword(userId, user.getPassword());
+        userService.updatePassword(userId, user.getPassword());
 
-            DefaultResponse<User> defaultResponse = DefaultResponse.<User>builder()
-                    .code(HttpStatus.OK.value())
-                    .httpStatus(HttpStatus.OK)
-                    .message("비밀번호 변경완료.")
-                    .result(user)
-                    .build();
+        log.info("변경된 유저 = {}, 변경된 유저의 비밀번호 = {}", user, user.getPassword());
 
-            return ResponseEntity.ok().body(defaultResponse);
-        } catch (PersistenceException e) {
-            return ResponseEntity.badRequest()
-                    .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(),
-                            "비밀번호 변경실패"));
-        }
+        DefaultResponse<User> defaultResponse = DefaultResponse.<User>builder()
+                .code(HttpStatus.OK.value())
+                .httpStatus(HttpStatus.OK)
+                .message("비밀번호 변경완료.")
+                .result(user)
+                .build();
+
+        return ResponseEntity.ok().body(defaultResponse);
+//        catch (PersistenceException e) {
+//            return ResponseEntity.badRequest()
+//                    .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(),
+//                            "비밀번호 변경실패"));
+//        }
     }
     // ======================== ( Here is MyPage Controller Code  ) ============================
 
     @GetMapping("/user/myinfo")
-    public String myInfo(){
+    public String myInfo() {
         //개인정보 화면
         return "";
     }
 
     @GetMapping("/user/picture")
-    public String myPicture(){
+    public String myPicture() {
         //나의 사진 화면
         return "";
     }
 
     @GetMapping("/user/bookmark")
-    public String myBookmark(){
+    public String myBookmark() {
         //나의 북마크
         return "";
     }
@@ -187,8 +192,8 @@ public class UserController {
     @DeleteMapping(value = "/user/delete")
     public ResponseEntity<? extends BasicResponse> deleteUser(
             @RequestBody @Validated UserFindDto userFindData
-    ){
-        try{
+    ) {
+        try {
             userService.deleteUser(userFindData.getLoginId());
 
             DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
@@ -199,7 +204,7 @@ public class UserController {
                     .build();
 
             return ResponseEntity.ok().body(defaultResponse);
-        }catch (IllegalStateException e){
+        } catch (IllegalStateException e) {
             return ResponseEntity.badRequest()
                     .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(),
                             "잘못된 삭제 요청입니다."));
@@ -207,11 +212,11 @@ public class UserController {
 
     }
 
-    @PatchMapping(value="/user/edit")
+    @PatchMapping(value = "/user/edit")
     public ResponseEntity<? extends BasicResponse> editUser(
             @RequestBody @Validated UserEditDto userEditData
-    ){
-        try{
+    ) {
+        try {
             userService.editUser(userEditData);
 
             DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
@@ -222,11 +227,11 @@ public class UserController {
                     .build();
 
             return ResponseEntity.ok().body(defaultResponse);
-        }catch (IllegalStateException e){
+        } catch (IllegalStateException e) {
             return ResponseEntity.badRequest()
                     .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(),
                             "잘못된 수정 요청입니다."));
         }
-        
+
     }
 }

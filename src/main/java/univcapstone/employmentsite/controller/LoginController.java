@@ -41,6 +41,8 @@ public class LoginController {
             session.invalidate();
         }
 
+        log.info("로그아웃");
+
         return "redirect:/"; // 로그아웃 성공 후 메인 페이지로 리다이렉트
     }
 
@@ -49,6 +51,8 @@ public class LoginController {
 
         //로그인에 대한 로직
         User loginUser = userService.login(userDto.getLoginId(), userDto.getPassword());
+
+        log.info("로그인 유저 = {}", loginUser);
 
         if (loginUser == null) {
             throw new UserAuthenticationException("아이디 또는 비밀번호가 맞지 않습니다.");

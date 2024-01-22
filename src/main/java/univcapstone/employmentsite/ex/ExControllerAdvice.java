@@ -21,5 +21,4 @@ public class ExControllerAdvice {
         return ResponseEntity.badRequest()
                 .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
     }
-
 }
