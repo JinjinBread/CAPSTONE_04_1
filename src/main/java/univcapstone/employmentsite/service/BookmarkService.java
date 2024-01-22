@@ -20,6 +20,11 @@ public class BookmarkService {
         this.bookmarkRepository = bookmarkRepository;
     }
 
+
+    public void saveBookmark(Bookmark bookmark){
+        bookmarkRepository.save(bookmark);
+    }
+
     public void deleteBookmark(Long bookmarkId,Long id){
         Bookmark bookmark=bookmarkRepository.findByBookmarkId(bookmarkId);
         if(bookmark==null){

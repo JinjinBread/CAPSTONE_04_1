@@ -49,6 +49,9 @@ public class UserService {
     }
 
     public void validateDuplicateLoginId(String userId) {
+        if(userId.equals(null)){
+            throw new IllegalStateException("아이디를 입력해주세요");
+        }
         userRepository.findByLoginId(userId)
                 .ifPresent(u -> {
                     throw new IllegalStateException(u + "은(는) 이미 존재하는 아이디입니다.");

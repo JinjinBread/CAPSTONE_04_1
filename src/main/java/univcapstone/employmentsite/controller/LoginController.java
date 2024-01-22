@@ -66,6 +66,7 @@ public class LoginController {
 
         return ResponseEntity.ok()
                 .body(defaultResponse);
+
     }
 
 }

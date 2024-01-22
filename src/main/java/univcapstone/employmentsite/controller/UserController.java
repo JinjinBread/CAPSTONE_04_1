@@ -58,6 +58,11 @@ public class UserController {
                 .body(defaultResponse);
     }
 
+    @GetMapping("/verify/id")
+    public String verifyIdPage(){
+        return "";
+    }
+
     @PostMapping("/verify/id")
     public ResponseEntity<? extends BasicResponse> verifyID(
             @RequestBody @Validated UserFindDto userFindData
@@ -74,6 +79,7 @@ public class UserController {
 
             return ResponseEntity.ok()
                     .body(defaultResponse);
+
         } catch (IllegalStateException e) {
             return ResponseEntity.badRequest()
                     .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "이미 ID가 존재합니다."));
