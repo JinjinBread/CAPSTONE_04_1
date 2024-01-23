@@ -1,18 +1,34 @@
 package univcapstone.employmentsite.repository;
 
+
+import jakarta.persistence.EntityManager;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
+import univcapstone.employmentsite.domain.Bookmark;
 import univcapstone.employmentsite.domain.Post;
+import univcapstone.employmentsite.domain.User;
 
-import java.util.List;
+@Repository
+@RequiredArgsConstructor
+public class BoardRepository {
+    private final EntityManager em; //JPA
 
-public interface BoardRepository {
-    //게시글 등록
-    Post createPost(Post post);
-    //게시글 삭제
-    int deletePost();
-    //게시글 수정
-    Post updatePost();
-    //제목으로 게시글 찾기
-    List<Post> findByTitle();
-    //본인이 쓴 글
-    List<Post> findMyPost();
+    public void save(Post post) {
+        em.persist(post);
+    }
+
+    public void delete(Post post){
+        em.remove(post);
+    }
+
+    public void update(Post post){
+        Post result = em.find(Post.class, post.getPostId());
+        result.setTitle(post.getTitle());
+        result.setContent(post.getContent());
+        result.setDate(post.getDate());
+
+    }
+    public Post findByPostId(Long postId){
+        return em.find(Post.class,postId);
+    }
 }

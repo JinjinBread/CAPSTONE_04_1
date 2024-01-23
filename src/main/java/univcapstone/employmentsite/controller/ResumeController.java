@@ -12,7 +12,7 @@ public class ResumeController {
         return "";
     }
 
-    @RequestMapping(value = "/save")
+    @RequestMapping(value = "/resume/save")
     @PostMapping
     public String save(@RequestParam("content") String content){
         //자기소개서 보내기

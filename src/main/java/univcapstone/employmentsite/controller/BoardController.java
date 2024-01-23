@@ -1,10 +1,31 @@
 package univcapstone.employmentsite.controller;
 
+import lombok.extern.slf4j.Slf4j;
+import org.apache.juli.logging.Log;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import univcapstone.employmentsite.domain.Post;
+import univcapstone.employmentsite.domain.User;
+import univcapstone.employmentsite.dto.PostDto;
+import univcapstone.employmentsite.service.BoardService;
+import univcapstone.employmentsite.service.UserService;
+import univcapstone.employmentsite.util.response.BasicResponse;
+import univcapstone.employmentsite.util.response.DefaultResponse;
 
+@Slf4j
 @RestController
-@RequestMapping(value = "/jobhak.univ")
 public class BoardController {
+
+    private final BoardService boardService;
+
+    @Autowired
+    public BoardController(BoardService boardService) {
+        this.boardService = boardService;
+    }
+
     @GetMapping("/boardlist")
     public String boardMain(){
         //게시글 메인화면 보기
@@ -12,76 +33,103 @@ public class BoardController {
     }
 
     @GetMapping("/boardlist/{board_id}")
-    public String board(@PathVariable int board_id){
-        //클릭한 게시글의 상세내용을 보여주기(게시글 보기)
-        return "";
+    public ResponseEntity<? extends BasicResponse> board(@PathVariable Long postId){
+        Post post=boardService.showPost(postId);
+        log.info("클릭한 게시물 정보:{}",post);
+
+        DefaultResponse<Post> defaultResponse = DefaultResponse.<Post>builder()
+                .code(HttpStatus.OK.value())
+                .httpStatus(HttpStatus.OK)
+                .message("회원가입 완료")
+                .result(post)
+                .build();
+
+        return ResponseEntity.ok()
+                .body(defaultResponse);
     }
 
     @PostMapping("/boardlist/write")
-    public String boardWrite(
-            @RequestParam("post_id") String post_id,
-            @RequestParam("user_id") String user_id,
-            @RequestParam("title") String title,
-            @RequestParam("content") String content,
-            @RequestParam("file") String file
+    public ResponseEntity<? extends BasicResponse> boardWrite(
+            @RequestBody @Validated PostDto postDto
     ){
-        //게시글 쓰기
-        //post_id는 데이터베이스에서 임의의 기본키 아닌가?...
-        return "";
+        log.info("작성한 게시물 정보:{}",postDto);
+        
+        Post post=boardService.uploadPost(postDto);
+
+        DefaultResponse<Post> defaultResponse = DefaultResponse.<Post>builder()
+                .code(HttpStatus.OK.value())
+                .httpStatus(HttpStatus.OK)
+                .message("게시글 작성 완료")
+                .result(post)
+                .build();
+
+        return ResponseEntity.ok()
+                .body(defaultResponse);
+
     }
 
     @PostMapping("/boardlist/edit/{board_id}")
-    public String edit(
-            @RequestParam("post_id") String post_id,
-            @RequestParam("user_id") String user_id,
-            @RequestParam("title") String title,
-            @RequestParam("content") String content,
-            @RequestParam("file") String file
+    public ResponseEntity<? extends BasicResponse> edit(
+            @PathVariable Long postId,
+            @RequestBody @Validated PostDto postDto
     ){
-        //게시글 수정
-        return "";
+        log.info("수정한 게시물 정보:{}",postDto);
+        
+        postDto.setPostId(postId);
+        boardService.updatePost(postDto);
+
+        DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
+                .code(HttpStatus.OK.value())
+                .httpStatus(HttpStatus.OK)
+                .message("게시글 수정 완료")
+                .result("")
+                .build();
+
+        return ResponseEntity.ok()
+                .body(defaultResponse);
+
     }
 
-    @DeleteMapping("/boardlist/delete/{board_id}")
-    public String delete(@RequestParam("post_id") String post_id){
+    @DeleteMapping("/boardlist/delete/{boardId}")
+    public String delete(@RequestParam("postId") String post_id){
         //게시글 삭제
         return "";
     }
 
 
-    @GetMapping("/boardlist/delete/{board_title}")
+    @GetMapping("/boardlist/delete/{boardTitle}")
     public String search(@PathVariable String board_title){
         //게시글 검색 (제목으로)
         return "";
     }
 
-    @GetMapping("/boardlist/{board_id}/bookmark")
+    @GetMapping("/boardlist/{postId}/bookmark")
     public String bookmark(
-            @RequestParam("post_id") String post_id,
-            @RequestParam("user_id") String user_id,
+            @RequestParam("postId") String post_id,
+            @RequestParam("userId") String user_id,
             @PathVariable int board_id
     ){
         //게시글 북마크
         return "";
     }
 
-    @PostMapping("/boardlist/{board_id}/{reply_id}")
+    @PostMapping("/boardlist/{postId}/{replyId}")
     public String reply(
-            @RequestParam("post_id") String post_id,
-            @RequestParam("user_id") String user_id,
-            @RequestParam("ref_id") String ref_id,
-            @RequestParam("reply_content") String reply_content,
-            @RequestParam("reply_ref_id") String reply_ref_id
+            @RequestParam("postId") String post_id,
+            @RequestParam("userId") String user_id,
+            @RequestParam("refId") String ref_id,
+            @RequestParam("replyContent") String reply_content,
+            @RequestParam("replyRefId") String reply_ref_id
     ){
         //댓글 달기
         return "";
     }
 
 
-    @DeleteMapping("/boardlist/{board_id}/{reply_id}")
+    @DeleteMapping("/boardlist/{postId}/{replyId}")
     public String replyDelete(
-            @PathVariable int board_id,
-            @PathVariable int reply_id
+            @PathVariable Long postId,
+            @PathVariable int replyId
     ){
         //댓글삭제.. 대댓글이 있다면 삭제안되도록 해야하나?..
         return "";

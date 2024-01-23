@@ -14,9 +14,9 @@ import java.util.Date;
 @ToString
 public class Reply {
     @Id
-    private Long reply_id;
-    private Long ref_id;
-    private String reply_cotent;
+    private Long replyId;
+    private Long refId;
+    private String replyCotent;
     private Date date;
-    private Long post_id;
+    private Long postId;
 }
