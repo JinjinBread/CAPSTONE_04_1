@@ -32,7 +32,7 @@ public class BoardController {
         return "";
     }
 
-    @GetMapping("/boardlist/{board_id}")
+    @GetMapping("/boardlist/{postId}")
     public ResponseEntity<? extends BasicResponse> board(@PathVariable Long postId){
         Post post=boardService.showPost(postId);
         log.info("클릭한 게시물 정보:{}",post);
@@ -68,7 +68,7 @@ public class BoardController {
 
     }
 
-    @PostMapping("/boardlist/edit/{board_id}")
+    @PostMapping("/boardlist/edit/{postId}")
     public ResponseEntity<? extends BasicResponse> edit(
             @PathVariable Long postId,
             @RequestBody @Validated PostDto postDto
@@ -90,7 +90,7 @@ public class BoardController {
 
     }
 
-    @DeleteMapping("/boardlist/delete/{boardId}")
+    @DeleteMapping("/boardlist/delete/{postId}")
     public String delete(@RequestParam("postId") String post_id){
         //게시글 삭제
         return "";
@@ -98,15 +98,15 @@ public class BoardController {
 
 
     @GetMapping("/boardlist/delete/{boardTitle}")
-    public String search(@PathVariable String board_title){
+    public String search(@PathVariable String boardTitle){
         //게시글 검색 (제목으로)
         return "";
     }
 
     @GetMapping("/boardlist/{postId}/bookmark")
     public String bookmark(
-            @RequestParam("postId") String post_id,
-            @RequestParam("userId") String user_id,
+            @RequestParam("postId") String postId,
+            @RequestParam("userId") String userId,
             @PathVariable int board_id
     ){
         //게시글 북마크
@@ -115,14 +115,15 @@ public class BoardController {
 
     @PostMapping("/boardlist/{postId}/{replyId}")
     public String reply(
-            @RequestParam("postId") String post_id,
-            @RequestParam("userId") String user_id,
-            @RequestParam("refId") String ref_id,
-            @RequestParam("replyContent") String reply_content,
-            @RequestParam("replyRefId") String reply_ref_id
+            @RequestParam("postId") String postId,
+            @RequestParam("userId") String userId,
+            @RequestParam("refId") String refId,
+            @RequestParam("replyContent") String replyContent,
+            @RequestParam("replyRefId") String replyRefId
     ){
         //댓글 달기
         return "";
+
     }
 
 
