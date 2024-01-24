@@ -11,9 +11,12 @@ import univcapstone.employmentsite.domain.Post;
 import univcapstone.employmentsite.domain.User;
 import univcapstone.employmentsite.dto.PostDto;
 import univcapstone.employmentsite.service.BoardService;
+import univcapstone.employmentsite.service.BookmarkService;
 import univcapstone.employmentsite.service.UserService;
 import univcapstone.employmentsite.util.response.BasicResponse;
 import univcapstone.employmentsite.util.response.DefaultResponse;
+
+import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -91,16 +94,39 @@ public class BoardController {
     }
 
     @DeleteMapping("/boardlist/delete/{postId}")
-    public String delete(@RequestParam("postId") String post_id){
+    public ResponseEntity<? extends BasicResponse> delete(@PathVariable("postId") Long postId){
         //게시글 삭제
-        return "";
+        log.info("삭제하려는 게시물 id : {}",postId);
+        boardService.deletePost(postId);
+
+        DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
+                .code(HttpStatus.OK.value())
+                .httpStatus(HttpStatus.OK)
+                .message("게시글 삭제 완료")
+                .result("")
+                .build();
+
+        return ResponseEntity.ok()
+                .body(defaultResponse);
     }
 
 
-    @GetMapping("/boardlist/delete/{boardTitle}")
-    public String search(@PathVariable String boardTitle){
+    @GetMapping("/boardlist/search/{boardTitle}")
+    public ResponseEntity<? extends BasicResponse> search(@PathVariable String boardTitle){
         //게시글 검색 (제목으로)
-        return "";
+        Optional<Post> post=boardService.searchbyTitle(boardTitle);
+
+        log.info("검색을 위해 입력한 단어={} ,찾은 결과물 {}",boardTitle,post);
+
+        DefaultResponse<Optional<Post>> defaultResponse = DefaultResponse.<Optional<Post>>builder()
+                .code(HttpStatus.OK.value())
+                .httpStatus(HttpStatus.OK)
+                .message("게시글 삭제 완료")
+                .result(post)
+                .build();
+
+        return ResponseEntity.ok()
+                .body(defaultResponse);
     }
 
     @GetMapping("/boardlist/{postId}/bookmark")

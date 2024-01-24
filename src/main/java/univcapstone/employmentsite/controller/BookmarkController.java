@@ -31,7 +31,7 @@ public class BookmarkController {
             @RequestBody @Validated BookmarkDeleteDto bookmarkData
     ){
         try{
-            bookmarkService.deleteBookmark(bookmarkData.getBookmark_id(),bookmarkData.getId());
+            bookmarkService.deleteBookmark(bookmarkData.getBookmarkId(),bookmarkData.getPostId());
 
             DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
                     .code(HttpStatus.OK.value())

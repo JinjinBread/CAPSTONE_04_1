@@ -9,6 +9,8 @@ import univcapstone.employmentsite.dto.PostDto;
 import univcapstone.employmentsite.repository.BoardRepository;
 import univcapstone.employmentsite.repository.BookmarkRepository;
 
+import java.util.Optional;
+
 @Slf4j
 @Transactional
 @Service
@@ -29,6 +31,14 @@ public class BoardService {
         return post;
     }
 
+    public void deletePost(Long postId) {
+        Post post=boardRepository.findByPostId(postId);
+        if(post==null){
+            throw new IllegalStateException("해당하는 게시글을 찾을 수 없습니다.");
+        }
+        boardRepository.delete(post);
+    }
+
     public Post uploadPost(PostDto postData){
         Post post=new Post(postData.getPostId(),
                 postData.getTitle(),
@@ -47,5 +57,10 @@ public class BoardService {
                 postData.getUserId());
         boardRepository.update(post);
 
+    }
+
+    public Optional<Post> searchbyTitle(String boardTitle) {
+        Optional<Post> postResult=boardRepository.findbyTitle(boardTitle);
+        return postResult;
     }
 }

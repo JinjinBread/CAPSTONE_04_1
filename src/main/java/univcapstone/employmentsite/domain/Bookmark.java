@@ -6,16 +6,17 @@ import jakarta.persistence.ForeignKey;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
 @Entity
-@Getter
-@Setter
+@Getter@Setter
 @ToString
+@NoArgsConstructor
 public class Bookmark {
     @Id
-    private Long bookmark_id;
+    private Long bookmarkId;
     @NotEmpty
     public Long userId;
     @NotEmpty
