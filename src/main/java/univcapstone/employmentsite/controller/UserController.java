@@ -80,7 +80,7 @@ public class UserController {
                     .body(defaultResponse);
 
         } catch (IllegalStateException e) {
-            log.error("중복된 아이디 존재 = {}");
+            log.error("중복된 아이디 존재 = {}",userFindData.getLoginId());
             return ResponseEntity.badRequest()
                     .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "이미 ID가 존재합니다."));
         }

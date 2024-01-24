@@ -84,6 +84,7 @@ public class MyPageController {
 
             return ResponseEntity.ok().body(defaultResponse);
         } catch (IllegalStateException e) {
+            log.info("수정하려는 유저가 없거나 찾을 수 없습니다");
             return ResponseEntity.badRequest()
                     .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(),
                             "잘못된 수정 요청입니다."));
