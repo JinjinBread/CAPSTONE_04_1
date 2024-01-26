@@ -16,6 +16,12 @@ import java.util.Optional;
 public class BoardRepository {
     private final EntityManager em; //JPA
 
+    public Optional<Post> getAllPost(){
+        List<Post> posts = em.createQuery("select p from Post p", Post.class)
+                .getResultList();
+
+        return posts.stream().findAny();
+    }
     public void save(Post post) {
         em.persist(post);
     }

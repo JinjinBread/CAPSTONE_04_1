@@ -9,6 +9,8 @@ import univcapstone.employmentsite.domain.Bookmark;
 import univcapstone.employmentsite.repository.BookmarkRepository;
 import univcapstone.employmentsite.repository.UserRepository;
 
+import java.util.Optional;
+
 @Slf4j
 @Transactional
 @Service
@@ -23,6 +25,10 @@ public class BookmarkService {
 
     public void saveBookmark(Bookmark bookmark){
         bookmarkRepository.save(bookmark);
+    }
+
+    public Optional<Bookmark> getMyBookmark(Long userId){
+        return bookmarkRepository.getMyBookmark(userId);
     }
 
     public void deleteBookmark(Long bookmarkId,Long id){

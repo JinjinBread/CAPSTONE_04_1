@@ -7,7 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 import univcapstone.employmentsite.domain.Post;
 import univcapstone.employmentsite.dto.PostDto;
 import univcapstone.employmentsite.repository.BoardRepository;
-import univcapstone.employmentsite.repository.BookmarkRepository;
 
 import java.util.Optional;
 
@@ -23,6 +22,9 @@ public class BoardService {
         this.boardRepository = boardRepository;
     }
 
+    public Optional<Post> showAllPost(){
+        return boardRepository.getAllPost();
+    }
     public Post showPost(Long postId){
         Post post=boardRepository.findByPostId(postId);
         if(post==null){

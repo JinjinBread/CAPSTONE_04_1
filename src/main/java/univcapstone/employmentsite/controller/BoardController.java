@@ -8,11 +8,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import univcapstone.employmentsite.domain.Post;
+import univcapstone.employmentsite.domain.Reply;
 import univcapstone.employmentsite.domain.User;
 import univcapstone.employmentsite.dto.PostDto;
+import univcapstone.employmentsite.dto.ReplyPostDto;
 import univcapstone.employmentsite.service.BoardService;
 import univcapstone.employmentsite.service.BookmarkService;
 import univcapstone.employmentsite.service.UserService;
+import univcapstone.employmentsite.util.SessionConst;
 import univcapstone.employmentsite.util.response.BasicResponse;
 import univcapstone.employmentsite.util.response.DefaultResponse;
 
@@ -30,9 +33,19 @@ public class BoardController {
     }
 
     @GetMapping("/boardlist")
-    public String boardMain(){
+    public ResponseEntity<? extends BasicResponse> boardMain(){
         //게시글 메인화면 보기
-        return "";
+        Optional<Post> posts=boardService.showAllPost();
+        log.info("전체 게시글 데이터 {}",posts);
+        DefaultResponse<Optional<Post>> defaultResponse = DefaultResponse.<Optional<Post>>builder()
+                .code(HttpStatus.OK.value())
+                .httpStatus(HttpStatus.OK)
+                .message("보여줄 게시글 데이터")
+                .result(posts)
+                .build();
+
+        return ResponseEntity.ok()
+                .body(defaultResponse);
     }
 
     @GetMapping("/boardlist/{postId}")
@@ -121,7 +134,7 @@ public class BoardController {
         DefaultResponse<Optional<Post>> defaultResponse = DefaultResponse.<Optional<Post>>builder()
                 .code(HttpStatus.OK.value())
                 .httpStatus(HttpStatus.OK)
-                .message("게시글 삭제 완료")
+                .message("검색한 게시글들")
                 .result(post)
                 .build();
 
@@ -131,9 +144,8 @@ public class BoardController {
 
     @GetMapping("/boardlist/{postId}/bookmark")
     public String bookmark(
-            @RequestParam("postId") String postId,
-            @RequestParam("userId") String userId,
-            @PathVariable int board_id
+            @PathVariable Long postId,
+            @SessionAttribute(name = SessionConst.LOGIN_USER, required = false) String userLoginId
     ){
         //게시글 북마크
         return "";
@@ -141,13 +153,10 @@ public class BoardController {
 
     @PostMapping("/boardlist/{postId}/{replyId}")
     public String reply(
-            @RequestParam("postId") String postId,
-            @RequestParam("userId") String userId,
-            @RequestParam("refId") String refId,
-            @RequestParam("replyContent") String replyContent,
-            @RequestParam("replyRefId") String replyRefId
+            @PathVariable Long postId,
+            @RequestBody @Validated ReplyPostDto replyData
     ){
-        //댓글 달기
+
         return "";
 
     }
@@ -156,7 +165,7 @@ public class BoardController {
     @DeleteMapping("/boardlist/{postId}/{replyId}")
     public String replyDelete(
             @PathVariable Long postId,
-            @PathVariable int replyId
+            @PathVariable Long replyId
     ){
         //댓글삭제.. 대댓글이 있다면 삭제안되도록 해야하나?..
         return "";

@@ -6,9 +6,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import univcapstone.employmentsite.domain.User;
 import univcapstone.employmentsite.dto.UserEditDto;
 import univcapstone.employmentsite.dto.UserFindDto;
 import univcapstone.employmentsite.service.UserService;
+import univcapstone.employmentsite.util.SessionConst;
 import univcapstone.employmentsite.util.response.BasicResponse;
 import univcapstone.employmentsite.util.response.DefaultResponse;
 import univcapstone.employmentsite.util.response.ErrorResponse;
@@ -25,19 +27,37 @@ public class MyPageController {
     }
 
     @GetMapping("/user/myinfo")
-    public String myInfo() {
+    public ResponseEntity<? extends BasicResponse> myInfo(
+            @SessionAttribute(name = SessionConst.LOGIN_USER, required = false) User loginUser
+    ) {
         //개인정보 화면
-        return "";
+        String loginId = loginUser.getLoginId();
+        User user=userService.findUserByLoginId(loginId);
+
+        log.info("찾은 유저의 정보 {}",user);
+
+        DefaultResponse<User> defaultResponse = DefaultResponse.<User>builder()
+                .code(HttpStatus.OK.value())
+                .httpStatus(HttpStatus.OK)
+                .message("비밀번호를 찾았습니다.")
+                .result(user)
+                .build();
+
+        return ResponseEntity.ok().body(defaultResponse);
     }
 
     @GetMapping("/user/picture")
-    public String myPicture() {
+    public String myPicture(
+            @SessionAttribute(name = SessionConst.LOGIN_USER, required = false) User loginUser
+    ) {
         //나의 사진 화면
         return "";
     }
 
     @GetMapping("/user/bookmark")
-    public String myBookmark() {
+    public String myBookmark(
+            @SessionAttribute(name = SessionConst.LOGIN_USER, required = false) User loginUser
+    ) {
         //나의 북마크
         return "";
     }

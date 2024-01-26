@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Slf4j
 @Transactional
 @Service
@@ -59,6 +61,15 @@ public class UserService {
                 });
     }
 
+    /**
+     * 아이디로 회원 찾기
+     * @param id
+     * @return
+     */
+    public User findUserByLoginId(String id){
+        return userRepository.findByLoginId(id)
+                .orElse(null);
+    }
     /**
      * ID 찾기
      *
