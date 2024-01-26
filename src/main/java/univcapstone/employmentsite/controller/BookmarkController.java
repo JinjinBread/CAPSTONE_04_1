@@ -6,12 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import univcapstone.employmentsite.dto.BookmarkDeleteDto;
 import univcapstone.employmentsite.service.BookmarkService;
 import univcapstone.employmentsite.service.UserService;
+import univcapstone.employmentsite.util.SessionConst;
 import univcapstone.employmentsite.util.response.BasicResponse;
 import univcapstone.employmentsite.util.response.DefaultResponse;
 import univcapstone.employmentsite.util.response.ErrorResponse;
@@ -26,6 +25,26 @@ public class BookmarkController {
         this.bookmarkService = bookmarkService;
     }
 
+    /**
+     * 자신의 북마크 가져오기
+     * @param postId
+     * @param userLoginId
+     * @return
+     */
+    @GetMapping("/boardlist/{postId}/bookmark")
+    public String bookmark(
+            @PathVariable Long postId,
+            @SessionAttribute(name = SessionConst.LOGIN_USER, required = false) String userLoginId
+    ){
+        //게시글 북마크
+        return "";
+    }
+
+    /**
+     * 북마크 삭제
+     * @param bookmarkData
+     * @return
+     */
     @DeleteMapping(value="/user/bookmark/delete")
     public ResponseEntity<? extends BasicResponse> editUser(
             @RequestBody @Validated BookmarkDeleteDto bookmarkData
@@ -48,4 +67,5 @@ public class BookmarkController {
         }
 
     }
+
 }

@@ -141,33 +141,4 @@ public class BoardController {
         return ResponseEntity.ok()
                 .body(defaultResponse);
     }
-
-    @GetMapping("/boardlist/{postId}/bookmark")
-    public String bookmark(
-            @PathVariable Long postId,
-            @SessionAttribute(name = SessionConst.LOGIN_USER, required = false) String userLoginId
-    ){
-        //게시글 북마크
-        return "";
-    }
-
-    @PostMapping("/boardlist/{postId}/{replyId}")
-    public String reply(
-            @PathVariable Long postId,
-            @RequestBody @Validated ReplyPostDto replyData
-    ){
-
-        return "";
-
-    }
-
-
-    @DeleteMapping("/boardlist/{postId}/{replyId}")
-    public String replyDelete(
-            @PathVariable Long postId,
-            @PathVariable Long replyId
-    ){
-        //댓글삭제.. 대댓글이 있다면 삭제안되도록 해야하나?..
-        return "";
-    }
 }

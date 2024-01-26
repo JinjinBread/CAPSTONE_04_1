@@ -1,8 +1,17 @@
 package univcapstone.employmentsite.repository;
 
+import jakarta.persistence.EntityManager;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 import univcapstone.employmentsite.domain.Reply;
+import univcapstone.employmentsite.domain.User;
 
-public interface ReplyRepository {
-    Reply addReply(Reply reply);
-    int deleteReply();
+@Repository
+@RequiredArgsConstructor
+public class ReplyRepository {
+    private final EntityManager em;
+
+    public void save(Reply reply) {
+        em.persist(reply);
+    }
 }
