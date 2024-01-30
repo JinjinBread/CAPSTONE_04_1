@@ -11,7 +11,4 @@ public class DefaultResponse<T> extends BasicResponse {
     private HttpStatus httpStatus;
     private String message;
     private T result;
-
-
-
 }

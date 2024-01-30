@@ -26,10 +26,10 @@ public class BoardController {
     }
 
     @GetMapping("/boardlist")
-    public ResponseEntity<? extends BasicResponse> boardMain(){
+    public ResponseEntity<? extends BasicResponse> boardMain() {
         //게시글 메인화면 보기
-        Optional<Post> posts=boardService.showAllPost();
-        log.info("전체 게시글 데이터 {}",posts);
+        Optional<Post> posts = boardService.showAllPost();
+        log.info("전체 게시글 데이터 {}", posts);
         DefaultResponse<Optional<Post>> defaultResponse = DefaultResponse.<Optional<Post>>builder()
                 .code(HttpStatus.OK.value())
                 .httpStatus(HttpStatus.OK)
@@ -42,9 +42,9 @@ public class BoardController {
     }
 
     @GetMapping("/boardlist/{postId}")
-    public ResponseEntity<? extends BasicResponse> board(@PathVariable Long postId){
-        Post post=boardService.showPost(postId);
-        log.info("클릭한 게시물 정보:{}",post);
+    public ResponseEntity<? extends BasicResponse> board(@PathVariable Long postId) {
+        Post post = boardService.showPost(postId);
+        log.info("클릭한 게시물 정보:{}", post);
 
         DefaultResponse<Post> defaultResponse = DefaultResponse.<Post>builder()
                 .code(HttpStatus.OK.value())
@@ -60,10 +60,10 @@ public class BoardController {
     @PostMapping("/boardlist/write")
     public ResponseEntity<? extends BasicResponse> boardWrite(
             @RequestBody @Validated PostDto postDto
-    ){
-        log.info("작성한 게시물 정보:{}",postDto);
-        
-        Post post=boardService.uploadPost(postDto);
+    ) {
+        log.info("작성한 게시물 정보:{}", postDto);
+
+        Post post = boardService.uploadPost(postDto);
 
         DefaultResponse<Post> defaultResponse = DefaultResponse.<Post>builder()
                 .code(HttpStatus.OK.value())
@@ -81,9 +81,9 @@ public class BoardController {
     public ResponseEntity<? extends BasicResponse> edit(
             @PathVariable Long postId,
             @RequestBody @Validated PostDto postDto
-    ){
-        log.info("수정한 게시물 정보:{}",postDto);
-        
+    ) {
+        log.info("수정한 게시물 정보:{}", postDto);
+
         postDto.setPostId(postId);
         boardService.updatePost(postDto);
 
@@ -100,9 +100,9 @@ public class BoardController {
     }
 
     @DeleteMapping("/boardlist/delete/{postId}")
-    public ResponseEntity<? extends BasicResponse> delete(@PathVariable("postId") Long postId){
+    public ResponseEntity<? extends BasicResponse> delete(@PathVariable("postId") Long postId) {
         //게시글 삭제
-        log.info("삭제하려는 게시물 id : {}",postId);
+        log.info("삭제하려는 게시물 id : {}", postId);
         boardService.deletePost(postId);
 
         DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
@@ -118,11 +118,11 @@ public class BoardController {
 
 
     @GetMapping("/boardlist/search/{boardTitle}")
-    public ResponseEntity<? extends BasicResponse> search(@PathVariable String boardTitle){
+    public ResponseEntity<? extends BasicResponse> search(@PathVariable String boardTitle) {
         //게시글 검색 (제목으로)
-        Optional<Post> post=boardService.searchbyTitle(boardTitle);
+        Optional<Post> post = boardService.searchByTitle(boardTitle);
 
-        log.info("검색을 위해 입력한 단어={} ,찾은 결과물 {}",boardTitle,post);
+        log.info("검색을 위해 입력한 단어={} ,찾은 결과물 {}", boardTitle, post);
 
         DefaultResponse<Optional<Post>> defaultResponse = DefaultResponse.<Optional<Post>>builder()
                 .code(HttpStatus.OK.value())

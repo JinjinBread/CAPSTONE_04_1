@@ -32,14 +32,14 @@ public class MyPageController {
     ) {
         //개인정보 화면
         String loginId = loginUser.getLoginId();
-        User user=userService.findUserByLoginId(loginId);
+        User user = userService.findUserByLoginId(loginId);
 
-        log.info("찾은 유저의 정보 {}",user);
+        log.info("찾은 유저의 정보 {}", user);
 
         DefaultResponse<User> defaultResponse = DefaultResponse.<User>builder()
                 .code(HttpStatus.OK.value())
                 .httpStatus(HttpStatus.OK)
-                .message("비밀번호를 찾았습니다.")
+                .message("유저 마이페이지")
                 .result(user)
                 .build();
 
@@ -67,7 +67,7 @@ public class MyPageController {
             @RequestBody @Validated UserFindDto userFindData
     ) {
         try {
-            log.info("삭제하러는 유저 데이터 {}",userFindData);
+            log.info("삭제하러는 유저 데이터 {}", userFindData);
             userService.deleteUser(userFindData.getLoginId());
 
             DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
@@ -92,7 +92,7 @@ public class MyPageController {
             @RequestBody @Validated UserEditDto userEditData
     ) {
         try {
-            log.info("수정려는 유저 데이터 {}",userEditData);
+            log.info("수정려는 유저 데이터 {}", userEditData);
             userService.editUser(userEditData);
 
             DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
