@@ -1,21 +1,14 @@
 package univcapstone.employmentsite.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.juli.logging.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import univcapstone.employmentsite.domain.Post;
-import univcapstone.employmentsite.domain.Reply;
-import univcapstone.employmentsite.domain.User;
 import univcapstone.employmentsite.dto.PostDto;
-import univcapstone.employmentsite.dto.ReplyPostDto;
 import univcapstone.employmentsite.service.BoardService;
-import univcapstone.employmentsite.service.BookmarkService;
-import univcapstone.employmentsite.service.UserService;
-import univcapstone.employmentsite.util.SessionConst;
 import univcapstone.employmentsite.util.response.BasicResponse;
 import univcapstone.employmentsite.util.response.DefaultResponse;
 
