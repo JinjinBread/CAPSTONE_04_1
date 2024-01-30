@@ -15,7 +15,14 @@ public class ResumeController {
 
     @RequestMapping(value = "/resume/revise")
     @GetMapping
-    public String resumeRevise(){
+    public String getResumeRevise(){
+        //자기소개서 첫화면 불러오기
+        return "";
+    }
+
+    @RequestMapping(value = "/resume/revise")
+    @PostMapping
+    public String postResumeRevise(){
         //자기소개서 첫화면 불러오기
         return "";
     }
