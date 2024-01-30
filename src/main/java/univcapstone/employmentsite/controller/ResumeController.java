@@ -6,29 +6,25 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(value = "/jobhak.univ")
 public class ResumeController {
 
-    @RequestMapping(value = "/resume/write")
-    @GetMapping
+    @GetMapping(value = "/resume/write")
     public String resumeWrite(){
         //자기소개서 첫화면 불러오기
         return "";
     }
 
-    @RequestMapping(value = "/resume/revise")
-    @GetMapping
+    @GetMapping(value = "/resume/revise")
     public String getResumeRevise(){
         //자기소개서 첫화면 불러오기
         return "";
     }
 
-    @RequestMapping(value = "/resume/revise")
-    @PostMapping
+    @PostMapping(value = "/resume/revise")
     public String postResumeRevise(){
         //자기소개서 첫화면 불러오기
         return "";
     }
 
-    @RequestMapping(value = "/resume/save")
-    @PostMapping
+    @PostMapping(value = "/resume/save")
     public String resumeSave(@RequestParam("content") String content){
         //자기소개서 보내기
         return "";
