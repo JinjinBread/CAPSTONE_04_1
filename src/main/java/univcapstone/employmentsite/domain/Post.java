@@ -8,6 +8,8 @@ import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -20,6 +22,10 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "post_id")
     private Long postId;
+
+    //댓글
+    @OneToMany(mappedBy = "post",cascade = CascadeType.REMOVE)
+    private List<Reply> replies=new ArrayList<>();
 
     @NotEmpty
     private String title;
