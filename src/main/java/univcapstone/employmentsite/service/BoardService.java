@@ -2,6 +2,7 @@ package univcapstone.employmentsite.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import univcapstone.employmentsite.domain.Post;
@@ -28,8 +29,8 @@ public class BoardService {
         this.replyRepository = replyRepository;
     }
 
-    public Optional<Post> showAllPost() {
-        return boardRepository.getAllPost();
+    public List<Post> showAllPost(Pageable pageable) {
+        return boardRepository.findByPost(pageable);
     }
 
     public Post showPost(Long postId) {

@@ -2,16 +2,19 @@ package univcapstone.employmentsite.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import univcapstone.employmentsite.domain.Post;
 import univcapstone.employmentsite.dto.PostDto;
+import univcapstone.employmentsite.repository.PostJpaRepository;
 import univcapstone.employmentsite.service.BoardService;
 import univcapstone.employmentsite.util.response.BasicResponse;
 import univcapstone.employmentsite.util.response.DefaultResponse;
 
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -25,12 +28,16 @@ public class BoardController {
         this.boardService = boardService;
     }
 
+    /**
+     * 게시글 목록(/boardlist 경로는 /boardlist/0(=메인페이지) /boardlist/1 (게시글 1페이지 목록.. 10개씩?)
+     * @return
+     */
     @GetMapping("/boardlist")
-    public ResponseEntity<? extends BasicResponse> boardMain() {
+    public ResponseEntity<? extends BasicResponse> boardMain(final Pageable pageable) {
         //게시글 메인화면 보기
-        Optional<Post> posts = boardService.showAllPost();
+        List<Post> posts = boardService.showAllPost(pageable);
         log.info("전체 게시글 데이터 {}", posts);
-        DefaultResponse<Optional<Post>> defaultResponse = DefaultResponse.<Optional<Post>>builder()
+        DefaultResponse<List<Post>> defaultResponse = DefaultResponse.<List<Post>>builder()
                 .code(HttpStatus.OK.value())
                 .httpStatus(HttpStatus.OK)
                 .message("보여줄 게시글 데이터")
@@ -41,8 +48,9 @@ public class BoardController {
                 .body(defaultResponse);
     }
 
-    @GetMapping("/boardlist/{postId}")
-    public ResponseEntity<? extends BasicResponse> board(@PathVariable Long postId) {
+    @GetMapping("/boardlist/detail/{postId}")
+    public ResponseEntity<? extends BasicResponse> board(
+            @PathVariable(name = "postId") Long postId) {
         Post post = boardService.showPost(postId);
         log.info("클릭한 게시물 정보:{}", post);
 
