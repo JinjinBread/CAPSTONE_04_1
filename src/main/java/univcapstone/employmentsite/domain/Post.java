@@ -36,16 +36,16 @@ public class Post {
     @Nullable
     private String fileName;
 
-    @Column(name = "user_id")
-    private String userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @CreatedDate
     private LocalDate date;
 
-    public Post(String title, String content, String fileName, String userId) {
+    public Post(String title, String content, String fileName) {
         this.title = title;
         this.content = content;
         this.fileName = fileName;
-        this.userId = userId;
     }
 }

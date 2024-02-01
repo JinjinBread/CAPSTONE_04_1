@@ -5,9 +5,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import univcapstone.employmentsite.domain.Post;
+import univcapstone.employmentsite.domain.Reply;
 import univcapstone.employmentsite.dto.PostDto;
 import univcapstone.employmentsite.repository.BoardRepository;
+import univcapstone.employmentsite.repository.ReplyRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -16,10 +19,13 @@ import java.util.Optional;
 public class BoardService {
 
     private final BoardRepository boardRepository;
+    private final ReplyRepository replyRepository;
 
     @Autowired
-    public BoardService(BoardRepository boardRepository) {
+    public BoardService(BoardRepository boardRepository,
+                        ReplyRepository replyRepository) {
         this.boardRepository = boardRepository;
+        this.replyRepository = replyRepository;
     }
 
     public Optional<Post> showAllPost() {
@@ -28,6 +34,8 @@ public class BoardService {
 
     public Post showPost(Long postId) {
         Post post = boardRepository.findByPostId(postId);
+        List<Reply> replies=replyRepository.findByReply(postId);
+        post.setReplies(replies);
         if (post == null) {
             throw new IllegalStateException("해당하는 게시글을 찾을 수 없습니다.");
         }
@@ -45,8 +53,7 @@ public class BoardService {
     public Post uploadPost(PostDto postData) {
         Post post = new Post(postData.getTitle(),
                 postData.getContent(),
-                postData.getFileName(),
-                postData.getUserId());
+                postData.getFileName());
         boardRepository.save(post);
         return post;
     }

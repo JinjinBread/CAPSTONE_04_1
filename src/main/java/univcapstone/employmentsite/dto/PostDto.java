@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Setter
 public class PostDto {
     private Long postId;
-    private String userId;
+    private Long userId;
     private String title;
     private String content;
     private String fileName;
