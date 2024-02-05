@@ -27,7 +27,7 @@ public class ReplyController {
      * @param replyData
      * @return
      */
-    @PostMapping("/boardlist/{postId}/{replyId}")
+    @PostMapping("/boardlist/{postId}/reply")
     public ResponseEntity<? extends BasicResponse> reply(
             @PathVariable Long postId,
             @RequestBody @Validated ReplyPostDto replyData
@@ -53,7 +53,7 @@ public class ReplyController {
      * @param replyId
      * @return
      */
-    @DeleteMapping("/boardlist/{postId}/{replyId}")
+    @DeleteMapping("/boardlist/{postId}/reply/delete/{replyId}")
     public String replyDelete(
             @PathVariable Long postId,
             @PathVariable Long replyId
