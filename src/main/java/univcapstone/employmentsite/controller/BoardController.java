@@ -9,8 +9,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import univcapstone.employmentsite.domain.Post;
+import univcapstone.employmentsite.domain.User;
 import univcapstone.employmentsite.dto.PostDto;
 import univcapstone.employmentsite.service.BoardService;
+import univcapstone.employmentsite.util.SessionConst;
 import univcapstone.employmentsite.util.response.BasicResponse;
 import univcapstone.employmentsite.util.response.DefaultResponse;
 
@@ -70,11 +72,12 @@ public class BoardController {
 
     @PostMapping("/boardlist/write")
     public ResponseEntity<? extends BasicResponse> boardWrite(
+            @SessionAttribute(name = SessionConst.LOGIN_USER, required = false) User user,
             @RequestBody @Validated PostDto postDto
     ) {
         log.info("작성한 게시물 정보:{}", postDto);
 
-        Post post = boardService.uploadPost(postDto);
+        Post post = boardService.uploadPost(user, postDto);
 
         DefaultResponse<Post> defaultResponse = DefaultResponse.<Post>builder()
                 .code(HttpStatus.OK.value())
@@ -95,8 +98,7 @@ public class BoardController {
     ) {
         log.info("수정한 게시물 정보:{}", postDto);
 
-        postDto.setPostId(postId);
-        boardService.updatePost(postDto);
+        boardService.updatePost(postId, postDto);
 
         DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
                 .code(HttpStatus.OK.value())

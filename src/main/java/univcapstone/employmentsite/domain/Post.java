@@ -9,8 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Getter
-@Setter
+@Getter @Setter
 @NoArgsConstructor
 @ToString
 public class Post {
@@ -21,8 +20,8 @@ public class Post {
     private Long postId;
 
     //댓글
-    @OneToMany(mappedBy = "post",cascade = CascadeType.REMOVE)
-    private List<Reply> replies=new ArrayList<>();
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
+    private List<Reply> replies = new ArrayList<>();
 
     private String title;
     private String content;
@@ -35,9 +34,10 @@ public class Post {
     @CreatedDate
     private LocalDate date;
 
-    public Post(String title, String content, String fileName) {
+    public Post(String title, String content, String fileName, User user) {
         this.title = title;
         this.content = content;
         this.fileName = fileName;
+        this.user = user;
     }
 }

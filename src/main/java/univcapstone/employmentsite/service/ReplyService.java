@@ -23,12 +23,12 @@ public class ReplyService {
     }
 
 
-    public Reply saveReply(Long postId, ReplyPostDto replyData) {
-        Reply reply=new Reply(postId,
-                replyData.getReplyContent(),
-                replyData.getUserId(),
-                replyData.getReplyRefId());
-        replyRepository.save(reply);
-        return reply;
-    }
+//    public Reply saveReply(Long postId, ReplyPostDto replyData) {
+//        Reply reply=new Reply(postId,
+//                replyData.getReplyContent(),
+//                replyData.getUserId(),
+//                replyData.getReplyRefId());
+//        replyRepository.save(reply);
+//        return reply;
+//    }
 }

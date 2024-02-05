@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import univcapstone.employmentsite.domain.Post;
 import univcapstone.employmentsite.domain.Reply;
+import univcapstone.employmentsite.domain.User;
 import univcapstone.employmentsite.dto.PostDto;
 import univcapstone.employmentsite.repository.BoardRepository;
 import univcapstone.employmentsite.repository.ReplyRepository;
@@ -51,16 +52,14 @@ public class BoardService {
         boardRepository.delete(post);
     }
 
-    public Post uploadPost(PostDto postData) {
-        Post post = new Post(postData.getTitle(),
-                postData.getContent(),
-                postData.getFileName());
+    public Post uploadPost(User user, PostDto postData) {
+        Post post = postData.toEntity(user, postData);
         boardRepository.save(post);
         return post;
     }
 
-    public void updatePost(PostDto postDto) {
-        boardRepository.update(postDto);
+    public void updatePost(Long postId, PostDto postDto) {
+        boardRepository.update(postId, postDto);
     }
 
     public Optional<Post> searchByTitle(String boardTitle) {

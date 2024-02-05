@@ -54,8 +54,8 @@ public class BoardRepository implements PostJpaRepository {
 
     }
 
-    public void update(PostDto postDto) {
-        Post post = em.find(Post.class, postDto.getPostId());
+    public void update(Long postId, PostDto postDto) {
+        Post post = em.find(Post.class, postId);
         post.setTitle(postDto.getTitle());
         post.setContent(postDto.getContent());
         post.setFileName(postDto.getFileName());

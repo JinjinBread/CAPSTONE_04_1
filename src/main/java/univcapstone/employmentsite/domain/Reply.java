@@ -8,13 +8,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.repository.cdi.Eager;
 
 import java.time.LocalDate;
-import java.util.Date;
+import java.util.List;
 
 @Entity
-@Getter@Setter
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 public class Reply {
@@ -23,29 +23,31 @@ public class Reply {
     @Column(name = "reply_id")
     private Long replyId;
 
-    @ManyToOne
-    @JoinColumn(name="post_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_id")
     private Post post;
 
     @NotNull
-    private Long id;
+    private Long userId;
+
+    //댓글, 대댓글을 묶어주는 id, self join
+    @OneToMany(mappedBy = "replyId", orphanRemoval = true)
+    private List<Reply> replies;
+
     @NotNull
-    private String userLoginId;
-    @Nullable
-    private Long refId;
-    @NotNull
-    private String replyCotent;
+    private String replyContent;
+
     @CreatedDate
     private LocalDate date;
 
-    public Reply(Long postId,
-                 String ReplyContent,
-                 String userLoginId,
-                 Long replyRefId){
-        this.post.setPostId(postId);
-        this.replyCotent=ReplyContent;
-        this.userLoginId=userLoginId;
-        this.refId=replyRefId;
-    }
+//    public Reply(Long postId,
+//                 String ReplyContent,
+//                 String userLoginId,
+//                 Long replyRefId) {
+//        this.post.setPostId(postId);
+//        this.replyContent = ReplyContent;
+//        this.userLoginId = userLoginId;
+//        this.refId = replyRefId;
+//    }
 
 }
