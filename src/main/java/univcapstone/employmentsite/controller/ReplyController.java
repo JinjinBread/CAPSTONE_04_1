@@ -2,10 +2,15 @@ package univcapstone.employmentsite.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import univcapstone.employmentsite.domain.Reply;
 import univcapstone.employmentsite.dto.ReplyPostDto;
 import univcapstone.employmentsite.service.ReplyService;
+import univcapstone.employmentsite.util.response.BasicResponse;
+import univcapstone.employmentsite.util.response.DefaultResponse;
 
 @Slf4j
 @RestController
@@ -23,12 +28,22 @@ public class ReplyController {
      * @return
      */
     @PostMapping("/boardlist/{postId}/{replyId}")
-    public String reply(
+    public ResponseEntity<? extends BasicResponse> reply(
             @PathVariable Long postId,
             @RequestBody @Validated ReplyPostDto replyData
     ){
+        Reply reply=replyService.saveReply(postId,replyData);
+        log.info("작성한 댓글 정보 {}",reply);
 
-        return "";
+        DefaultResponse<Reply> defaultResponse = DefaultResponse.<Reply>builder()
+                .code(HttpStatus.OK.value())
+                .httpStatus(HttpStatus.OK)
+                .message("게시글 수정 완료")
+                .result(reply)
+                .build();
+
+        return ResponseEntity.ok()
+                .body(defaultResponse);
 
     }
 

@@ -12,5 +12,5 @@ public class ReplyPostDto {
     private String userId;
     private String refId;
     private String replyContent;
-    private String replyRefId;
+    private Long replyRefId;
 }
