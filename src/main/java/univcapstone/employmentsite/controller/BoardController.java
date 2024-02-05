@@ -3,6 +3,7 @@ package univcapstone.employmentsite.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -33,8 +34,11 @@ public class BoardController {
      * @return
      */
     @GetMapping("/boardlist")
-    public ResponseEntity<? extends BasicResponse> boardMain(final Pageable pageable) {
+    public ResponseEntity<? extends BasicResponse> boardMain(
+            @PageableDefault(size=12) final Pageable pageable)
+    {
         //게시글 메인화면 보기
+        // /boardlist?size=10&page=1
         List<Post> posts = boardService.showAllPost(pageable);
         log.info("전체 게시글 데이터 {}", posts);
         DefaultResponse<List<Post>> defaultResponse = DefaultResponse.<List<Post>>builder()

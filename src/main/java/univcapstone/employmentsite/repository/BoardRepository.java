@@ -28,10 +28,12 @@ public class BoardRepository implements PostJpaRepository {
         return posts.stream().findAny();
     }
 
+    /*
     public String save(Post post) {
         em.persist(post);
         return "s";
     }
+    */
 
     public void delete(Post post) {
         em.remove(post);
@@ -71,15 +73,6 @@ public class BoardRepository implements PostJpaRepository {
         return post.stream().findAny();
     }
 
-    /**
-     * 페이지 번호에 따라 10개씩 게시글 정보를 반환하는 함수
-     * @param pageable
-     * @return
-     */
-    @Override
-    public List<Post> findByPost(Pageable pageable) {
-        return null;
-    }
     @Override
     public void flush() {
 
@@ -157,6 +150,11 @@ public class BoardRepository implements PostJpaRepository {
 
     @Override
     public <S extends Post, R> R findBy(Example<S> example, Function<FluentQuery.FetchableFluentQuery<S>, R> queryFunction) {
+        return null;
+    }
+
+    @Override
+    public <S extends Post> S save(S entity) {
         return null;
     }
 

@@ -24,7 +24,6 @@ public class Reply {
     @ManyToOne
     @JoinColumn(name="post_id")
     private Post post;
-    private Long postId=post.getPostId();
 
     @Nullable
     private Long refId;

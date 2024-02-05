@@ -30,7 +30,7 @@ public class BoardService {
     }
 
     public List<Post> showAllPost(Pageable pageable) {
-        return boardRepository.findByPost(pageable);
+        return boardRepository.findAll(pageable).getContent();
     }
 
     public Post showPost(Long postId) {
