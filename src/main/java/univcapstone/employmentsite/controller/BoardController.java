@@ -10,7 +10,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import univcapstone.employmentsite.domain.Post;
 import univcapstone.employmentsite.dto.PostDto;
-import univcapstone.employmentsite.repository.PostJpaRepository;
 import univcapstone.employmentsite.service.BoardService;
 import univcapstone.employmentsite.util.response.BasicResponse;
 import univcapstone.employmentsite.util.response.DefaultResponse;

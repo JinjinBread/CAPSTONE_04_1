@@ -1,9 +1,6 @@
 package univcapstone.employmentsite.domain;
 
-import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 
@@ -27,13 +24,8 @@ public class Post {
     @OneToMany(mappedBy = "post",cascade = CascadeType.REMOVE)
     private List<Reply> replies=new ArrayList<>();
 
-    @NotEmpty
     private String title;
-
-    @NotNull
     private String content;
-
-    @Nullable
     private String fileName;
 
     @ManyToOne(fetch = FetchType.LAZY)
