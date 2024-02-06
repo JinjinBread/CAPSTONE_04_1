@@ -86,31 +86,6 @@ public class MyPageController {
 
     }
 
-    @PatchMapping(value = "/user/edit")
-    public ResponseEntity<? extends BasicResponse> editUser(
-            @RequestBody @Validated UserEditDto userEditData
-    ) {
-        try {
-            log.info("수정려는 유저 데이터 {}", userEditData);
-            userService.editUser(userEditData);
-
-            DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
-                    .code(HttpStatus.OK.value())
-                    .httpStatus(HttpStatus.OK)
-                    .message("계정 편집 완료")
-                    .result("")
-                    .build();
-
-            return ResponseEntity.ok().body(defaultResponse);
-        } catch (IllegalStateException e) {
-            log.info("수정하려는 유저가 없거나 찾을 수 없습니다");
-            return ResponseEntity.badRequest()
-                    .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(),
-                            "잘못된 수정 요청입니다."));
-        }
-
-    }
-
     @PatchMapping(value = "/user/edit/pw")
     public ResponseEntity<? extends BasicResponse> editPw(
             @SessionAttribute(name = SessionConst.LOGIN_USER, required = false) User loginUser,
@@ -131,7 +106,7 @@ public class MyPageController {
 
     }
 
-    @PatchMapping(value = "/user/edit/nickname")
+    @PatchMapping(value = "/user/edit")
     public ResponseEntity<? extends BasicResponse> editNickname(
             @SessionAttribute(name = SessionConst.LOGIN_USER, required = false) User loginUser,
             @RequestBody @Validated NicknameDto nicknameDto
@@ -151,3 +126,29 @@ public class MyPageController {
 
     }
 }
+/*
+@PatchMapping(value = "/user/edit")
+public ResponseEntity<? extends BasicResponse> editUser(
+        @RequestBody @Validated UserEditDto userEditData
+) {
+    try {
+        log.info("수정려는 유저 데이터 {}", userEditData);
+        userService.editUser(userEditData);
+
+        DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
+                .code(HttpStatus.OK.value())
+                .httpStatus(HttpStatus.OK)
+                .message("계정 편집 완료")
+                .result("")
+                .build();
+
+        return ResponseEntity.ok().body(defaultResponse);
+    } catch (IllegalStateException e) {
+        log.info("수정하려는 유저가 없거나 찾을 수 없습니다");
+        return ResponseEntity.badRequest()
+                .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(),
+                        "잘못된 수정 요청입니다."));
+    }
+
+}
+*/
