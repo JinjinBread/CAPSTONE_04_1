@@ -134,4 +134,8 @@ public class UserService {
     public void editPass(User user,String newPass){
         userRepository.updatePassword(user.getId(),newPass);
     }
+
+    public void editNickname(User user, String newNickname) {
+        userRepository.updateNickname(user.getId(),newNickname);
+    }
 }

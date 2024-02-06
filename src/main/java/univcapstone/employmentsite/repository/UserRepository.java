@@ -60,4 +60,9 @@ public class UserRepository {
         user.setNickname(userData.getNickname());
         user.setPassword(userData.getPw());
     }
+
+    public void updateNickname(Long id, String newNickname) {
+        User user = em.find(User.class, id);
+        user.setNickname(newNickname);
+    }
 }

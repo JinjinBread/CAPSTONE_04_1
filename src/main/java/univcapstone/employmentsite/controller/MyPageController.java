@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import univcapstone.employmentsite.domain.User;
+import univcapstone.employmentsite.dto.NicknameDto;
 import univcapstone.employmentsite.dto.PasswordDto;
 import univcapstone.employmentsite.dto.UserEditDto;
 import univcapstone.employmentsite.dto.UserFindDto;
@@ -123,6 +124,26 @@ public class MyPageController {
                 .code(HttpStatus.OK.value())
                 .httpStatus(HttpStatus.OK)
                 .message("비밀번호 변경 완료")
+                .result("")
+                .build();
+
+        return ResponseEntity.ok().body(defaultResponse);
+
+    }
+
+    @PatchMapping(value = "/user/edit/nickname")
+    public ResponseEntity<? extends BasicResponse> editNickname(
+            @SessionAttribute(name = SessionConst.LOGIN_USER, required = false) User loginUser,
+            @RequestBody @Validated NicknameDto nicknameDto
+    ){
+        String newNickname=nicknameDto.getNickname();
+
+        userService.editNickname(loginUser,newNickname);
+
+        DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
+                .code(HttpStatus.OK.value())
+                .httpStatus(HttpStatus.OK)
+                .message("닉네임 변경 완료")
                 .result("")
                 .build();
 
