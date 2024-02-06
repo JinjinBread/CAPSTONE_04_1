@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import univcapstone.employmentsite.domain.User;
+import univcapstone.employmentsite.dto.PasswordDto;
 import univcapstone.employmentsite.dto.UserEditDto;
 import univcapstone.employmentsite.dto.UserFindDto;
 import univcapstone.employmentsite.service.UserService;
@@ -112,6 +113,26 @@ public class MyPageController {
                     .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(),
                             "잘못된 수정 요청입니다."));
         }
+
+    }
+
+    @PatchMapping(value = "/user/edit/pw")
+    public ResponseEntity<? extends BasicResponse> editPw(
+            @SessionAttribute(name = SessionConst.LOGIN_USER, required = false) User loginUser,
+            @RequestBody @Validated PasswordDto passwordDto
+    ){
+        String newPassword=passwordDto.getPassword();
+
+        userService.editPass(loginUser,newPassword);
+
+        DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
+                .code(HttpStatus.OK.value())
+                .httpStatus(HttpStatus.OK)
+                .message("비밀번호 변경 완료")
+                .result("")
+                .build();
+
+        return ResponseEntity.ok().body(defaultResponse);
 
     }
 }

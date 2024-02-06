@@ -130,4 +130,8 @@ public class UserService {
         userRepository.findByLoginId(editDto.getLoginId())
                 .orElseThrow(()-> new IllegalStateException("수정하려는 계정을 찾을 수 없습니다."));
     }
+
+    public void editPass(User user,String newPass){
+        userRepository.updatePassword(user.getId(),newPass);
+    }
 }
