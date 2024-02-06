@@ -9,10 +9,10 @@ import univcapstone.employmentsite.util.SessionConst;
 @RestController
 public class HomeController {
 
-    @GetMapping("/")
+    @GetMapping("/home")
     public String home(@SessionAttribute(name = SessionConst.LOGIN_USER, required = false) User user) {
         if (user == null)
             return "Hello home";
-        return "Hello login home";
+        return user.getNickname();
     }
 }

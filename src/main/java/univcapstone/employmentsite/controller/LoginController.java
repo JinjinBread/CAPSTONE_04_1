@@ -1,6 +1,7 @@
 package univcapstone.employmentsite.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,8 @@ import univcapstone.employmentsite.util.SessionConst;
 import univcapstone.employmentsite.util.response.BasicResponse;
 import univcapstone.employmentsite.util.response.DefaultResponse;
 
+import java.io.IOException;
+
 @Slf4j
 @RestController
 public class LoginController {
@@ -27,13 +30,13 @@ public class LoginController {
         this.userService = userService;
     }
 
-    @GetMapping("/login")
+    @GetMapping("/")
     public String loginForm() {
         return "login form"; // 로그인 페이지
     }
 
     @GetMapping("/logout")
-    public String logout(HttpServletRequest request) {
+    public String logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
         //로그아웃에 대한 로직
         HttpSession session = request.getSession(false);
 
@@ -41,12 +44,14 @@ public class LoginController {
             session.invalidate();
         }
 
+        response.sendRedirect("/");
+
         log.info("로그아웃");
 
-        return "redirect:/"; // 로그아웃 성공 후 메인 페이지로 리다이렉트
+        return "logout"; // 로그아웃 성공 후 메인 페이지로 리다이렉트
     }
 
-    @PostMapping("/login")
+    @PostMapping("/")
     public ResponseEntity<? extends BasicResponse> login(@RequestBody @Validated UserLoginDto userDto, HttpServletRequest request) {
 
         //로그인에 대한 로직

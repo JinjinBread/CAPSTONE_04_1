@@ -6,11 +6,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import univcapstone.employmentsite.domain.Post;
-import univcapstone.employmentsite.domain.Reply;
 import univcapstone.employmentsite.domain.User;
 import univcapstone.employmentsite.dto.PostDto;
 import univcapstone.employmentsite.repository.BoardRepository;
-import univcapstone.employmentsite.repository.ReplyRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,13 +19,10 @@ import java.util.Optional;
 public class BoardService {
 
     private final BoardRepository boardRepository;
-    private final ReplyRepository replyRepository;
 
     @Autowired
-    public BoardService(BoardRepository boardRepository,
-                        ReplyRepository replyRepository) {
+    public BoardService(BoardRepository boardRepository) {
         this.boardRepository = boardRepository;
-        this.replyRepository = replyRepository;
     }
 
     public List<Post> showAllPost(Pageable pageable) {
@@ -36,8 +31,6 @@ public class BoardService {
 
     public Post showPost(Long postId) {
         Post post = boardRepository.findByPostId(postId);
-        List<Reply> replies=replyRepository.findByReply(postId);
-        post.setReplies(replies);
         if (post == null) {
             throw new IllegalStateException("해당하는 게시글을 찾을 수 없습니다.");
         }
