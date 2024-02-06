@@ -29,16 +29,10 @@ public class MyPageController {
 
     @GetMapping("/user/myInfo")
     public ResponseEntity<? extends BasicResponse> myInfo(
-            @SessionAttribute(name = SessionConst.LOGIN_USER, required = false) User loginUser
+            @SessionAttribute(name = SessionConst.LOGIN_USER, required = false) User user
     ) {
 
-        log.info("loginUser = ", loginUser);
-
-        //개인정보 화면
-        String loginId = loginUser.getLoginId();
-        User user = userService.findUserByLoginId(loginId);
-
-        log.info("찾은 유저의 정보 {}", user);
+        log.info("세션으로 찾은 로그인 유저의 정보 = {}", user);
 
         DefaultResponse<User> defaultResponse = DefaultResponse.<User>builder()
                 .code(HttpStatus.OK.value())
