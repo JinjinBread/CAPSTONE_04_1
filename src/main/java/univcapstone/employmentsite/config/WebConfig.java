@@ -14,7 +14,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .order(1)
                 .addPathPatterns("/**") //인터셉터를 모든 경로에 적용
                 .excludePathPatterns(
-                        "/", "/join", "/terms", "/login/**", "/logout",
+                        "/", "/home", "/join", "/terms", "/login/**", "/logout",
                         "/confirm/**", "/verify/**", "/find/**"
                 ); // /login, /confirm 포함 제외됨
     }

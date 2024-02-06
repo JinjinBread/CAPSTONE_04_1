@@ -44,8 +44,6 @@ public class LoginController {
             session.invalidate();
         }
 
-        response.sendRedirect("/");
-
         log.info("로그아웃");
 
         return "logout"; // 로그아웃 성공 후 메인 페이지로 리다이렉트

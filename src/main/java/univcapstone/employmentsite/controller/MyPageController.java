@@ -26,7 +26,7 @@ public class MyPageController {
         this.userService = userService;
     }
 
-    @GetMapping("/user/myinfo")
+    @GetMapping("/user/myInfo")
     public ResponseEntity<? extends BasicResponse> myInfo(
             @SessionAttribute(name = SessionConst.LOGIN_USER, required = false) User loginUser
     ) {
