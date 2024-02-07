@@ -2,6 +2,7 @@ package univcapstone.employmentsite.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -9,6 +10,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
 public class Resume {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,4 +21,9 @@ public class Resume {
     private Long userId;
 
     private String resumeContent;
+
+    public Resume(Long userId, String content) {
+        this.resumeId=userId;
+        this.resumeContent=content;
+    }
 }
