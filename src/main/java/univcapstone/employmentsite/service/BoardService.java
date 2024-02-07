@@ -26,7 +26,7 @@ public class BoardService {
     }
 
     public List<Post> showAllPost(Pageable pageable) {
-        return boardRepository.findAll(pageable).getContent();
+        return boardRepository.findAllByOrderByDateDesc(pageable).getContent();
     }
 
     public Post showPost(Long postId) {
@@ -52,7 +52,11 @@ public class BoardService {
     }
 
     public void updatePost(Long postId, PostDto postDto) {
-        boardRepository.update(postId, postDto);
+        Post findPost = boardRepository.findByPostId(postId);
+        findPost.setTitle(postDto.getTitle());
+        findPost.setContent(postDto.getContent());
+        findPost.setFileName(postDto.getFileName());
+        boardRepository.save(findPost);
     }
 
     public Optional<Post> searchByTitle(String boardTitle) {

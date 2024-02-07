@@ -13,11 +13,6 @@ import univcapstone.employmentsite.domain.User;
 @Setter
 public class PostDto {
 
-    private Long postId;
-
-    @NotEmpty
-    private Long userId;
-
     @NotEmpty
     private String title;
 
@@ -28,9 +23,19 @@ public class PostDto {
     private String fileName;
 
     public Post toEntity(User user, PostDto postDto) {
-        return new Post(postDto.getTitle(),
-                postDto.getContent(),
-                postDto.getFileName(),
-                user);
+        return Post.builder()
+                .user(user)
+                .title(postDto.getTitle())
+                .content(postDto.getContent())
+                .fileName(postDto.getFileName())
+                .build();
+    }
+
+    public Post toEntity(PostDto postDto) {
+        return Post.builder()
+                .title(postDto.getTitle())
+                .content(postDto.getContent())
+                .fileName(postDto.getFileName())
+                .build();
     }
 }
