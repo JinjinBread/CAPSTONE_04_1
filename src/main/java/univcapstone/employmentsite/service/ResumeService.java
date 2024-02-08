@@ -9,6 +9,8 @@ import univcapstone.employmentsite.domain.User;
 import univcapstone.employmentsite.repository.ReplyRepository;
 import univcapstone.employmentsite.repository.ResumeRepository;
 
+import java.util.List;
+
 @Slf4j
 @Transactional
 @Service
@@ -20,17 +22,18 @@ public class ResumeService {
         this.resumeRepository = resumeRepository;
     }
 
-    public Resume getMyResume(Long userId){
-        return resumeRepository.getResumeByUserId(userId);
+    public List<Resume> getMyResume(Long userId){
+        return resumeRepository.getResumeListByUserId(userId);
     }
 
-    public void saveResume(User user, String content) {
+    public Resume saveResume(User user, String content) {
         Resume resume=new Resume(user.getId(),content);
         resumeRepository.save(resume);
+        return resume;
     }
 
-    public void reviseResume(User user, String content) {
-        Resume resume=resumeRepository.getResumeByUserId(user.getId());
-        resumeRepository.updateResume(resume.getResumeId(),user.getId(),content);
+    public void reviseResume(Long resumeId, String content) {
+        Resume resume=resumeRepository.getResumeByResumeId(resumeId);
+        resumeRepository.updateResume(resume.getResumeId(),content);
     }
 }

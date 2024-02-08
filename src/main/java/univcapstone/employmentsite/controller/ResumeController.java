@@ -15,6 +15,8 @@ import univcapstone.employmentsite.util.SessionConst;
 import univcapstone.employmentsite.util.response.BasicResponse;
 import univcapstone.employmentsite.util.response.DefaultResponse;
 
+import java.util.List;
+
 @Slf4j
 @RestController
 public class ResumeController {
@@ -29,9 +31,17 @@ public class ResumeController {
     }
 
     @GetMapping(value = "/resume/write")
-    public String resumeWrite(){
+    public ResponseEntity<? extends BasicResponse> resumeWrite(){
         //자기소개서 첫화면 불러오기
-        return "";
+        DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
+                .code(HttpStatus.OK.value())
+                .httpStatus(HttpStatus.OK)
+                .message("자기소개서 첫화면")
+                .result("")
+                .build();
+
+        return ResponseEntity.ok()
+                .body(defaultResponse);
     }
 
     @GetMapping(value = "/resume/revise")
@@ -40,14 +50,14 @@ public class ResumeController {
     ){
         //자기소개서 수정하기 불러오기
         User user=userService.findUserByLoginId(loginUser.getLoginId());
-        Resume resume=resumeService.getMyResume(user.getId());
-        log.info("가져오려는 자기소개서 정보 {}", resume);
+        List<Resume> resumes=resumeService.getMyResume(user.getId());
+        log.info("가져오려는 자기소개서들 {}", resumes);
 
-        DefaultResponse<Resume> defaultResponse = DefaultResponse.<Resume>builder()
+        DefaultResponse<List<Resume>> defaultResponse = DefaultResponse.<List<Resume>>builder()
                 .code(HttpStatus.OK.value())
                 .httpStatus(HttpStatus.OK)
-                .message("자기소개서 가져오기 완료")
-                .result(resume)
+                .message("수정할 자기소개서 가져오기 완료")
+                .result(resumes)
                 .build();
 
         return ResponseEntity.ok()
@@ -55,15 +65,24 @@ public class ResumeController {
     }
 
     @PostMapping(value = "/resume/revise")
-    public String postResumeRevise(
+    public ResponseEntity<? extends BasicResponse> postResumeRevise(
             @SessionAttribute(name = SessionConst.LOGIN_USER, required = false) User loginUser,
             @RequestBody @Validated ResumeDto resumeDto
     ){
         //자기소개서 수정하기
         User user=userService.findUserByLoginId(loginUser.getLoginId());
-        resumeService.reviseResume(user, resumeDto.getContent());
+        resumeService.reviseResume(resumeDto.getResumeId(),resumeDto.getContent());
         log.info("수정자: {}, 수정 내용 {}", user, resumeDto);
-        return "";
+
+        DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
+                .code(HttpStatus.OK.value())
+                .httpStatus(HttpStatus.OK)
+                .message("자기소개서 수정 완료")
+                .result("")
+                .build();
+
+        return ResponseEntity.ok()
+                .body(defaultResponse);
     }
 
     @PostMapping(value = "/resume/save")
@@ -73,15 +92,15 @@ public class ResumeController {
     ){
         //자기소개서 저장하기
         User user=userService.findUserByLoginId(loginUser.getLoginId());
-        resumeService.saveResume(user, resumeDto.getContent());
-        log.info("저장하려는 사람 {}, 저장하는 내용 {}",
-                user, resumeDto);
+        Resume resume=resumeService.saveResume(user, resumeDto.getContent());
 
-        DefaultResponse<User> defaultResponse = DefaultResponse.<User>builder()
+        log.info("저장하려는 사람 {}, 저장하는 내용 {}", user, resumeDto);
+
+        DefaultResponse<Resume> defaultResponse = DefaultResponse.<Resume>builder()
                 .code(HttpStatus.OK.value())
                 .httpStatus(HttpStatus.OK)
                 .message("자기소개서 저장 완료")
-                .result(user)
+                .result(resume)
                 .build();
 
         return ResponseEntity.ok()

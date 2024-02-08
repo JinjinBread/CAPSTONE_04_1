@@ -19,15 +19,23 @@ public class ResumeRepository {
         em.persist(resume);
     }
 
-    public Resume getResumeByUserId(Long userId) {
-        Resume resume = em.createQuery("select r from Resume r where r.userId=:userId",Resume.class)
+    public List<Resume> getResumeListByUserId(Long userId) {
+        List<Resume> resumes = em.createQuery("select r from Resume r where r.userId=:userId",Resume.class)
                 .setParameter("userId",userId)
+                .getResultList();
+
+        return resumes;
+    }
+
+    public Resume getResumeByResumeId(Long resumeId) {
+        Resume resume = em.createQuery("select r from Resume r where r.resumeId=:resumeId",Resume.class)
+                .setParameter("resumeId",resumeId)
                 .getSingleResult();
 
         return resume;
     }
 
-    public void updateResume(Long resumeId, Long id, String content) {
+    public void updateResume(Long resumeId,String content) {
         Resume resume = em.find(Resume.class, resumeId);
         resume.setResumeContent(content);
     }
