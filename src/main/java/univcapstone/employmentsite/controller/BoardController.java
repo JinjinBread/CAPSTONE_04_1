@@ -91,12 +91,12 @@ public class BoardController {
 
     }
 
-    @PostMapping("/boardlist/edit/{postId}")
+    @PatchMapping("/boardlist/edit/{postId}")
     public ResponseEntity<? extends BasicResponse> edit(
             @PathVariable Long postId,
             @RequestBody @Validated PostDto postDto
     ) {
-        log.info("수정한 게시물 정보:{}", postDto);
+        log.info("수정한 게시물 정보 = {}", postDto);
 
         boardService.updatePost(postId, postDto);
 

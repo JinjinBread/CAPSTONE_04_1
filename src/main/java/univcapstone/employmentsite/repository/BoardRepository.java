@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import univcapstone.employmentsite.domain.Post;
+import univcapstone.employmentsite.domain.Reply;
 
 import java.util.Optional;
 
@@ -18,4 +19,5 @@ public interface BoardRepository extends JpaRepository<Post, Long> {
     Post findByPostId(Long postId);
 
     Optional<Post> findByTitle(String title);
+
 }
