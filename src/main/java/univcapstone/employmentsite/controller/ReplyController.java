@@ -7,8 +7,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import univcapstone.employmentsite.domain.Reply;
+import univcapstone.employmentsite.domain.User;
 import univcapstone.employmentsite.dto.ReplyPostDto;
 import univcapstone.employmentsite.service.ReplyService;
+import univcapstone.employmentsite.util.SessionConst;
 import univcapstone.employmentsite.util.response.BasicResponse;
 import univcapstone.employmentsite.util.response.DefaultResponse;
 
@@ -26,17 +28,18 @@ public class ReplyController {
      * 댓글 달기
      *
      * @param postId
+     * @param user
      * @param replyDto
      * @return
      */
     @PostMapping("/boardlist/detail/{postId}/reply")
     public ResponseEntity<? extends BasicResponse> reply(
             @PathVariable Long postId,
-            @RequestBody @Validated ReplyPostDto replyDto
-    ) { //2024-02-14 세션으로 user 정보 가져오는 걸로 변경
+            @SessionAttribute(name = SessionConst.LOGIN_USER, required = false) User user,
+            @RequestBody @Validated ReplyPostDto replyDto) {
 
-        replyService.saveReply(postId, replyDto);
-        log.info("작성한 댓글 정보 {}", replyDto);
+        replyService.saveReply(postId, user, replyDto);
+        log.info("댓글을 작성한 포스트 id = {}, 댓글을 작성한 유저 = {}, 작성한 댓글 정보 = {}", postId, user, replyDto);
 
         DefaultResponse<ReplyPostDto> defaultResponse = DefaultResponse.<ReplyPostDto>builder()
                 .code(HttpStatus.OK.value())
