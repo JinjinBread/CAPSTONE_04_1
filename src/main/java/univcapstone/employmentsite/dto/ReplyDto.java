@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 
 @Data
-public class ReplyPostDto {
+public class ReplyDto {
 
     @Nullable
     private Long parentReplyId; //대댓글의 부모 댓글 id

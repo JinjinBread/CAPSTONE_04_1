@@ -6,9 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import univcapstone.employmentsite.domain.Reply;
 import univcapstone.employmentsite.domain.User;
-import univcapstone.employmentsite.dto.ReplyPostDto;
+import univcapstone.employmentsite.dto.ReplyDto;
 import univcapstone.employmentsite.service.ReplyService;
 import univcapstone.employmentsite.util.SessionConst;
 import univcapstone.employmentsite.util.response.BasicResponse;
@@ -36,12 +35,12 @@ public class ReplyController {
     public ResponseEntity<? extends BasicResponse> reply(
             @PathVariable Long postId,
             @SessionAttribute(name = SessionConst.LOGIN_USER, required = false) User user,
-            @RequestBody @Validated ReplyPostDto replyDto) {
+            @RequestBody @Validated ReplyDto replyDto) {
 
         replyService.saveReply(postId, user, replyDto);
         log.info("댓글을 작성한 포스트 id = {}, 댓글을 작성한 유저 = {}, 작성한 댓글 정보 = {}", postId, user, replyDto);
 
-        DefaultResponse<ReplyPostDto> defaultResponse = DefaultResponse.<ReplyPostDto>builder()
+        DefaultResponse<ReplyDto> defaultResponse = DefaultResponse.<ReplyDto>builder()
                 .code(HttpStatus.OK.value())
                 .httpStatus(HttpStatus.OK)
                 .message("댓글 작성")

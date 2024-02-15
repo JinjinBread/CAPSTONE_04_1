@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import univcapstone.employmentsite.domain.Post;
 import univcapstone.employmentsite.domain.Reply;
 import univcapstone.employmentsite.domain.User;
-import univcapstone.employmentsite.dto.ReplyPostDto;
+import univcapstone.employmentsite.dto.ReplyDto;
 import univcapstone.employmentsite.repository.BoardRepository;
 import univcapstone.employmentsite.repository.ReplyRepository;
 
@@ -26,13 +26,13 @@ public class ReplyService {
         this.replyRepository = replyRepository;
     }
 
-    public Reply saveReply(Long postId, User user, ReplyPostDto replyDto) {
+    public Reply saveReply(Long postId, User user, ReplyDto replyDto) {
 
         Post post = boardRepository.getReferenceById(postId);
 
         Reply reply = Reply.builder()
                 .post(post)
-                .userId(user.getId())
+                .user(user)
                 .parentReplyId(replyDto.getParentReplyId())
                 .replyContent(replyDto.getReplyContent())
                 .build();

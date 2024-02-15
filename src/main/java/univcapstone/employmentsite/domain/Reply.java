@@ -23,7 +23,10 @@ public class Reply {
     @JoinColumn(name = "post_id")
     private Post post;
 
-    private Long userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
     //대댓글의 부모 댓글 Id
     private Long parentReplyId;
     private String replyContent;
@@ -32,9 +35,9 @@ public class Reply {
     private LocalDate date;
 
     @Builder
-    public Reply(Post post, Long userId, Long parentReplyId, String replyContent) {
+    public Reply(Post post, User user, Long parentReplyId, String replyContent) {
         this.post = post;
-        this.userId = userId;
+        this.user = user;
         this.parentReplyId = parentReplyId;
         this.replyContent = replyContent;
     }
