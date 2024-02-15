@@ -2,12 +2,14 @@ package univcapstone.employmentsite.domain;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 @Entity
 @Getter @Setter
+@EqualsAndHashCode
 @ToString
 public class User {
 

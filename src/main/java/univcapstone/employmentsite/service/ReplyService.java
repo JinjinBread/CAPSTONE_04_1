@@ -40,4 +40,15 @@ public class ReplyService {
         replyRepository.save(reply);
         return reply;
     }
+
+    public void deleteReply(Long replyId, User loginUser) {
+        Reply findReply = replyRepository.findByReplyId(replyId);
+        User replyWriter = findReply.getUser();
+
+        if (!replyWriter.equals(loginUser)) {
+            throw new IllegalStateException("자신이 작성한 댓글만 삭제할 수 있습니다.");
+        }
+
+        replyRepository.delete(replyId);
+    }
 }
