@@ -45,7 +45,7 @@ public class PostController {
         //게시글 메인화면 보기
         // /boardlist?size=10&page=1
         log.info("page={} , category={}",pageNo,category);
-        PageRequest pageRequest = PageRequest.of(0, 5);
+        PageRequest pageRequest = PageRequest.of(pageNo, 5);
         List<Post> posts = postService.showAllPost(pageRequest);
 
         log.info("전체 게시글 데이터 = {}", posts);
