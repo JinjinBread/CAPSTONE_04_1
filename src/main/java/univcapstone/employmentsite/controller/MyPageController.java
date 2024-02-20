@@ -83,7 +83,6 @@ public class MyPageController {
                     .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(),
                             "잘못된 삭제 요청입니다."));
         }
-
     }
 
     @PatchMapping(value = "/user/edit/pw")

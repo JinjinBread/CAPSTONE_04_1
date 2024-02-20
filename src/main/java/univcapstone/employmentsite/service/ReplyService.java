@@ -9,7 +9,7 @@ import univcapstone.employmentsite.domain.Post;
 import univcapstone.employmentsite.domain.Reply;
 import univcapstone.employmentsite.domain.User;
 import univcapstone.employmentsite.dto.ReplyDto;
-import univcapstone.employmentsite.repository.BoardRepository;
+import univcapstone.employmentsite.repository.PostRepository;
 import univcapstone.employmentsite.repository.ReplyRepository;
 
 @Slf4j
@@ -17,18 +17,18 @@ import univcapstone.employmentsite.repository.ReplyRepository;
 @Service
 public class ReplyService {
 
-    private final BoardRepository boardRepository;
+    private final PostRepository postRepository;
     private final ReplyRepository replyRepository;
 
     @Autowired
-    public ReplyService(BoardRepository boardRepository, ReplyRepository replyRepository) {
-        this.boardRepository = boardRepository;
+    public ReplyService(PostRepository postRepository, ReplyRepository replyRepository) {
+        this.postRepository = postRepository;
         this.replyRepository = replyRepository;
     }
 
     public Reply saveReply(Long postId, User user, ReplyDto replyDto) {
 
-        Post post = boardRepository.getReferenceById(postId);
+        Post post = postRepository.getReferenceById(postId);
 
         Reply reply = Reply.builder()
                 .post(post)
