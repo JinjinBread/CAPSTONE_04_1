@@ -2,6 +2,7 @@ package univcapstone.employmentsite.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,6 +11,7 @@ import univcapstone.employmentsite.domain.User;
 import univcapstone.employmentsite.dto.PostDto;
 import univcapstone.employmentsite.repository.PostRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,7 +28,13 @@ public class PostService {
     }
 
     public List<Post> showAllPost(Pageable pageable) {
-        return postRepository.findAllByOrderByDateDesc(pageable).getContent();
+        List<Post> post=new ArrayList<>();
+        Page<Post> pagePost= postRepository.findAllByOrderByDateDesc(pageable);
+
+        if(pagePost!=null && pagePost.hasContent()){
+            post=pagePost.getContent();
+        }
+        return post;
     }
 
     public Post showPost(Long postId) {

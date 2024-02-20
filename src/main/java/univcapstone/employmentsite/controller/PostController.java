@@ -2,6 +2,8 @@ package univcapstone.employmentsite.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
@@ -36,11 +38,15 @@ public class PostController {
      */
     @GetMapping("/boardlist")
     public ResponseEntity<? extends BasicResponse> boardMain(
-            @PageableDefault(size=12) final Pageable pageable)
+            @RequestParam(required = false, defaultValue = "0", value = "page") int pageNo,
+            @RequestParam(required = false, defaultValue = "all", value = "category") String category)
+            //@PageableDefault(page=0,size=12) final Pageable pageable)
     {
         //게시글 메인화면 보기
         // /boardlist?size=10&page=1
-        List<Post> posts = postService.showAllPost(pageable);
+        log.info("page={} , category={}",pageNo,category);
+        PageRequest pageRequest = PageRequest.of(0, 5);
+        List<Post> posts = postService.showAllPost(pageRequest);
 
         log.info("전체 게시글 데이터 = {}", posts);
 

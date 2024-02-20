@@ -13,8 +13,8 @@ import java.util.Optional;
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
 
+    Page<Post> findAll(Pageable pageable);
     Page<Post> findAllByOrderByDateDesc(Pageable pageable);
-
     Post findByPostId(Long postId);
 
     Optional<Post> findByTitle(String title);
