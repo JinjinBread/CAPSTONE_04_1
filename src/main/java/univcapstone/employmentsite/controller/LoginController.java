@@ -55,11 +55,7 @@ public class LoginController {
         //로그인에 대한 로직
         User loginUser = userService.login(userDto.getLoginId(), userDto.getPassword());
 
-        log.info("로그인 유저 = {}", loginUser);
-
-        if (loginUser == null) {
-            throw new UserAuthenticationException("아이디 또는 비밀번호가 맞지 않습니다.");
-        }
+        log.info("로그인 유저 정보 = {}", userDto);
 
         HttpSession session = request.getSession();
         session.setAttribute(SessionConst.LOGIN_USER, loginUser);

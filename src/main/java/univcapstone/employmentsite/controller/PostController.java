@@ -41,7 +41,9 @@ public class PostController {
         //게시글 메인화면 보기
         // /boardlist?size=10&page=1
         List<Post> posts = postService.showAllPost(pageable);
-        log.info("전체 게시글 데이터 {}", posts);
+
+        log.info("전체 게시글 데이터 = {}", posts);
+
         DefaultResponse<List<Post>> defaultResponse = DefaultResponse.<List<Post>>builder()
                 .code(HttpStatus.OK.value())
                 .httpStatus(HttpStatus.OK)

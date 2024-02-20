@@ -13,7 +13,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-@ToString
+@ToString(exclude = "user")
 @EntityListeners(AuditingEntityListener.class)
 public class Post {
 

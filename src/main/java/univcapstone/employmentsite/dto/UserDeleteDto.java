@@ -7,7 +7,10 @@ import lombok.Setter;
 
 @Data
 @Getter@Setter
-public class PasswordDto {
+public class UserDeleteDto {
+    @NotEmpty
+    private String loginId;
+    
     @NotEmpty
     private String password;
 }

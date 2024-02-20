@@ -1,5 +1,7 @@
 package univcapstone.employmentsite.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -7,10 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import univcapstone.employmentsite.domain.User;
-import univcapstone.employmentsite.dto.NicknameDto;
-import univcapstone.employmentsite.dto.PasswordDto;
-import univcapstone.employmentsite.dto.UserEditDto;
-import univcapstone.employmentsite.dto.UserFindDto;
+import univcapstone.employmentsite.dto.*;
 import univcapstone.employmentsite.service.UserService;
 import univcapstone.employmentsite.util.SessionConst;
 import univcapstone.employmentsite.util.response.BasicResponse;
@@ -63,11 +62,13 @@ public class MyPageController {
 
     @DeleteMapping(value = "/user/delete")
     public ResponseEntity<? extends BasicResponse> deleteUser(
-            @RequestBody @Validated UserFindDto userFindData
+            HttpServletRequest request,
+            @RequestBody @Validated UserDeleteDto userDeleteDto
     ) {
         try {
-            log.info("삭제하러는 유저 데이터 {}", userFindData);
-            userService.deleteUser(userFindData.getLoginId());
+            log.info("삭제하려는 유저 데이터 {}", userDeleteDto);
+
+            userService.deleteUser(userDeleteDto);
 
             DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
                     .code(HttpStatus.OK.value())
@@ -76,9 +77,15 @@ public class MyPageController {
                     .result("")
                     .build();
 
+            HttpSession session = request.getSession(false);
+
+            if (session != null) {
+                session.invalidate();
+            }
+
             return ResponseEntity.ok().body(defaultResponse);
         } catch (IllegalStateException e) {
-            log.error("잘못된 삭제 요청: 삭제하려는 계정이 없거나 찾을 수 없습니다.");
+            log.error(e.getMessage());
             return ResponseEntity.badRequest()
                     .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(),
                             "잘못된 삭제 요청입니다."));
@@ -88,9 +95,9 @@ public class MyPageController {
     @PatchMapping(value = "/user/edit/pw")
     public ResponseEntity<? extends BasicResponse> editPw(
             @SessionAttribute(name = SessionConst.LOGIN_USER, required = false) User loginUser,
-            @RequestBody @Validated PasswordDto passwordDto
+            @RequestBody @Validated UserDeleteDto userDeleteDto
     ){
-        String newPassword=passwordDto.getPassword();
+        String newPassword= userDeleteDto.getPassword();
 
         userService.editPass(loginUser,newPassword);
 

@@ -2,13 +2,13 @@ package univcapstone.employmentsite.service;
 
 import org.springframework.transaction.annotation.Transactional;
 import univcapstone.employmentsite.domain.User;
+import univcapstone.employmentsite.dto.UserDeleteDto;
 import univcapstone.employmentsite.dto.UserEditDto;
+import univcapstone.employmentsite.ex.custom.UserAuthenticationException;
 import univcapstone.employmentsite.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Slf4j
 @Transactional
@@ -37,7 +37,7 @@ public class UserService {
     public User login(String loginId, String password) {
         return userRepository.findByLoginId(loginId)
                 .filter(u -> u.getPassword().equals(password))
-                .orElse(null);
+                .orElseThrow(() -> new UserAuthenticationException("아이디 또는 비밀번호가 맞지 않습니다."));
     }
 
     /**
@@ -110,16 +110,17 @@ public class UserService {
 
     /**
      * 계정 삭제
-     * @param loginId
+     * @param userDeleteDto
      */
-    public void deleteUser(String loginId){
-        userRepository.findByLoginId(loginId)
-                .ifPresent(u->{
-                    userRepository.delete(u.getId());
-                });
+    public void deleteUser(UserDeleteDto userDeleteDto){
+        User user = userRepository.findByLoginId(userDeleteDto.getLoginId())
+                .orElseThrow(() -> new IllegalStateException("삭제하려는 계정을 찾을 수 없습니다."));
 
-        userRepository.findByLoginId(loginId)
-                .orElseThrow(()-> new IllegalStateException("삭제하려는 계정을 찾을 수 없습니다."));
+        if (user.getPassword().equals(userDeleteDto.getPassword())) {
+            userRepository.delete(user.getId());
+        } else {
+            throw new IllegalStateException("삭제하려는 계정의 패스워드가 일치하지 않습니다.");
+        }
     }
 
     public void editUser(UserEditDto editDto){
@@ -138,4 +139,5 @@ public class UserService {
     public void editNickname(User user, String newNickname) {
         userRepository.updateNickname(user.getId(),newNickname);
     }
+
 }
