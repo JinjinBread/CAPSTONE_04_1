@@ -24,9 +24,11 @@ public class Post {
     private Long postId;
 
     //댓글
+    @JsonIgnore
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
     private List<Reply> replies = new ArrayList<>();
 
+    private String category;
     private String title;
     private String content;
     private String fileName;
@@ -38,6 +40,17 @@ public class Post {
 
     @CreatedDate
     private LocalDate date;
+
+
+
+    @Builder
+    public Post(User user, String title, String content, String fileName,String category) {
+        this.user = user;
+        this.title = title;
+        this.content = content;
+        this.fileName = fileName;
+        this.category=category;
+    }
 
     @Builder
     public Post(User user, String title, String content, String fileName) {

@@ -27,6 +27,10 @@ public class PostService {
         this.postRepository = postRepository;
     }
 
+    public Post findPostById(long postId){
+        return postRepository.findByPostId(postId);
+    }
+
     public List<Post> showAllPost(Pageable pageable) {
         List<Post> post=new ArrayList<>();
         Page<Post> pagePost= postRepository.findAllByOrderByDateDesc(pageable);

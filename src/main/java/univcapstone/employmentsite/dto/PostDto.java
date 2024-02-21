@@ -2,6 +2,7 @@ package univcapstone.employmentsite.dto;
 
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotEmpty;
+import jdk.jfr.Category;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,12 +23,16 @@ public class PostDto {
     @Nullable
     private String fileName;
 
+    @Nullable
+    private String category;
+
     public Post toEntity(User user, PostDto postDto) {
         return Post.builder()
                 .user(user)
                 .title(postDto.getTitle())
                 .content(postDto.getContent())
                 .fileName(postDto.getFileName())
+                .category(postDto.getCategory())
                 .build();
     }
 

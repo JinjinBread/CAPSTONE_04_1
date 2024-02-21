@@ -10,9 +10,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import univcapstone.employmentsite.domain.Bookmark;
 import univcapstone.employmentsite.domain.Post;
 import univcapstone.employmentsite.domain.User;
 import univcapstone.employmentsite.dto.PostDto;
+import univcapstone.employmentsite.service.BookmarkService;
 import univcapstone.employmentsite.service.PostService;
 import univcapstone.employmentsite.util.SessionConst;
 import univcapstone.employmentsite.util.response.BasicResponse;
@@ -26,10 +28,12 @@ import java.util.Optional;
 public class PostController {
 
     private final PostService postService;
+    private final BookmarkService bookmarkService;
 
     @Autowired
-    public PostController(PostService postService) {
+    public PostController(PostService postService,BookmarkService bookmarkService) {
         this.postService = postService;
+        this.bookmarkService=bookmarkService;
     }
 
     /**
@@ -39,8 +43,8 @@ public class PostController {
     @GetMapping("/boardlist")
     public ResponseEntity<? extends BasicResponse> boardMain(
             @RequestParam(required = false, defaultValue = "0", value = "page") int pageNo,
+            @RequestParam(required = false, defaultValue = "lastest", value = "sort") String sort,
             @RequestParam(required = false, defaultValue = "all", value = "category") String category)
-            //@PageableDefault(page=0,size=12) final Pageable pageable)
     {
         //게시글 메인화면 보기
         // /boardlist?size=10&page=1
@@ -150,6 +154,30 @@ public class PostController {
                 .httpStatus(HttpStatus.OK)
                 .message("검색한 게시글들")
                 .result(post)
+                .build();
+
+        return ResponseEntity.ok()
+                .body(defaultResponse);
+    }
+
+    @PostMapping("/boardlist/{postId}/bookmark")
+    public ResponseEntity<? extends BasicResponse> addBookmark(
+            @SessionAttribute(name = SessionConst.LOGIN_USER, required = false) User user,
+            @PathVariable Long postId
+    ) {
+        Post post=postService.findPostById(postId);
+        Bookmark bookmark=new Bookmark();
+        bookmark.setPostId(post.getPostId());
+        bookmark.setUserId(post.getUser().getId());
+        bookmarkService.saveBookmark(bookmark);
+
+        log.info("북마크 하려는 게시물 정보={} , 북마크정보={}",post,bookmark);
+
+        DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
+                .code(HttpStatus.OK.value())
+                .httpStatus(HttpStatus.OK)
+                .message("북마크 지정완료")
+                .result("")
                 .build();
 
         return ResponseEntity.ok()

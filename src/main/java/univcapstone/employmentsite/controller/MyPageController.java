@@ -8,23 +8,29 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import univcapstone.employmentsite.domain.Bookmark;
 import univcapstone.employmentsite.domain.User;
 import univcapstone.employmentsite.dto.*;
+import univcapstone.employmentsite.service.BookmarkService;
 import univcapstone.employmentsite.service.UserService;
 import univcapstone.employmentsite.util.SessionConst;
 import univcapstone.employmentsite.util.response.BasicResponse;
 import univcapstone.employmentsite.util.response.DefaultResponse;
 import univcapstone.employmentsite.util.response.ErrorResponse;
 
+import java.util.Optional;
+
 @Slf4j
 @RestController
 public class MyPageController {
 
     private final UserService userService;
+    private final BookmarkService bookmarkService;
 
     @Autowired
-    public MyPageController(UserService userService) {
+    public MyPageController(UserService userService,BookmarkService bookmarkService) {
         this.userService = userService;
+        this.bookmarkService=bookmarkService;
     }
 
     @GetMapping("/user/myInfo")
@@ -53,11 +59,21 @@ public class MyPageController {
     }
 
     @GetMapping("/user/bookmark")
-    public String myBookmark(
+    public ResponseEntity<? extends BasicResponse> myBookmark(
             @SessionAttribute(name = SessionConst.LOGIN_USER, required = false) User loginUser
     ) {
         //나의 북마크
-        return "";
+        Optional<Bookmark> bookmarks= bookmarkService.getMyBookmark(loginUser.getId());
+        log.info("찾은 자기의 북마크={}",bookmarks);
+
+        DefaultResponse<Optional<Bookmark>> defaultResponse = DefaultResponse.<Optional<Bookmark>>builder()
+                .code(HttpStatus.OK.value())
+                .httpStatus(HttpStatus.OK)
+                .message("북마크 가져오기 완료")
+                .result(bookmarks)
+                .build();
+
+        return ResponseEntity.ok().body(defaultResponse);
     }
 
     @DeleteMapping(value = "/user/delete")
