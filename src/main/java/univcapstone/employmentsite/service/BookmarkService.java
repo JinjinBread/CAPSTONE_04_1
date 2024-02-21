@@ -6,9 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import univcapstone.employmentsite.domain.Bookmark;
+import univcapstone.employmentsite.domain.Post;
 import univcapstone.employmentsite.repository.BookmarkRepository;
 import univcapstone.employmentsite.repository.UserRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -38,5 +40,9 @@ public class BookmarkService {
         }
         bookmarkRepository.delete(bookmark);
 
+    }
+
+    public List<Post> getPostByPopular() {
+        return bookmarkRepository.getAllPostByPopular();
     }
 }

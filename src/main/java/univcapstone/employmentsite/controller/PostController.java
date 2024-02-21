@@ -186,4 +186,21 @@ public class PostController {
         return ResponseEntity.ok()
                 .body(defaultResponse);
     }
+
+    @GetMapping("/boardlist/best")
+    public ResponseEntity<? extends BasicResponse> bestPost(){
+        List<Post> post=bookmarkService.getPostByPopular();
+
+        log.info("북마크가 많이 된 순(조인횟수)의 게시글들 ={}",post);
+
+        DefaultResponse<List<Post>> defaultResponse = DefaultResponse.<List<Post>>builder()
+                .code(HttpStatus.OK.value())
+                .httpStatus(HttpStatus.OK)
+                .message("북마크된 순 게시글들 가져오기 완료")
+                .result(post)
+                .build();
+
+        return ResponseEntity.ok()
+                .body(defaultResponse);
+    }
 }

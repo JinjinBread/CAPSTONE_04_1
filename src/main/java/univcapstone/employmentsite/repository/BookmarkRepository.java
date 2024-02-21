@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.aspectj.apache.bcel.classfile.Module;
 import org.springframework.stereotype.Repository;
 import univcapstone.employmentsite.domain.Bookmark;
+import univcapstone.employmentsite.domain.Post;
 import univcapstone.employmentsite.domain.User;
 
 import java.util.List;
@@ -36,6 +37,15 @@ public class BookmarkRepository {
         return bookmarks.stream().findAny();
     }
 
+    public List<Post> getAllPostByPopular() {
+        String sql = "SELECT p " +
+                "FROM Post p " +
+                "JOIN Bookmark b ON p.postId = b.post.postId " +
+                "GROUP BY p.postId " +
+                "ORDER BY COUNT(b.bookmarkId) DESC";
+
+        return em.createQuery(sql, Post.class).getResultList();
+    }
 }
 
 
