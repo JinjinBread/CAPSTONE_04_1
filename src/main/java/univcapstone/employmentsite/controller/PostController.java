@@ -16,6 +16,7 @@ import univcapstone.employmentsite.domain.User;
 import univcapstone.employmentsite.dto.PostDto;
 import univcapstone.employmentsite.service.BookmarkService;
 import univcapstone.employmentsite.service.PostService;
+import univcapstone.employmentsite.service.UserService;
 import univcapstone.employmentsite.util.SessionConst;
 import univcapstone.employmentsite.util.response.BasicResponse;
 import univcapstone.employmentsite.util.response.DefaultResponse;
@@ -31,7 +32,9 @@ public class PostController {
     private final BookmarkService bookmarkService;
 
     @Autowired
-    public PostController(PostService postService,BookmarkService bookmarkService) {
+    public PostController(PostService postService,
+                          BookmarkService bookmarkService
+    ) {
         this.postService = postService;
         this.bookmarkService=bookmarkService;
     }
@@ -167,8 +170,8 @@ public class PostController {
     ) {
         Post post=postService.findPostById(postId);
         Bookmark bookmark=new Bookmark();
-        bookmark.setPostId(post.getPostId());
-        bookmark.setUserId(post.getUser().getId());
+        bookmark.setPost(post);
+        bookmark.setUser(user);
         bookmarkService.saveBookmark(bookmark);
 
         log.info("북마크 하려는 게시물 정보={} , 북마크정보={}",post,bookmark);

@@ -29,7 +29,7 @@ public class BookmarkRepository {
     }
 
     public Optional<Bookmark> getMyBookmark(Long userId){
-        List<Bookmark> bookmarks=em.createQuery("select b from Bookmark b where b.userId = :userId", Bookmark.class)
+        List<Bookmark> bookmarks=em.createQuery("select b from Bookmark b where b.user.id = :userId", Bookmark.class)
                 .setParameter("userId", userId)
                 .getResultList();
 
