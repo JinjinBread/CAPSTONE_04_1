@@ -18,6 +18,7 @@ import univcapstone.employmentsite.util.response.BasicResponse;
 import univcapstone.employmentsite.util.response.DefaultResponse;
 import univcapstone.employmentsite.util.response.ErrorResponse;
 
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -63,10 +64,10 @@ public class MyPageController {
             @SessionAttribute(name = SessionConst.LOGIN_USER, required = false) User loginUser
     ) {
         //나의 북마크
-        Optional<Bookmark> bookmarks= bookmarkService.getMyBookmark(loginUser.getId());
+        List<Bookmark> bookmarks= bookmarkService.getMyBookmark(loginUser.getId());
         log.info("찾은 자기의 북마크={}",bookmarks);
 
-        DefaultResponse<Optional<Bookmark>> defaultResponse = DefaultResponse.<Optional<Bookmark>>builder()
+        DefaultResponse<List<Bookmark>> defaultResponse = DefaultResponse.<List<Bookmark>>builder()
                 .code(HttpStatus.OK.value())
                 .httpStatus(HttpStatus.OK)
                 .message("북마크 가져오기 완료")

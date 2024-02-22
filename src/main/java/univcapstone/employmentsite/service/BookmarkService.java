@@ -29,7 +29,7 @@ public class BookmarkService {
         bookmarkRepository.save(bookmark);
     }
 
-    public Optional<Bookmark> getMyBookmark(Long userId){
+    public List<Bookmark> getMyBookmark(Long userId){
         return bookmarkRepository.getMyBookmark(userId);
     }
 

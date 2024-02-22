@@ -29,12 +29,12 @@ public class BookmarkRepository {
         return em.find(Bookmark.class,bookmarkId);
     }
 
-    public Optional<Bookmark> getMyBookmark(Long userId){
+    public List<Bookmark> getMyBookmark(Long userId){
         List<Bookmark> bookmarks=em.createQuery("select b from Bookmark b where b.user.id = :userId", Bookmark.class)
                 .setParameter("userId", userId)
                 .getResultList();
 
-        return bookmarks.stream().findAny();
+        return bookmarks;
     }
 
     public List<Post> getAllPostByPopular() {
