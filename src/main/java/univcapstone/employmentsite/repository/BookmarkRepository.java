@@ -48,6 +48,39 @@ public class BookmarkRepository {
 
         return em.createQuery(sql, Post.class).getResultList();
     }
+
+    public List<Post> getResumePostOrderByPopular() {
+        String sql = "SELECT p " +
+                "FROM Post p " +
+                "JOIN Bookmark b ON p.postId = b.post.postId " +
+                "WHERE p.category = 'resume' " +
+                "GROUP BY p.postId " +
+                "ORDER BY COUNT(b.bookmarkId) DESC";
+
+        return em.createQuery(sql, Post.class).getResultList();
+    }
+
+    public List<Post> getInterviewPostOrderByPopular() {
+        String sql = "SELECT p " +
+                "FROM Post p " +
+                "JOIN Bookmark b ON p.postId = b.post.postId " +
+                "WHERE p.category = 'interview' " +
+                "GROUP BY p.postId " +
+                "ORDER BY COUNT(b.bookmarkId) DESC";
+
+        return em.createQuery(sql, Post.class).getResultList();
+    }
+
+    public List<Post> getSharePostOrderByPopular() {
+        String sql = "SELECT p " +
+                "FROM Post p " +
+                "JOIN Bookmark b ON p.postId = b.post.postId " +
+                "WHERE p.category = 'share' " +
+                "GROUP BY p.postId " +
+                "ORDER BY COUNT(b.bookmarkId) DESC";
+
+        return em.createQuery(sql, Post.class).getResultList();
+    }
 }
 
 

@@ -6,6 +6,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -19,11 +20,11 @@ public class Reply {
     @Column(name = "reply_id")
     private Long replyId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "post_id")
     private Post post;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
 
@@ -32,7 +33,7 @@ public class Reply {
     private String replyContent;
 
     @CreatedDate
-    private LocalDate date;
+    private LocalDateTime date;
 
     @Builder
     public Reply(Post post, User user, Long parentReplyId, String replyContent) {

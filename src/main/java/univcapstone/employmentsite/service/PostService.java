@@ -3,12 +3,14 @@ package univcapstone.employmentsite.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import univcapstone.employmentsite.domain.Post;
 import univcapstone.employmentsite.domain.User;
 import univcapstone.employmentsite.dto.PostDto;
+import univcapstone.employmentsite.repository.BookmarkRepository;
 import univcapstone.employmentsite.repository.PostRepository;
 
 import java.util.ArrayList;
@@ -21,10 +23,11 @@ import java.util.Optional;
 public class PostService {
 
     private final PostRepository postRepository;
-
+    private final BookmarkRepository bookmarkRepository;
     @Autowired
-    public PostService(PostRepository postRepository) {
+    public PostService(PostRepository postRepository,BookmarkRepository bookmarkRepository) {
         this.postRepository = postRepository;
+        this.bookmarkRepository=bookmarkRepository;
     }
 
     public Post findPostById(long postId){
@@ -74,5 +77,55 @@ public class PostService {
     public Optional<Post> searchByTitle(String boardTitle) {
         Optional<Post> postResult = postRepository.findByTitle(boardTitle);
         return postResult;
+    }
+
+    public List<Post> showResumePostOrderByDate(Pageable pageable) {
+        List<Post> post=new ArrayList<>();
+        Page<Post> pagePost= postRepository.findResumeByOrderByDateDesc(pageable);
+
+        if(pagePost!=null && pagePost.hasContent()){
+            post=pagePost.getContent();
+        }
+        return post;
+    }
+
+    public List<Post> showInterviewPostOrderByDate(Pageable pageable) {
+        List<Post> post=new ArrayList<>();
+        Page<Post> pagePost= postRepository.findInterviewByOrderByDateDesc(pageable);
+
+        if(pagePost!=null && pagePost.hasContent()){
+            post=pagePost.getContent();
+        }
+        return post;
+    }
+
+    public List<Post> showSharePostOrderByDate(Pageable pageable) {
+        List<Post> post=new ArrayList<>();
+        Page<Post> pagePost= postRepository.findShareByOrderByDateDesc(pageable);
+
+        if(pagePost!=null && pagePost.hasContent()){
+            post=pagePost.getContent();
+        }
+        return post;
+    }
+
+    public List<Post> showAllPostByPopluar() {
+        List<Post> post= bookmarkRepository.getAllPostByPopular();
+        return post;
+    }
+
+    public List<Post> showResumePostOrderByPopular(Pageable pageable) {
+        List<Post> post=bookmarkRepository.getResumePostOrderByPopular();
+        return post;
+    }
+
+    public List<Post> showInterviewPostOrderByPopular(Pageable pageable) {
+        List<Post> post=bookmarkRepository.getInterviewPostOrderByPopular();
+        return post;
+    }
+
+    public List<Post> showSharePostOrderByPopular(Pageable pageable) {
+        List<Post> post=bookmarkRepository.getSharePostOrderByPopular();
+        return post;
     }
 }

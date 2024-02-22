@@ -21,6 +21,7 @@ import univcapstone.employmentsite.util.SessionConst;
 import univcapstone.employmentsite.util.response.BasicResponse;
 import univcapstone.employmentsite.util.response.DefaultResponse;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,8 +53,35 @@ public class PostController {
         //게시글 메인화면 보기
         // /boardlist?size=10&page=1
         log.info("page={} , category={}",pageNo,category);
-        PageRequest pageRequest = PageRequest.of(pageNo, 5);
-        List<Post> posts = postService.showAllPost(pageRequest);
+        PageRequest pageRequest = PageRequest.of(pageNo, 10);
+
+        List<Post> posts=new ArrayList<>();
+
+        //latest: 최신순 popular : 인기순 (북마크와의 조인순)
+        if(sort.equals("lastest")){
+            if(category.equals("all")){
+                posts = postService.showAllPost(pageRequest);
+            }
+            else if(category.equals("resume")){
+                posts = postService.showResumePostOrderByDate(pageRequest);
+            }else if(category.equals("interview")){
+                posts = postService.showInterviewPostOrderByDate(pageRequest);
+            }else if(category.equals("share")){
+                posts = postService.showSharePostOrderByDate(pageRequest);
+            }
+        }else if(sort.equals("popular")){
+            if(category.equals("all")){
+                posts = postService.showAllPostByPopluar();
+            }
+            else if(category.equals("resume")){
+                posts = postService.showResumePostOrderByPopular(pageRequest);
+            }else if(category.equals("interview")){
+                posts = postService.showInterviewPostOrderByPopular(pageRequest);
+            }else if(category.equals("share")){
+                posts = postService.showSharePostOrderByPopular(pageRequest);
+            }
+        }
+
 
         log.info("전체 게시글 데이터 = {}", posts);
 
