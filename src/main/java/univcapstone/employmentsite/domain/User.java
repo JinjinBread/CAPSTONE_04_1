@@ -7,6 +7,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import univcapstone.employmentsite.dto.UserSignUpDto;
 
 import java.util.List;
 
@@ -44,5 +46,4 @@ public class User {
 
     @NotEmpty
     private String nickname;
-
 }
