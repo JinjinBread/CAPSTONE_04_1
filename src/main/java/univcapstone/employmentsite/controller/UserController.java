@@ -10,6 +10,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import univcapstone.employmentsite.domain.User;
+import univcapstone.employmentsite.dto.UserDto;
 import univcapstone.employmentsite.dto.UserEditDto;
 import univcapstone.employmentsite.dto.UserFindDto;
 import univcapstone.employmentsite.util.SessionConst;
@@ -37,7 +38,7 @@ public class UserController {
     }
 
     @PostMapping("/join")
-    public ResponseEntity<? extends BasicResponse> join(@RequestBody @Validated User user, BindingResult bindingResult) {
+    public ResponseEntity<? extends BasicResponse> join(@RequestBody @Validated UserDto userDto, BindingResult bindingResult) {
         //회원가입에 대한 로직
         if (bindingResult.hasErrors()) {
             log.error("join binding fail = {}");
@@ -45,15 +46,14 @@ public class UserController {
                     .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "회원가입 실패"));
         }
 
-        userService.join(user);
-        log.info("[{}] loginId={}, password={}, name={}, email={}, nickname={}",
-                user.getId(), user.getLoginId(), user.getPassword(), user.getName(), user.getEmail(), user.getNickname());
+        Long savedId = userService.join(userDto);
+        log.info("[{}] success join: {}", savedId, userDto);
 
-        DefaultResponse<User> defaultResponse = DefaultResponse.<User>builder()
+        DefaultResponse<UserDto> defaultResponse = DefaultResponse.<UserDto>builder()
                 .code(HttpStatus.OK.value())
                 .httpStatus(HttpStatus.OK)
                 .message("회원가입 완료")
-                .result(user)
+                .result(userDto)
                 .build();
 
         return ResponseEntity.ok()

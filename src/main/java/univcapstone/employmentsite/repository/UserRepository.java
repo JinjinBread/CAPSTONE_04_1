@@ -16,8 +16,9 @@ public class UserRepository {
 
     private final EntityManager em; //JPA
 
-    public void save(User user) {
+    public Long save(User user) {
         em.persist(user);
+        return user.getId();
     }
 
     public Optional<User> findByLoginId(String loginId) {
@@ -37,9 +38,9 @@ public class UserRepository {
                 .getResultList();
     }
 
-    public Optional<User> findByEmail(String email){
-        List<User> users = em.createQuery("select u from User u where u.email=:email",User.class)
-                .setParameter("email",email)
+    public Optional<User> findByEmail(String email) {
+        List<User> users = em.createQuery("select u from User u where u.email=:email", User.class)
+                .setParameter("email", email)
                 .getResultList();
 
         return users.stream().findAny();
@@ -52,17 +53,17 @@ public class UserRepository {
 
     public void updatePassword(Long id, String password) {
         User user = em.find(User.class, id);
-        user.setPassword(password);
+        user.updatePassword(password);
     }
 
-    public void editUser(Long id,UserEditDto userData){
-        User user=em.find(User.class,id);
-        user.setNickname(userData.getNickname());
-        user.setPassword(userData.getPw());
+    public void editUser(Long id, UserEditDto userData) {
+        User user = em.find(User.class, id);
+        user.updatePassword(userData.getPw());
+        user.updateNickname(userData.getNickname());
     }
 
     public void updateNickname(Long id, String newNickname) {
         User user = em.find(User.class, id);
-        user.setNickname(newNickname);
+        user.updateNickname(newNickname);
     }
 }

@@ -3,32 +3,35 @@ package univcapstone.employmentsite.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import univcapstone.employmentsite.domain.User;
+import univcapstone.employmentsite.dto.TokenDto;
 import univcapstone.employmentsite.dto.UserLoginDto;
-import univcapstone.employmentsite.ex.custom.UserAuthenticationException;
 import univcapstone.employmentsite.service.UserService;
-import univcapstone.employmentsite.util.SessionConst;
-import univcapstone.employmentsite.util.response.BasicResponse;
-import univcapstone.employmentsite.util.response.DefaultResponse;
+import univcapstone.employmentsite.token.TokenProvider;
+import univcapstone.employmentsite.util.AuthConstants;
 
 import java.io.IOException;
 
+import static univcapstone.employmentsite.util.AuthConstants.*;
+
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 public class LoginController {
 
     private final UserService userService;
-
-    @Autowired
-    public LoginController(UserService userService) {
-        this.userService = userService;
-    }
+    private final TokenProvider tokenProvider;
+    private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
     @GetMapping("/")
     public String loginForm() {
@@ -50,25 +53,41 @@ public class LoginController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<? extends BasicResponse> login(@RequestBody @Validated UserLoginDto userDto, HttpServletRequest request) {
+    public ResponseEntity<TokenDto> login(@RequestBody @Validated UserLoginDto userLoginDto) {
 
+        //보안 상 서버 단에서 아이디와 패스워드 유효성 검사 필요(UsernamePasswordAuthenticationFilter)
+        
         //로그인에 대한 로직
-        User loginUser = userService.login(userDto.getLoginId(), userDto.getPassword());
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(userLoginDto.getLoginId(), userLoginDto.getPassword());
 
-        log.info("로그인 유저 정보 = {}", userDto);
+        Authentication authenticate = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+        SecurityContextHolder.getContext().setAuthentication(authenticate);
 
-        HttpSession session = request.getSession();
-        session.setAttribute(SessionConst.LOGIN_USER, loginUser);
+        String jwt = tokenProvider.createToken(authenticate);
 
-        DefaultResponse<User> defaultResponse = DefaultResponse.<User>builder()
-                .code(HttpStatus.OK.value())
-                .httpStatus(HttpStatus.OK)
-                .message("로그인 성공!")
-                .result(loginUser)
-                .build();
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add(AUTH_HEADER, TOKEN_TYPE + jwt);
 
-        return ResponseEntity.ok()
-                .body(defaultResponse);
+        return new ResponseEntity<>(new TokenDto(jwt), httpHeaders, HttpStatus.OK);
+
+//        //로그인에 대한 로직
+//        User loginUser = userService.login(userLoginDto);
+//
+//        log.info("로그인 유저 정보 = {}", userLoginDto);
+//
+////        HttpSession session = request.getSession();
+////        session.setAttribute(SessionConst.LOGIN_USER, loginUser);
+//
+//        DefaultResponse<User> defaultResponse = DefaultResponse.<User>builder()
+//                .code(HttpStatus.OK.value())
+//                .httpStatus(HttpStatus.OK)
+//                .message("로그인 성공!")
+//                .result(loginUser)
+//                .build();
+//
+//        return ResponseEntity.ok()
+//                .body(defaultResponse);
 
     }
 

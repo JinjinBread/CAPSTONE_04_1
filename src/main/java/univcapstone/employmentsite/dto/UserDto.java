@@ -1,9 +1,10 @@
 package univcapstone.employmentsite.dto;
 
 import jakarta.validation.constraints.NotEmpty;
+import lombok.Getter;
 
-
-public class UserSignUpDto {
+@Getter
+public class UserDto {
 
     @NotEmpty
     private String loginId;
@@ -12,11 +13,11 @@ public class UserSignUpDto {
     private String password;
 
     @NotEmpty
-    private String name;
-
-    @NotEmpty
     private String nickname;
 
     @NotEmpty
     private String email;
+
+    @NotEmpty
+    private String name;
 }
