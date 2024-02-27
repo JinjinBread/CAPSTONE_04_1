@@ -19,7 +19,7 @@ import java.util.List;
 @NoArgsConstructor
 public class PostToFrontDto {
     private Long postId;
-    private List<Reply> replies = new ArrayList<>();
+    private List<ReplyToFrontDto> replies = new ArrayList<>();
     private String category;
     private String title;
     private String content;
@@ -27,7 +27,7 @@ public class PostToFrontDto {
     private User user;
     private LocalDateTime date;
 
-    public PostToFrontDto(Long postId, List<Reply> replies, String category, String title, String content, String fileName, User user, LocalDateTime date) {
+    public PostToFrontDto(Long postId, List<ReplyToFrontDto> replies, String category, String title, String content, String fileName, User user, LocalDateTime date) {
         this.postId = postId;
         this.replies = replies;
         this.category = category;

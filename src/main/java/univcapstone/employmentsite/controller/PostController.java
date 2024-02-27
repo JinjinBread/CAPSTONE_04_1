@@ -12,9 +12,11 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import univcapstone.employmentsite.domain.Bookmark;
 import univcapstone.employmentsite.domain.Post;
+import univcapstone.employmentsite.domain.Reply;
 import univcapstone.employmentsite.domain.User;
 import univcapstone.employmentsite.dto.PostDto;
 import univcapstone.employmentsite.dto.PostToFrontDto;
+import univcapstone.employmentsite.dto.ReplyToFrontDto;
 import univcapstone.employmentsite.service.BookmarkService;
 import univcapstone.employmentsite.service.PostService;
 import univcapstone.employmentsite.service.UserService;
@@ -85,8 +87,20 @@ public class PostController {
         }
 
         for (Post post : posts) {
+            List<ReplyToFrontDto> replyToFront=new ArrayList<ReplyToFrontDto>();
+
+            for(Reply reply : post.getReplies()){
+
+                replyToFront.add(new ReplyToFrontDto(reply.getReplyId(),
+                        reply.getPost(),
+                        reply.getUser(),
+                        reply.getParentReplyId(),
+                        reply.getReplyContent(),
+                        reply.getDate()));
+
+            }
             postToFront.add(new PostToFrontDto(post.getPostId(),
-                    post.getReplies(),
+                    replyToFront,
                     post.getCategory(),
                     post.getTitle(),
                     post.getContent(),
