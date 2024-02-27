@@ -47,7 +47,7 @@ public class PostController {
     @GetMapping("/boardlist")
     public ResponseEntity<? extends BasicResponse> boardMain(
             @RequestParam(required = false, defaultValue = "0", value = "page") int pageNo,
-            @RequestParam(required = false, defaultValue = "lastest", value = "sort") String sort,
+            @RequestParam(required = false, defaultValue = "latest", value = "sort") String sort,
             @RequestParam(required = false, defaultValue = "all", value = "category") String category)
     {
         //게시글 메인화면 보기
@@ -58,7 +58,7 @@ public class PostController {
         List<Post> posts=new ArrayList<>();
 
         //latest: 최신순 popular : 인기순 (북마크와의 조인순)
-        if(sort.equals("lastest")){
+        if(sort.equals("latest")){
             if(category.equals("all")){
                 posts = postService.showAllPost(pageRequest);
             }
