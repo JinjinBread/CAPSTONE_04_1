@@ -112,11 +112,11 @@ public class PostController {
 
         log.info("전체 게시글 데이터 = {}", postToFront);
 
-        DefaultResponse<List<PostToFrontDto>> defaultResponse = DefaultResponse.<List<PostToFrontDto>>builder()
+        DefaultResponse<List<Post>> defaultResponse = DefaultResponse.<List<Post>>builder()
                 .code(HttpStatus.OK.value())
                 .httpStatus(HttpStatus.OK)
                 .message("보여줄 게시글 데이터")
-                .result(postToFront)
+                .result(posts)
                 .build();
 
         return ResponseEntity.ok()
