@@ -8,6 +8,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +16,6 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-@ToString(exclude = "user")
 @EntityListeners(AuditingEntityListener.class)
 public class Post {
 
@@ -24,10 +24,12 @@ public class Post {
     @Column(name = "post_id")
     private Long postId;
 
-    //댓글
-    @JsonIgnore
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
     private List<Reply> replies = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
+    private List<Bookmark> bookmark = new ArrayList<>();
 
     private String category;
     private String title;
@@ -64,5 +66,18 @@ public class Post {
         this.title = title;
         this.content = content;
         this.fileName = fileName;
+    }
+
+    @Override
+    public String toString() {
+        return "Post{" +
+                "postId=" + postId +
+                ", replies=" + replies +
+                ", category='" + category + '\'' +
+                ", title='" + title + '\'' +
+                ", content='" + content + '\'' +
+                ", fileName='" + fileName + '\'' +
+                ", date=" + date +
+                '}';
     }
 }

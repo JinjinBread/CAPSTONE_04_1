@@ -24,6 +24,7 @@ import univcapstone.employmentsite.util.SessionConst;
 import univcapstone.employmentsite.util.response.BasicResponse;
 import univcapstone.employmentsite.util.response.DefaultResponse;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -87,20 +88,8 @@ public class PostController {
         }
 
         for (Post post : posts) {
-            List<ReplyToFrontDto> replyToFront=new ArrayList<ReplyToFrontDto>();
-
-            for(Reply reply : post.getReplies()){
-
-                replyToFront.add(new ReplyToFrontDto(reply.getReplyId(),
-                        reply.getPost(),
-                        reply.getUser(),
-                        reply.getParentReplyId(),
-                        reply.getReplyContent(),
-                        reply.getDate()));
-
-            }
             postToFront.add(new PostToFrontDto(post.getPostId(),
-                    replyToFront,
+                    null,
                     post.getCategory(),
                     post.getTitle(),
                     post.getContent(),
@@ -110,7 +99,7 @@ public class PostController {
             ));
         }
 
-        log.info("전체 게시글 데이터 = {}", postToFront);
+        log.info("전체 게시글 데이터 = {}", posts);
 
         DefaultResponse<List<Post>> defaultResponse = DefaultResponse.<List<Post>>builder()
                 .code(HttpStatus.OK.value())
