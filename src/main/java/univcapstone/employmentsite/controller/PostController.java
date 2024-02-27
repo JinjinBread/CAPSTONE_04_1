@@ -14,6 +14,7 @@ import univcapstone.employmentsite.domain.Bookmark;
 import univcapstone.employmentsite.domain.Post;
 import univcapstone.employmentsite.domain.User;
 import univcapstone.employmentsite.dto.PostDto;
+import univcapstone.employmentsite.dto.PostToFrontDto;
 import univcapstone.employmentsite.service.BookmarkService;
 import univcapstone.employmentsite.service.PostService;
 import univcapstone.employmentsite.service.UserService;
@@ -56,6 +57,7 @@ public class PostController {
         PageRequest pageRequest = PageRequest.of(pageNo, 10);
 
         List<Post> posts=new ArrayList<>();
+        List<PostToFrontDto> postToFront=new ArrayList<>();
 
         //latest: 최신순 popular : 인기순 (북마크와의 조인순)
         if(sort.equals("latest")){
@@ -82,14 +84,25 @@ public class PostController {
             }
         }
 
+        for (Post post : posts) {
+            postToFront.add(new PostToFrontDto(post.getPostId(),
+                    post.getReplies(),
+                    post.getCategory(),
+                    post.getTitle(),
+                    post.getContent(),
+                    post.getFileName(),
+                    post.getUser(),
+                    post.getDate()
+            ));
+        }
 
-        log.info("전체 게시글 데이터 = {}", posts);
+        log.info("전체 게시글 데이터 = {}", postToFront);
 
-        DefaultResponse<List<Post>> defaultResponse = DefaultResponse.<List<Post>>builder()
+        DefaultResponse<List<PostToFrontDto>> defaultResponse = DefaultResponse.<List<PostToFrontDto>>builder()
                 .code(HttpStatus.OK.value())
                 .httpStatus(HttpStatus.OK)
                 .message("보여줄 게시글 데이터")
-                .result(posts)
+                .result(postToFront)
                 .build();
 
         return ResponseEntity.ok()
@@ -105,7 +118,7 @@ public class PostController {
         DefaultResponse<Post> defaultResponse = DefaultResponse.<Post>builder()
                 .code(HttpStatus.OK.value())
                 .httpStatus(HttpStatus.OK)
-                .message("회원가입 완료")
+                .message("게시물 상세 정보")
                 .result(post)
                 .build();
 
