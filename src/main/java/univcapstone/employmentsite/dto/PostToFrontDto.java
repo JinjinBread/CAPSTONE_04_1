@@ -22,17 +22,17 @@ public class PostToFrontDto {
     private String title;
     private String content;
     private String fileName;
-    private User user;
+    private Long userId;
     private LocalDateTime date;
 
-    public PostToFrontDto(Long postId, List<ReplyToFrontDto> replies, String category, String title, String content, String fileName, User user, LocalDateTime date) {
+    public PostToFrontDto(Long postId, List<ReplyToFrontDto> replies, String category, String title, String content, String fileName, Long userId, LocalDateTime date) {
         this.postId = postId;
         this.replies = replies;
         this.category = category;
         this.title = title;
         this.content = content;
         this.fileName = fileName;
-        this.user = user;
+        this.userId = userId;
         this.date = date;
     }
 }

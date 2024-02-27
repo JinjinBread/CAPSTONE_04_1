@@ -50,7 +50,7 @@ public class BookmarkController {
             @RequestBody @Validated BookmarkDeleteDto bookmarkData
     ){
         try{
-            bookmarkService.deleteBookmark(bookmarkData.getBookmarkId(),bookmarkData.getPostId());
+            bookmarkService.deleteBookmark(bookmarkData.getBookmarkId());
 
             DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
                     .code(HttpStatus.OK.value())

@@ -33,7 +33,7 @@ public class BookmarkService {
         return bookmarkRepository.getMyBookmark(userId);
     }
 
-    public void deleteBookmark(Long bookmarkId,Long id){
+    public void deleteBookmark(Long bookmarkId){
         Bookmark bookmark=bookmarkRepository.findByBookmarkId(bookmarkId);
         if(bookmark==null){
             throw new IllegalStateException("해당 북마크는 존재하지 않습니다.");

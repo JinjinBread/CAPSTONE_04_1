@@ -35,7 +35,6 @@ public class PostController {
 
     private final PostService postService;
     private final BookmarkService bookmarkService;
-
     @Autowired
     public PostController(PostService postService,
                           BookmarkService bookmarkService
@@ -60,7 +59,6 @@ public class PostController {
         PageRequest pageRequest = PageRequest.of(pageNo, 10);
 
         List<Post> posts=new ArrayList<>();
-        List<PostToFrontDto> postToFront=new ArrayList<>();
 
         //latest: 최신순 popular : 인기순 (북마크와의 조인순)
         if(sort.equals("latest")){
@@ -87,31 +85,40 @@ public class PostController {
             }
         }
 
+        List<PostToFrontDto> postToFront=new ArrayList<>();
         for (Post post : posts) {
+            List<ReplyToFrontDto> replyToFront=new ArrayList<>();
+            for(Reply reply : post.getReplies()){
+                replyToFront.add(new ReplyToFrontDto(reply.getReplyId(),
+                        reply.getPost().getPostId(),
+                        reply.getUser().getId(),
+                        reply.getParentReplyId(),
+                        reply.getReplyContent(),
+                        reply.getDate()));
+            }
             postToFront.add(new PostToFrontDto(post.getPostId(),
-                    null,
+                    replyToFront,
                     post.getCategory(),
                     post.getTitle(),
                     post.getContent(),
                     post.getFileName(),
-                    post.getUser(),
+                    post.getUser().getId(),
                     post.getDate()
             ));
         }
 
         log.info("전체 게시글 데이터 = {}", posts);
 
-        DefaultResponse<List<Post>> defaultResponse = DefaultResponse.<List<Post>>builder()
+        DefaultResponse<List<PostToFrontDto>> defaultResponse = DefaultResponse.<List<PostToFrontDto>>builder()
                 .code(HttpStatus.OK.value())
                 .httpStatus(HttpStatus.OK)
                 .message("보여줄 게시글 데이터")
-                .result(posts)
+                .result(postToFront)
                 .build();
 
         return ResponseEntity.ok()
                 .body(defaultResponse);
     }
-
     @GetMapping("/boardlist/detail/{postId}")
     public ResponseEntity<? extends BasicResponse> board(
             @PathVariable(name = "postId") Long postId) {

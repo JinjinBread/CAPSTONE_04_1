@@ -9,10 +9,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class BookmarkDeleteDto {
-
-    @NotEmpty
-    private Long postId;
-
     @NotEmpty
     private Long bookmarkId;
 }

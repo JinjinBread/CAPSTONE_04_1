@@ -15,16 +15,16 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class ReplyToFrontDto {
     private Long replyId;
-    private Post post;
-    private User user;
+    private Long postId;
+    private Long userId;
     private Long parentReplyId;
     private String replyContent;
     private LocalDateTime date;
 
-    public ReplyToFrontDto(Long replyId, Post post, User user, Long parentReplyId, String replyContent, LocalDateTime date) {
+    public ReplyToFrontDto(Long replyId, Long postId, Long userId, Long parentReplyId, String replyContent, LocalDateTime date) {
         this.replyId = replyId;
-        this.post = post;
-        this.user = user;
+        this.postId = postId;
+        this.userId = userId;
         this.parentReplyId = parentReplyId;
         this.replyContent = replyContent;
         this.date = date;
