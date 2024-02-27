@@ -42,7 +42,6 @@ public class Post {
     private LocalDateTime date;
 
 
-
     @Builder
     public Post(User user, String title, String content, String fileName,String category) {
         this.user = user;
