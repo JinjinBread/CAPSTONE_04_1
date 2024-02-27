@@ -23,5 +23,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @Query("SELECT p FROM Post p WHERE p.category='share' ORDER BY p.date DESC")
     Page<Post> findShareByOrderByDateDesc(Pageable pageable);
     Post findByPostId(Long postId);
+    @Query("SELECT p FROM Post p WHERE p.title LIKE %:title% ORDER BY p.date DESC")
     Optional<Post> findByTitle(String title);
 }
