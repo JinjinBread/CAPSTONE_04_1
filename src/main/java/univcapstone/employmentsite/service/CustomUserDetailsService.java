@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import univcapstone.employmentsite.domain.User;
 import univcapstone.employmentsite.repository.UserRepository;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,12 +37,10 @@ public class CustomUserDetailsService implements UserDetailsService {
             throw new RuntimeException(loginId + " -> 활성화되어 있지 않습니다.");
         }
 
-        List<GrantedAuthority> grantedAuthorities = user.getAuthorities().stream()
-                .map(authority -> new SimpleGrantedAuthority(authority.getAuthorityName()))
-                .collect(Collectors.toList());
+        GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(user.getAuthority().toString());
 
         return new org.springframework.security.core.userdetails.User(user.getLoginId(),
                 user.getPassword(),
-                grantedAuthorities);
+                Collections.singleton(grantedAuthority));
     }
 }

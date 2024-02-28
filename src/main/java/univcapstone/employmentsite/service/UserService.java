@@ -1,53 +1,47 @@
 package univcapstone.employmentsite.service;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import univcapstone.employmentsite.domain.Authority;
 import univcapstone.employmentsite.domain.User;
-import univcapstone.employmentsite.dto.UserDeleteDto;
-import univcapstone.employmentsite.dto.UserDto;
-import univcapstone.employmentsite.dto.UserEditDto;
-import univcapstone.employmentsite.dto.UserLoginDto;
-import univcapstone.employmentsite.ex.custom.UserAuthenticationException;
+import univcapstone.employmentsite.dto.*;
 import univcapstone.employmentsite.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import univcapstone.employmentsite.token.TokenProvider;
 
-import java.util.Collections;
+import java.util.Optional;
 
 @Slf4j
 @Transactional
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-
-    @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
+    private final TokenProvider tokenProvider;
+    private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
     /**
      * 회원가입
      */
-    public Long join(UserDto userDto) {
+    public User join(UserRequestDto userRequestDto) {
 
-        validateDuplicateLoginId(userDto.getLoginId()); //중복 로그인 아이디 검증
-
-        Authority authority = Authority.builder()
-                .authorityName("ROLE_USER")
-                .build();
+        validateDuplicateLoginId(userRequestDto.getLoginId()); //중복 로그인 아이디 검증
 
         User user = User.builder()
-                .loginId(userDto.getLoginId())
-                .password(passwordEncoder.encode(userDto.getPassword()))
-                .nickname(userDto.getNickname())
-                .email(userDto.getEmail())
-                .name(userDto.getName())
-                .authorities(Collections.singleton(authority))
+                .loginId(userRequestDto.getLoginId())
+                .password(passwordEncoder.encode(userRequestDto.getPassword()))
+                .nickname(userRequestDto.getNickname())
+                .email(userRequestDto.getEmail())
+                .name(userRequestDto.getName())
+                .authority(Authority.ROLE_USER)
                 .activated(true)
                 .build();
 
@@ -57,18 +51,26 @@ public class UserService {
     /**
      * 로그인
      */
-    public User login(UserLoginDto userLoginDto) {
-        return userRepository.findByLoginId(userLoginDto.getLoginId())
-                .filter(u -> u.getPassword().equals(userLoginDto.getPassword()))
-                .orElseThrow(() -> new UserAuthenticationException("아이디 또는 비밀번호가 맞지 않습니다."));
+    public TokenDto login(UserLoginDto userLoginDto) {
+
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(userLoginDto.getLoginId(), userLoginDto.getPassword());
+
+        Authentication authenticate = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+        SecurityContextHolder.getContext().setAuthentication(authenticate);
+
+        TokenDto tokenDto = tokenProvider.createToken(authenticate);
+
+        return tokenDto;
     }
 
     /**
      * 아이디로 회원 찾기
+     *
      * @param id
      * @return
      */
-    public User findUserByLoginId(String id){
+    public User findUserByLoginId(String id) {
         return userRepository.findByLoginId(id)
                 .orElse(null);
     }
@@ -85,6 +87,7 @@ public class UserService {
                 .filter(u -> u.getName().equals(name))
                 .orElse(null);
     }
+
     /**
      * 비밀번호 찾기
      *
@@ -107,19 +110,22 @@ public class UserService {
      * @param newPassword
      */
     public void updatePassword(Long id, String newPassword) {
-        userRepository.updatePassword(id, newPassword);
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("존재하지 않는 계정입니다."));
+        user.updatePassword(newPassword);
     }
 
     /**
      * 계정 삭제
+     *
      * @param userDeleteDto
      */
-    public void deleteUser(UserDeleteDto userDeleteDto){
+    public void deleteUser(UserDeleteDto userDeleteDto) {
         User user = userRepository.findByLoginId(userDeleteDto.getLoginId())
                 .orElseThrow(() -> new IllegalStateException("삭제하려는 계정을 찾을 수 없습니다."));
 
         if (user.getPassword().equals(userDeleteDto.getPassword())) {
-            userRepository.delete(user.getId());
+            userRepository.delete(user);
         } else {
             throw new IllegalStateException("삭제하려는 계정의 패스워드가 일치하지 않습니다.");
         }
@@ -136,7 +142,7 @@ public class UserService {
     }
 
     public void validateDuplicateLoginId(String userId) {
-        if(userId == null){
+        if (userId == null) {
             throw new IllegalStateException("아이디를 입력해주세요");
         }
         userRepository.findByLoginId(userId)
@@ -146,21 +152,24 @@ public class UserService {
                 });
     }
 
-    public void editUser(UserEditDto editDto){
-        userRepository.findByLoginId(editDto.getLoginId())
-                .ifPresent(u->{
-                    userRepository.editUser(u.getId(),editDto);
-                });
-        userRepository.findByLoginId(editDto.getLoginId())
-                .orElseThrow(()-> new IllegalStateException("수정하려는 계정을 찾을 수 없습니다."));
-    }
+//    public void editUser(UserEditDto editDto) {
+//        User user = userRepository.findByLoginId(editDto.getLoginId())
+//                .orElseThrow(() -> new RuntimeException("존재하지 않는 계정입니다."));
+//        user.
+//        userRepository.findByLoginId(editDto.getLoginId())
+//                .orElseThrow(() -> new IllegalStateException("수정하려는 계정을 찾을 수 없습니다."));
+//    }
 
-    public void editPass(User user,String newPass){
-        userRepository.updatePassword(user.getId(),newPass);
+    public void editPass(User user, String newPass) {
+        User findUser = userRepository.findById(user.getId())
+                .orElseThrow(() -> new RuntimeException("존재하지 않는 계정입니다."));
+        findUser.updatePassword(newPass);
     }
 
     public void editNickname(User user, String newNickname) {
-        userRepository.updateNickname(user.getId(),newNickname);
+        User findUser = userRepository.findById(user.getId())
+                .orElseThrow(() -> new RuntimeException("존재하지 않는 계정입니다."));
+        findUser.updateNickname(newNickname);
     }
 
 }

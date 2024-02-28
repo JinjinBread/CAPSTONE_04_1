@@ -8,10 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 import univcapstone.employmentsite.domain.Bookmark;
 import univcapstone.employmentsite.domain.Post;
 import univcapstone.employmentsite.repository.BookmarkRepository;
-import univcapstone.employmentsite.repository.UserRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Transactional

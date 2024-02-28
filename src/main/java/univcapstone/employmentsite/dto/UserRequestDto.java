@@ -2,9 +2,11 @@ package univcapstone.employmentsite.dto;
 
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import univcapstone.employmentsite.domain.User;
 
 @Getter
-public class UserDto {
+public class UserRequestDto {
 
     @NotEmpty
     private String loginId;
@@ -12,12 +14,9 @@ public class UserDto {
     @NotEmpty
     private String password;
 
-    @NotEmpty
     private String nickname;
 
-    @NotEmpty
     private String email;
 
-    @NotEmpty
     private String name;
 }

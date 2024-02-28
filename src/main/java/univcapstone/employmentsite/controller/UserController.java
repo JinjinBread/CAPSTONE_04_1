@@ -1,6 +1,5 @@
 package univcapstone.employmentsite.controller;
 
-import jakarta.persistence.PersistenceException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,16 +9,13 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import univcapstone.employmentsite.domain.User;
-import univcapstone.employmentsite.dto.UserDto;
-import univcapstone.employmentsite.dto.UserEditDto;
+import univcapstone.employmentsite.dto.UserRequestDto;
 import univcapstone.employmentsite.dto.UserFindDto;
 import univcapstone.employmentsite.util.SessionConst;
 import univcapstone.employmentsite.util.response.BasicResponse;
 import univcapstone.employmentsite.util.response.ErrorResponse;
 import univcapstone.employmentsite.service.UserService;
 import univcapstone.employmentsite.util.response.DefaultResponse;
-
-import java.util.Map;
 
 @Slf4j
 @RestController
@@ -37,8 +33,8 @@ public class UserController {
         return "Hello join page"; // 회원가입 폼
     }
 
-    @PostMapping("/join")
-    public ResponseEntity<? extends BasicResponse> join(@RequestBody @Validated UserDto userDto, BindingResult bindingResult) {
+//    @PostMapping("/join")
+    public ResponseEntity<? extends BasicResponse> join(@RequestBody @Validated UserRequestDto userRequestDto, BindingResult bindingResult) {
         //회원가입에 대한 로직
         if (bindingResult.hasErrors()) {
             log.error("join binding fail = {}");
@@ -46,14 +42,14 @@ public class UserController {
                     .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "회원가입 실패"));
         }
 
-        Long savedId = userService.join(userDto);
-        log.info("[{}] success join: {}", savedId, userDto);
+        User user = userService.join(userRequestDto);
+        log.info("[{}] success join: {}", user.getId(), user);
 
-        DefaultResponse<UserDto> defaultResponse = DefaultResponse.<UserDto>builder()
+        DefaultResponse<User> defaultResponse = DefaultResponse.<User>builder()
                 .code(HttpStatus.OK.value())
                 .httpStatus(HttpStatus.OK)
                 .message("회원가입 완료")
-                .result(userDto)
+                .result(user)
                 .build();
 
         return ResponseEntity.ok()

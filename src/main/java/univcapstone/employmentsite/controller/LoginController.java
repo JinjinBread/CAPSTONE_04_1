@@ -18,7 +18,6 @@ import univcapstone.employmentsite.dto.TokenDto;
 import univcapstone.employmentsite.dto.UserLoginDto;
 import univcapstone.employmentsite.service.UserService;
 import univcapstone.employmentsite.token.TokenProvider;
-import univcapstone.employmentsite.util.AuthConstants;
 
 import java.io.IOException;
 
@@ -30,8 +29,6 @@ import static univcapstone.employmentsite.util.AuthConstants.*;
 public class LoginController {
 
     private final UserService userService;
-    private final TokenProvider tokenProvider;
-    private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
     @GetMapping("/")
     public String loginForm() {
@@ -52,24 +49,15 @@ public class LoginController {
         return "logout"; // 로그아웃 성공 후 메인 페이지로 리다이렉트
     }
 
-    @PostMapping("/")
+//    @PostMapping("/")
     public ResponseEntity<TokenDto> login(@RequestBody @Validated UserLoginDto userLoginDto) {
 
         //보안 상 서버 단에서 아이디와 패스워드 유효성 검사 필요(UsernamePasswordAuthenticationFilter)
         
         //로그인에 대한 로직
-        UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(userLoginDto.getLoginId(), userLoginDto.getPassword());
+        TokenDto tokenDto = userService.login(userLoginDto);
 
-        Authentication authenticate = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-        SecurityContextHolder.getContext().setAuthentication(authenticate);
-
-        String jwt = tokenProvider.createToken(authenticate);
-
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add(AUTH_HEADER, TOKEN_TYPE + jwt);
-
-        return new ResponseEntity<>(new TokenDto(jwt), httpHeaders, HttpStatus.OK);
+        return ResponseEntity.ok(tokenDto);
 
 //        //로그인에 대한 로직
 //        User loginUser = userService.login(userLoginDto);
