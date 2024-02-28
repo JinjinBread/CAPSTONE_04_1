@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import univcapstone.employmentsite.domain.Bookmark;
+import univcapstone.employmentsite.domain.Post;
+import univcapstone.employmentsite.domain.Reply;
 import univcapstone.employmentsite.domain.User;
 import univcapstone.employmentsite.dto.*;
 import univcapstone.employmentsite.service.BookmarkService;
@@ -20,6 +22,7 @@ import univcapstone.employmentsite.util.response.BasicResponse;
 import univcapstone.employmentsite.util.response.DefaultResponse;
 import univcapstone.employmentsite.util.response.ErrorResponse;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -67,13 +70,26 @@ public class MyPageController {
     ) {
         //나의 북마크
         List<Bookmark> bookmarks= bookmarkService.getMyBookmark(loginUser.getId());
-        log.info("찾은 자기의 북마크={}",bookmarks);
+        List<BookmarkToFront> boomarkToFront=new ArrayList<>();
+        for (Bookmark bookmark : bookmarks) {
+            boomarkToFront.add(new BookmarkToFront(
+                    bookmark.getBookmarkId(),
+                    bookmark.getUser().getId(),
+                    bookmark.getUser().getLoginId(),
+                    bookmark.getUser().getName(),
+                    bookmark.getPost().getPostId(),
+                    bookmark.getPost().getTitle(),
+                    bookmark.getPost().getCategory(),
+                    bookmark.getPost().getDate()
+            ));
+        }
+        log.info("찾은 자기의 북마크={}",boomarkToFront);
 
-        DefaultResponse<List<Bookmark>> defaultResponse = DefaultResponse.<List<Bookmark>>builder()
+        DefaultResponse<List<BookmarkToFront>> defaultResponse = DefaultResponse.<List<BookmarkToFront>>builder()
                 .code(HttpStatus.OK.value())
                 .httpStatus(HttpStatus.OK)
                 .message("북마크 가져오기 완료")
-                .result(bookmarks)
+                .result(boomarkToFront)
                 .build();
 
         return ResponseEntity.ok().body(defaultResponse);

@@ -42,7 +42,7 @@ public class BookmarkRepository {
     public List<Post> getAllPostByPopular() {
         String sql = "SELECT p " +
                 "FROM Post p " +
-                "JOIN Bookmark b ON p.postId = b.post.postId " +
+                "LEFT JOIN Bookmark b ON p.postId = b.post.postId " +
                 "GROUP BY p.postId " +
                 "ORDER BY COUNT(b.bookmarkId) DESC";
 
@@ -52,7 +52,7 @@ public class BookmarkRepository {
     public List<Post> getResumePostOrderByPopular() {
         String sql = "SELECT p " +
                 "FROM Post p " +
-                "JOIN Bookmark b ON p.postId = b.post.postId " +
+                "LEFT JOIN Bookmark b ON p.postId = b.post.postId " +
                 "WHERE p.category = 'resume' " +
                 "GROUP BY p.postId " +
                 "ORDER BY COUNT(b.bookmarkId) DESC";
@@ -63,7 +63,7 @@ public class BookmarkRepository {
     public List<Post> getInterviewPostOrderByPopular() {
         String sql = "SELECT p " +
                 "FROM Post p " +
-                "JOIN Bookmark b ON p.postId = b.post.postId " +
+                "LEFT JOIN Bookmark b ON p.postId = b.post.postId " +
                 "WHERE p.category = 'interview' " +
                 "GROUP BY p.postId " +
                 "ORDER BY COUNT(b.bookmarkId) DESC";
@@ -74,7 +74,7 @@ public class BookmarkRepository {
     public List<Post> getSharePostOrderByPopular() {
         String sql = "SELECT p " +
                 "FROM Post p " +
-                "JOIN Bookmark b ON p.postId = b.post.postId " +
+                "LEFT JOIN Bookmark b ON p.postId = b.post.postId " +
                 "WHERE p.category = 'share' " +
                 "GROUP BY p.postId " +
                 "ORDER BY COUNT(b.bookmarkId) DESC";

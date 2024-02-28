@@ -36,14 +36,16 @@ public class Post {
     private String content;
     private String fileName;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
     @CreatedDate
     private LocalDateTime date;
 
+    public Post(Post post, Long postId) {
 
+    }
     @Builder
     public Post(User user, String title, String content, String fileName,String category) {
         this.user = user;

@@ -74,8 +74,8 @@ public class PostService {
         postRepository.save(findPost);
     }
 
-    public Optional<Post> searchByTitle(String boardTitle) {
-        Optional<Post> postResult = postRepository.findByTitle(boardTitle);
+    public List<Post> searchByTitle(String boardTitle) {
+        List<Post> postResult = postRepository.findByTitle(boardTitle);
         return postResult;
     }
 

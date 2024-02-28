@@ -25,20 +25,6 @@ public class BookmarkController {
         this.bookmarkService = bookmarkService;
     }
 
-    /**
-     * 자신의 북마크 가져오기
-     * @param postId
-     * @param userLoginId
-     * @return
-     */
-    @GetMapping("/boardlist/{postId}/bookmark")
-    public String bookmark(
-            @PathVariable Long postId,
-            @SessionAttribute(name = SessionConst.LOGIN_USER, required = false) String userLoginId
-    ){
-        //게시글 북마크
-        return "";
-    }
 
     /**
      * 북마크 삭제
