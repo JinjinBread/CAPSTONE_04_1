@@ -40,7 +40,7 @@ public class ReplyController {
             @RequestBody @Validated ReplyDto replyDto) {
 
         replyService.saveReply(postId, user, replyDto);
-        log.info("댓글을 작성한 포스트 id = {}, 댓글을 작성한 유저 = {}, 작성한 댓글 정보 = {}", postId, user, replyDto);
+        log.info("댓글을 작성한 포스트 id = {}, 댓글을 작성한 유저 = {}, 작성한 댓글 정보 = {}", postId, user.getLoginId(), replyDto);
 
         DefaultResponse<ReplyDto> defaultResponse = DefaultResponse.<ReplyDto>builder()
                 .code(HttpStatus.OK.value())
