@@ -43,6 +43,9 @@ public class ReplyService {
 
     public void deleteReply(Long replyId, User loginUser) {
         Reply findReply = replyRepository.findByReplyId(replyId);
+        if(findReply==null){
+            throw new IllegalStateException("이미 삭제된 댓글이거나 찾을 수 없는 댓글 입니다.");
+        }
         User replyWriter = findReply.getUser();
 
         if (!replyWriter.getLoginId().equals(loginUser.getLoginId())) {

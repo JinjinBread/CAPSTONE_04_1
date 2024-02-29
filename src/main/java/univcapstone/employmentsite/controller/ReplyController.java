@@ -71,8 +71,21 @@ public class ReplyController {
         try {
             replyService.deleteReply(replyId, loginUser);
         } catch (IllegalStateException e) {
+            log.info("댓글 작성자와 삭제하려는 이가 일치하지 않거나 이미 삭제된 댓글입니다.");
+            
+            DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
+                    .code(HttpStatus.BAD_REQUEST.value())
+                    .httpStatus(HttpStatus.BAD_REQUEST)
+                    .message("잘못된 삭제요청")
+                    .result("")
+                    .build();
+
+            return ResponseEntity.ok().body(defaultResponse);
+            /*
             return ResponseEntity.badRequest()
                     .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
+                    
+             */
         }
         log.info("지우려는 댓글의 게시글 postId={}, 지우려는 댓글의 replyId={}", postId, replyId);
 
