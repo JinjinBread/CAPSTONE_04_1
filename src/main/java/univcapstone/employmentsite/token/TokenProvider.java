@@ -3,6 +3,8 @@ package univcapstone.employmentsite.token;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,6 +14,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import univcapstone.employmentsite.dto.TokenDto;
 
 import java.security.Key;
@@ -67,7 +70,7 @@ public class TokenProvider implements InitializingBean {
                 .compact();
 
         return TokenDto.builder()
-                .grantType(GRANT_TYPE)
+                .grantType(BEARER_PREFIX)
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();
@@ -121,4 +124,31 @@ public class TokenProvider implements InitializingBean {
             return e.getClaims();
         }
     }
+
+    public void setAccessTokenHeader(String accessToken, HttpServletResponse response) {
+        String headerValue = BEARER_PREFIX + accessToken;
+        response.setHeader(AUTH_HEADER, headerValue);
+    }
+
+//    public void refresshTokenSetHeader(String refreshToken, HttpServletResponse response) {
+//        response.setHeader("Refresh", refreshToken);
+//    }
+
+    // Request Header에 Access Token 정보를 추출하는 메서드
+    public String resolveAccessToken(HttpServletRequest request) {
+        String bearerToken = request.getHeader(AUTH_HEADER);
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
+            return bearerToken.substring(7);
+        }
+        return null;
+    }
+
+    // Request Header에 Refresh Token 정보를 추출하는 메서드
+//    public String resolveRefreshToken(HttpServletRequest request) {
+//        String bearerToken = request.getHeader(REFRESH_HEADER);
+//        if (StringUtils.hasText(bearerToken)) {
+//            return bearerToken;
+//        }
+//        return null;
+//    }
 }

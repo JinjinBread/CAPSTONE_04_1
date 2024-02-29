@@ -24,45 +24,6 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final TokenProvider tokenProvider;
-    private final AuthenticationManagerBuilder authenticationManagerBuilder;
-
-    /**
-     * 회원가입
-     */
-    public User join(UserRequestDto userRequestDto) {
-
-        validateDuplicateLoginId(userRequestDto.getLoginId()); //중복 로그인 아이디 검증
-
-        User user = User.builder()
-                .loginId(userRequestDto.getLoginId())
-                .password(passwordEncoder.encode(userRequestDto.getPassword()))
-                .nickname(userRequestDto.getNickname())
-                .email(userRequestDto.getEmail())
-                .name(userRequestDto.getName())
-                .authority(Authority.ROLE_USER)
-                .activated(true)
-                .build();
-
-        return userRepository.save(user);
-    }
-
-    /**
-     * 로그인
-     */
-    public TokenDto login(UserLoginDto userLoginDto) {
-
-        UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(userLoginDto.getLoginId(), userLoginDto.getPassword());
-
-        Authentication authenticate = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-        SecurityContextHolder.getContext().setAuthentication(authenticate);
-
-        TokenDto tokenDto = tokenProvider.createToken(authenticate);
-
-        return tokenDto;
-    }
 
     /**
      * 아이디로 회원 찾기

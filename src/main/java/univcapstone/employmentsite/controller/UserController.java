@@ -33,28 +33,13 @@ public class UserController {
         return "Hello join page"; // 회원가입 폼
     }
 
-//    @PostMapping("/join")
-    public ResponseEntity<? extends BasicResponse> join(@RequestBody @Validated UserRequestDto userRequestDto, BindingResult bindingResult) {
-        //회원가입에 대한 로직
-        if (bindingResult.hasErrors()) {
-            log.error("join binding fail = {}");
-            return ResponseEntity.badRequest()
-                    .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "회원가입 실패"));
-        }
-
-        User user = userService.join(userRequestDto);
-        log.info("[{}] success join: {}", user.getId(), user);
-
-        DefaultResponse<User> defaultResponse = DefaultResponse.<User>builder()
-                .code(HttpStatus.OK.value())
-                .httpStatus(HttpStatus.OK)
-                .message("회원가입 완료")
-                .result(user)
-                .build();
-
-        return ResponseEntity.ok()
-                .body(defaultResponse);
+    @GetMapping("/joincheck")
+    public String joinCheck() {
+        return "join check list";
     }
+
+//    @GetMapping("/error")
+//    public S
 
     @PostMapping("/verify/id")
     public ResponseEntity<? extends BasicResponse> verifyID(
