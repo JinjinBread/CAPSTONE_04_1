@@ -51,7 +51,6 @@ public class ReplyController {
 
         return ResponseEntity.ok()
                 .body(defaultResponse);
-
     }
 
     /**
