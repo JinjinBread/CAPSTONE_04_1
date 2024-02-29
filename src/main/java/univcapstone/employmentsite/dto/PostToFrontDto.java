@@ -8,6 +8,7 @@ import univcapstone.employmentsite.domain.Reply;
 import univcapstone.employmentsite.domain.User;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +24,7 @@ public class PostToFrontDto {
     private String content;
     private String fileName;
     private Long userId;
-    private LocalDateTime date;
+    private String date;
 
     public PostToFrontDto(Long postId, List<ReplyToFrontDto> replies, String category, String title, String content, String fileName, Long userId, LocalDateTime date) {
         this.postId = postId;
@@ -33,6 +34,6 @@ public class PostToFrontDto {
         this.content = content;
         this.fileName = fileName;
         this.userId = userId;
-        this.date = date;
+        this.date = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
     }
 }

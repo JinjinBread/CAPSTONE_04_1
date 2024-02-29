@@ -56,6 +56,7 @@ public class PostController {
                 replyToFront.add(new ReplyToFrontDto(reply.getReplyId(),
                         reply.getPost().getPostId(),
                         reply.getUser().getId(),
+                        reply.getUser().getNickname(),
                         reply.getParentReplyId(),
                         reply.getReplyContent(),
                         reply.getDate()));
@@ -78,6 +79,7 @@ public class PostController {
             replyToFront.add(new ReplyToFrontDto(reply.getReplyId(),
                     reply.getPost().getPostId(),
                     reply.getUser().getId(),
+                    reply.getUser().getNickname(),
                     reply.getParentReplyId(),
                     reply.getReplyContent(),
                     reply.getDate()));
