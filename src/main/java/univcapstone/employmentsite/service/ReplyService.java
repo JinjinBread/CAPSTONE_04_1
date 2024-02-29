@@ -45,7 +45,7 @@ public class ReplyService {
         Reply findReply = replyRepository.findByReplyId(replyId);
         User replyWriter = findReply.getUser();
 
-        if (!replyWriter.equals(loginUser)) {
+        if (!replyWriter.getLoginId().equals(loginUser.getLoginId())) {
             throw new IllegalStateException("자신이 작성한 댓글만 삭제할 수 있습니다.");
         }
 

@@ -24,9 +24,10 @@ public class PostToFrontDto {
     private String content;
     private String fileName;
     private Long userId;
+    private String nickname;
     private String date;
 
-    public PostToFrontDto(Long postId, List<ReplyToFrontDto> replies, String category, String title, String content, String fileName, Long userId, LocalDateTime date) {
+    public PostToFrontDto(Long postId, List<ReplyToFrontDto> replies, String category, String title, String content, String fileName, Long userId,String nickname, LocalDateTime date) {
         this.postId = postId;
         this.replies = replies;
         this.category = category;
@@ -34,6 +35,7 @@ public class PostToFrontDto {
         this.content = content;
         this.fileName = fileName;
         this.userId = userId;
+        this.nickname=nickname;
         this.date = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
     }
 }

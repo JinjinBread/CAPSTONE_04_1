@@ -68,6 +68,7 @@ public class PostController {
                     post.getContent(),
                     post.getFileName(),
                     post.getUser().getId(),
+                    post.getUser().getNickname(),
                     post.getDate()
             ));
         }
@@ -91,6 +92,7 @@ public class PostController {
                 post.getContent(),
                 post.getFileName(),
                 post.getUser().getId(),
+                post.getUser().getNickname(),
                 post.getDate()
         );
         return postToFront;
