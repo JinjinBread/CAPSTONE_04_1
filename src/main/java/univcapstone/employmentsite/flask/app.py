@@ -16,8 +16,18 @@ def editPicture():
     stream_handler.setFormatter(formatter)
     logger.addHandler(stream_handler)
 
-    photoId = request.form['photoId']
-    return render_template('.html')
+    #Spring에서 받은 JSON 형식의 데이터들
+    brightness = float(request.form['brightness'])
+    saturation = float(request.form['saturation'])
+    print(brightness,saturation)
+
+    result={
+        'bright':brightness,
+        'saturation':saturation,
+    }
+
+    return result
+
 
 if __name__=='__main__':
     app.run(host="localhost",port=12300)
