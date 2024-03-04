@@ -14,7 +14,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.filter.CorsFilter;
 import univcapstone.employmentsite.config.filter.JwtRequestFilter;
-import univcapstone.employmentsite.service.AuthService;
 import univcapstone.employmentsite.service.LogoutService;
 import univcapstone.employmentsite.token.JwtAccessDeniedHandler;
 import univcapstone.employmentsite.token.JwtAuthenticationEntryPoint;

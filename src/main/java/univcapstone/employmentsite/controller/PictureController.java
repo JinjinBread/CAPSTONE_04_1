@@ -1,19 +1,14 @@
 package univcapstone.employmentsite.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.logging.Log;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
-import univcapstone.employmentsite.dto.PostToFrontDto;
 import univcapstone.employmentsite.util.response.BasicResponse;
 import univcapstone.employmentsite.util.response.DefaultResponse;
 
-import java.util.HashMap;
-import java.util.Map;
 
 @Slf4j
 @RestController

@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import univcapstone.employmentsite.domain.Resume;
 import univcapstone.employmentsite.domain.User;
-import univcapstone.employmentsite.repository.ReplyRepository;
 import univcapstone.employmentsite.repository.ResumeRepository;
 
 import java.util.List;

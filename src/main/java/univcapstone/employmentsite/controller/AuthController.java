@@ -1,11 +1,8 @@
 package univcapstone.employmentsite.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -14,10 +11,6 @@ import univcapstone.employmentsite.dto.TokenRequestDto;
 import univcapstone.employmentsite.dto.UserRequestDto;
 import univcapstone.employmentsite.dto.UserResponseDto;
 import univcapstone.employmentsite.service.AuthService;
-import univcapstone.employmentsite.token.TokenProvider;
-import univcapstone.employmentsite.util.response.BasicResponse;
-import univcapstone.employmentsite.util.response.DefaultResponse;
-import univcapstone.employmentsite.util.response.ErrorResponse;
 
 @Slf4j
 @RestController
@@ -25,7 +18,6 @@ import univcapstone.employmentsite.util.response.ErrorResponse;
 public class AuthController {
 
     private final AuthService authService;
-    private final TokenProvider tokenProvider;
 
     /**
      * 회원가입

@@ -19,7 +19,6 @@ import univcapstone.employmentsite.repository.RefreshTokenRepository;
 import univcapstone.employmentsite.repository.UserRepository;
 import univcapstone.employmentsite.token.TokenProvider;
 
-import java.util.Optional;
 
 @Slf4j
 @Transactional

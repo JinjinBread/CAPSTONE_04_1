@@ -2,11 +2,8 @@ package univcapstone.employmentsite.repository;
 
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
-import org.apache.tomcat.util.descriptor.web.ContextEjb;
 import org.springframework.stereotype.Repository;
-import univcapstone.employmentsite.domain.Reply;
 import univcapstone.employmentsite.domain.Resume;
-import univcapstone.employmentsite.domain.User;
 
 import java.util.List;
 

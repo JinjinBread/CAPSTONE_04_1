@@ -14,7 +14,6 @@ import univcapstone.employmentsite.token.TokenProvider;
 
 import java.io.IOException;
 
-import static univcapstone.employmentsite.util.AuthConstants.*;
 
 @Slf4j
 @RequiredArgsConstructor

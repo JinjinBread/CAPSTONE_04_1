@@ -13,8 +13,6 @@ import univcapstone.employmentsite.domain.User;
 import univcapstone.employmentsite.repository.UserRepository;
 
 import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Transactional

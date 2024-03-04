@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 import univcapstone.employmentsite.domain.Post;
 
 import java.util.List;
-import java.util.Optional;
 
 
 @Repository
