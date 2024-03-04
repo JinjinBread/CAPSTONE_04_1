@@ -25,4 +25,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Post findByPostId(Long postId);
     @Query("SELECT p FROM Post p WHERE p.title LIKE %:title% ORDER BY p.date DESC")
     List<Post> findByTitle(String title);
+    @Query("SELECT p FROM Post p WHERE p.user.loginId= :loginId ORDER BY p.date DESC")
+    List<Post> findMyPost(String loginId);
 }

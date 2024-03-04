@@ -128,4 +128,9 @@ public class PostService {
         List<Post> post=bookmarkRepository.getSharePostOrderByPopular();
         return post;
     }
+
+    public List<Post> showMyPost(String loginId) {
+        List<Post> post=postRepository.findMyPost(loginId);
+        return post;
+    }
 }

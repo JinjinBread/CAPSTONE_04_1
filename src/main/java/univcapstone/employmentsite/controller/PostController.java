@@ -27,6 +27,7 @@ import univcapstone.employmentsite.util.response.DefaultResponse;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
@@ -282,6 +283,25 @@ public class PostController {
                 .code(HttpStatus.OK.value())
                 .httpStatus(HttpStatus.OK)
                 .message("북마크된 순 게시글들 가져오기 완료")
+                .result(postDTO)
+                .build();
+
+        return ResponseEntity.ok()
+                .body(defaultResponse);
+    }
+
+    @GetMapping("/boardlist/user")
+    public ResponseEntity<? extends BasicResponse> userPost(
+            @RequestBody Map<String, String> receiverMap
+    ){
+        List<Post> post=postService.showMyPost(receiverMap.get("loginId"));
+        List<PostToFrontDto> postDTO=convertListPostDTO(post);
+        log.info("불러온 본인의 게시글 = {}",post);
+
+        DefaultResponse<List<PostToFrontDto>> defaultResponse = DefaultResponse.<List<PostToFrontDto>>builder()
+                .code(HttpStatus.OK.value())
+                .httpStatus(HttpStatus.OK)
+                .message("본인이 작성한 게시글")
                 .result(postDTO)
                 .build();
 
