@@ -6,7 +6,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import univcapstone.employmentsite.interceptor.LoginCheckInterceptor;
 
-@Configuration
+//@Configuration
 @EnableJpaAuditing
 public class WebConfig implements WebMvcConfigurer {
 

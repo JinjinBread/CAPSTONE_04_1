@@ -2,16 +2,16 @@ package univcapstone.employmentsite.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotEmpty;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.List;
+import java.util.Set;
 
 @Entity
-@Getter @Setter
+@Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode
 @ToString
 public class User {
@@ -21,7 +21,6 @@ public class User {
     @Column(name = "user_id")
     private Long id;
 
-    @NotEmpty
     @Column(name = "login_id")
     private String loginId;
 
@@ -33,16 +32,31 @@ public class User {
     @OneToMany(mappedBy = "replyId", cascade = CascadeType.REMOVE)
     private List<Reply> replies;
 
-    @NotEmpty
+    @Column(name = "name")
     private String name;
 
-    @NotEmpty
+    @Column(name = "password")
     private String password;
 
-    @NotEmpty
+    @Column(name = "email")
     private String email;
 
-    @NotEmpty
+    @Column(name = "nickname")
     private String nickname;
+
+    @JsonIgnore
+    @Column(name = "activated")
+    private boolean activated;
+
+    @Enumerated(EnumType.STRING)
+    private Authority authority;
+
+    public void updatePassword(String password) {
+        this.password = password;
+    }
+
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
+    }
 
 }

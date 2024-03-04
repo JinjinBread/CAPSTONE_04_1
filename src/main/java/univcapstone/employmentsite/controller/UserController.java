@@ -1,6 +1,5 @@
 package univcapstone.employmentsite.controller;
 
-import jakarta.persistence.PersistenceException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,15 +9,13 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import univcapstone.employmentsite.domain.User;
-import univcapstone.employmentsite.dto.UserEditDto;
+import univcapstone.employmentsite.dto.UserRequestDto;
 import univcapstone.employmentsite.dto.UserFindDto;
 import univcapstone.employmentsite.util.SessionConst;
 import univcapstone.employmentsite.util.response.BasicResponse;
 import univcapstone.employmentsite.util.response.ErrorResponse;
 import univcapstone.employmentsite.service.UserService;
 import univcapstone.employmentsite.util.response.DefaultResponse;
-
-import java.util.Map;
 
 @Slf4j
 @RestController
@@ -36,29 +33,13 @@ public class UserController {
         return "Hello join page"; // 회원가입 폼
     }
 
-    @PostMapping("/join")
-    public ResponseEntity<? extends BasicResponse> join(@RequestBody @Validated User user, BindingResult bindingResult) {
-        //회원가입에 대한 로직
-        if (bindingResult.hasErrors()) {
-            log.error("join binding fail = {}");
-            return ResponseEntity.badRequest()
-                    .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "회원가입 실패"));
-        }
-
-        userService.join(user);
-        log.info("[{}] loginId={}, password={}, name={}, email={}, nickname={}",
-                user.getId(), user.getLoginId(), user.getPassword(), user.getName(), user.getEmail(), user.getNickname());
-
-        DefaultResponse<User> defaultResponse = DefaultResponse.<User>builder()
-                .code(HttpStatus.OK.value())
-                .httpStatus(HttpStatus.OK)
-                .message("회원가입 완료")
-                .result(user)
-                .build();
-
-        return ResponseEntity.ok()
-                .body(defaultResponse);
+    @GetMapping("/joincheck")
+    public String joinCheck() {
+        return "join check list";
     }
+
+//    @GetMapping("/error")
+//    public S
 
     @PostMapping("/verify/id")
     public ResponseEntity<? extends BasicResponse> verifyID(
