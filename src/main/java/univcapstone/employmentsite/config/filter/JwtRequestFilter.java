@@ -25,7 +25,14 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        
+        String requestURI = request.getRequestURI();
+        if ("/".equals(requestURI)) {
+            // 로그인 URL이면 토큰 비교를 수행하지 않음
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+
         //request 헤더에서 토큰을 꺼냄
         String jwt = tokenProvider.resolveAccessToken(request);
 
@@ -35,12 +42,19 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             Authentication authentication = tokenProvider.getAuthentication(jwt);
             tokenProvider.setAccessTokenHeader(jwt, response);
             SecurityContextHolder.getContext().setAuthentication(authentication);
+        }else if(StringUtils.hasText(jwt) != tokenProvider.validateToken(jwt)) {
+            setResponse(response, new ErrorMessage(400, "토큰 불일치"));
+            return;
+        }else if(jwt==null){
+            setResponse(response, new ErrorMessage(400, "토큰이 없습니다"));
+            return;
         }
+        //
 
         filterChain.doFilter(request, response);
 
     }
-    /*
+
     private void setResponse(HttpServletResponse response, ErrorMessage errorMessage) throws RuntimeException, IOException {
         response.setContentType("application/json;charset=UTF-8");
         MultiValueMap<String, Object> formData = new LinkedMultiValueMap<>();
@@ -50,5 +64,5 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         response.setStatus(errorMessage.getCode());
         response.getWriter().print(formData);
     }
-    */
+
 }
