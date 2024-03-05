@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 import univcapstone.employmentsite.token.TokenProvider;
@@ -36,5 +38,17 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+
     }
+    /*
+    private void setResponse(HttpServletResponse response, ErrorMessage errorMessage) throws RuntimeException, IOException {
+        response.setContentType("application/json;charset=UTF-8");
+        MultiValueMap<String, Object> formData = new LinkedMultiValueMap<>();
+        formData.add("error", errorMessage.getCode());
+        formData.add("message", errorMessage.getMessage());
+
+        response.setStatus(errorMessage.getCode());
+        response.getWriter().print(formData);
+    }
+    */
 }
