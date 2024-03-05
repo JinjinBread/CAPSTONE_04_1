@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -38,6 +39,14 @@ public class SecurityConfig {
     }
 
     @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return (web) -> web.ignoring()
+                .requestMatchers("/", "/join", "/joincheck",
+                        "/login/**", "/logout", "/confirm/**",
+                        "/verify/**", "/find/**");
+    }
+
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
 
         return httpSecurity.httpBasic(AbstractHttpConfigurer::disable)
@@ -55,6 +64,10 @@ public class SecurityConfig {
                         .accessDeniedHandler(jwtAccessDeniedHandler)
                 )
 
+                .addFilterBefore(
+                        new JwtRequestFilter(tokenProvider),
+                        UsernamePasswordAuthenticationFilter.class)
+
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests //요청 인증 무시 목록
                                 .requestMatchers("/", "/join", "/joincheck",
@@ -70,9 +83,6 @@ public class SecurityConfig {
                         .addLogoutHandler(logoutService)
                         .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext()))
 
-                .addFilterBefore(
-                        new JwtRequestFilter(tokenProvider),
-                        UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
