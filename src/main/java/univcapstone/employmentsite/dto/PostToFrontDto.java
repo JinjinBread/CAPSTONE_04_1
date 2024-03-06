@@ -1,11 +1,6 @@
 package univcapstone.employmentsite.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
-import univcapstone.employmentsite.domain.Reply;
-import univcapstone.employmentsite.domain.User;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -13,7 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-@Getter@Setter
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 public class PostToFrontDto {
@@ -27,7 +23,7 @@ public class PostToFrontDto {
     private String nickname;
     private String date;
 
-    public PostToFrontDto(Long postId, List<ReplyToFrontDto> replies, String category, String title, String content, String fileName, Long userId,String nickname, LocalDateTime date) {
+    public PostToFrontDto(Long postId, List<ReplyToFrontDto> replies, String category, String title, String content, String fileName, Long userId, String nickname, LocalDateTime date) {
         this.postId = postId;
         this.replies = replies;
         this.category = category;
@@ -35,7 +31,7 @@ public class PostToFrontDto {
         this.content = content;
         this.fileName = fileName;
         this.userId = userId;
-        this.nickname=nickname;
+        this.nickname = nickname;
         this.date = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
     }
 }

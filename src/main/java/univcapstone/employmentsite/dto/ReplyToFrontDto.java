@@ -1,10 +1,6 @@
 package univcapstone.employmentsite.dto;
 
-import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
-import univcapstone.employmentsite.domain.Post;
-import univcapstone.employmentsite.domain.User;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -23,11 +19,11 @@ public class ReplyToFrontDto {
     private String replyContent;
     private String date;
 
-    public ReplyToFrontDto(Long replyId, Long postId, Long userId,String nickname, Long parentReplyId, String replyContent, LocalDateTime date) {
+    public ReplyToFrontDto(Long replyId, Long postId, Long userId, String nickname, Long parentReplyId, String replyContent, LocalDateTime date) {
         this.replyId = replyId;
         this.postId = postId;
         this.userId = userId;
-        this.nickname=nickname;
+        this.nickname = nickname;
         this.parentReplyId = parentReplyId;
         this.replyContent = replyContent;
         this.date = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));

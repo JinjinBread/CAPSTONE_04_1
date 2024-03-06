@@ -5,10 +5,10 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import univcapstone.employmentsite.dto.PostToFrontDto;
+import univcapstone.employmentsite.dto.ReplyToFrontDto;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,16 +43,13 @@ public class Post {
     @CreatedDate
     private LocalDateTime date;
 
-    public Post(Post post, Long postId) {
-
-    }
     @Builder
-    public Post(User user, String title, String content, String fileName,String category) {
+    public Post(User user, String title, String content, String fileName, String category) {
         this.user = user;
         this.title = title;
         this.content = content;
         this.fileName = fileName;
-        this.category=category;
+        this.category = category;
     }
 
     @Builder
@@ -81,5 +78,31 @@ public class Post {
                 ", fileName='" + fileName + '\'' +
                 ", date=" + date +
                 '}';
+    }
+
+
+    public static PostToFrontDto convertPostDTO(Post post) {
+        List<ReplyToFrontDto> replyToFront = new ArrayList<>();
+
+        for (Reply reply : post.getReplies()) {
+            replyToFront.add(new ReplyToFrontDto(reply.getReplyId(),
+                    reply.getPost().getPostId(),
+                    reply.getUser().getId(),
+                    reply.getUser().getNickname(),
+                    reply.getParentReplyId(),
+                    reply.getReplyContent(),
+                    reply.getDate()));
+        }
+
+        return new PostToFrontDto(post.getPostId(),
+                replyToFront,
+                post.getCategory(),
+                post.getTitle(),
+                post.getContent(),
+                post.getFileName(),
+                post.getUser().getId(),
+                post.getUser().getNickname(),
+                post.getDate()
+        );
     }
 }

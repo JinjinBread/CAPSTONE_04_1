@@ -1,10 +1,12 @@
 package univcapstone.employmentsite.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import univcapstone.employmentsite.domain.Bookmark;
@@ -16,7 +18,7 @@ import univcapstone.employmentsite.dto.PostToFrontDto;
 import univcapstone.employmentsite.dto.ReplyToFrontDto;
 import univcapstone.employmentsite.service.BookmarkService;
 import univcapstone.employmentsite.service.PostService;
-import univcapstone.employmentsite.util.SessionConst;
+import univcapstone.employmentsite.token.CustomUserDetails;
 import univcapstone.employmentsite.util.response.BasicResponse;
 import univcapstone.employmentsite.util.response.DefaultResponse;
 
@@ -25,116 +27,63 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
+@RequiredArgsConstructor
 @RestController
 public class PostController {
 
     private final PostService postService;
     private final BookmarkService bookmarkService;
-    @Autowired
-    public PostController(PostService postService,
-                          BookmarkService bookmarkService
-    ) {
-        this.postService = postService;
-        this.bookmarkService=bookmarkService;
-    }
-
-    /**
-     * 직렬화 문제로 List<Post>->List<PostToFrontDto> 변환 함수
-     * @param posts
-     * @return
-     */
-    public List<PostToFrontDto> convertListPostDTO(List<Post> posts){
-        List<PostToFrontDto> postToFront=new ArrayList<>();
-        for (Post post : posts) {
-            List<ReplyToFrontDto> replyToFront=new ArrayList<>();
-            for(Reply reply : post.getReplies()){
-                replyToFront.add(new ReplyToFrontDto(reply.getReplyId(),
-                        reply.getPost().getPostId(),
-                        reply.getUser().getId(),
-                        reply.getUser().getNickname(),
-                        reply.getParentReplyId(),
-                        reply.getReplyContent(),
-                        reply.getDate()));
-            }
-            postToFront.add(new PostToFrontDto(post.getPostId(),
-                    replyToFront,
-                    post.getCategory(),
-                    post.getTitle(),
-                    post.getContent(),
-                    post.getFileName(),
-                    post.getUser().getId(),
-                    post.getUser().getNickname(),
-                    post.getDate()
-            ));
-        }
-        return postToFront;
-    }
-    public PostToFrontDto convertPostDTO(Post post){
-        List<ReplyToFrontDto> replyToFront=new ArrayList<>();
-        for(Reply reply : post.getReplies()){
-            replyToFront.add(new ReplyToFrontDto(reply.getReplyId(),
-                    reply.getPost().getPostId(),
-                    reply.getUser().getId(),
-                    reply.getUser().getNickname(),
-                    reply.getParentReplyId(),
-                    reply.getReplyContent(),
-                    reply.getDate()));
-        }
-        PostToFrontDto postToFront=new PostToFrontDto(post.getPostId(),
-                replyToFront,
-                post.getCategory(),
-                post.getTitle(),
-                post.getContent(),
-                post.getFileName(),
-                post.getUser().getId(),
-                post.getUser().getNickname(),
-                post.getDate()
-        );
-        return postToFront;
-    }
 
     /**
      * 게시글 목록(/boardlist 경로는 /boardlist/0(=메인페이지) /boardlist/1 (게시글 1페이지 목록.. 10개씩?)
+     *
      * @return
      */
     @GetMapping("/boardlist")
     public ResponseEntity<? extends BasicResponse> boardMain(
             @RequestParam(required = false, defaultValue = "0", value = "page") int pageNo,
             @RequestParam(required = false, defaultValue = "latest", value = "sort") String sort,
-            @RequestParam(required = false, defaultValue = "all", value = "category") String category)
-    {
+            @RequestParam(required = false, defaultValue = "all", value = "category") String category
+    ) {
+
         //게시글 메인화면 보기
         // /boardlist?size=10&page=1
-        log.info("page={} , category={}",pageNo,category);
+
+        log.info("page={} , category={}", pageNo, category);
+
         PageRequest pageRequest = PageRequest.of(pageNo, 10);
 
-        List<Post> posts=new ArrayList<>();
+        List<Post> posts = new ArrayList<>();
 
         //latest: 최신순 popular : 인기순 (북마크와의 조인순)
-        if(sort.equals("latest")){
-            if(category.equals("all")){
+        if (sort.equals("latest")) {
+            if (category.equals("all")) {
                 posts = postService.showAllPost(pageRequest);
-            }
-            else if(category.equals("resume")){
+            } else if (category.equals("resume")) {
                 posts = postService.showResumePostOrderByDate(pageRequest);
-            }else if(category.equals("interview")){
+            } else if (category.equals("interview")) {
                 posts = postService.showInterviewPostOrderByDate(pageRequest);
-            }else if(category.equals("share")){
+            } else if (category.equals("share")) {
                 posts = postService.showSharePostOrderByDate(pageRequest);
             }
-        }else if(sort.equals("popular")){
-            if(category.equals("all")){
+        } else if (sort.equals("popular")) {
+            if (category.equals("all")) {
                 posts = postService.showAllPostByPopluar();
-            }
-            else if(category.equals("resume")){
+            } else if (category.equals("resume")) {
                 posts = postService.showResumePostOrderByPopular(pageRequest);
-            }else if(category.equals("interview")){
+            } else if (category.equals("interview")) {
                 posts = postService.showInterviewPostOrderByPopular(pageRequest);
-            }else if(category.equals("share")){
+            } else if (category.equals("share")) {
                 posts = postService.showSharePostOrderByPopular(pageRequest);
             }
         }
-        List<PostToFrontDto> postToFront=convertListPostDTO(posts);
+
+        List<PostToFrontDto> postToFront = new ArrayList<>();
+
+        for (Post post : posts) {
+            postToFront.add(Post.convertPostDTO(post));
+        }
+
         log.info("전체 게시글 데이터 = {}", postToFront);
 
         DefaultResponse<List<PostToFrontDto>> defaultResponse = DefaultResponse.<List<PostToFrontDto>>builder()
@@ -151,9 +100,13 @@ public class PostController {
     @GetMapping("/boardlist/detail/{postId}")
     public ResponseEntity<? extends BasicResponse> board(
             @PathVariable(name = "postId") Long postId) {
+
         Post post = postService.showPost(postId);
+
         log.info("클릭한 게시물 정보:{}", post);
-        PostToFrontDto postDTO= convertPostDTO(post);
+
+        PostToFrontDto postDTO = Post.convertPostDTO(post);
+
         DefaultResponse<PostToFrontDto> defaultResponse = DefaultResponse.<PostToFrontDto>builder()
                 .code(HttpStatus.OK.value())
                 .httpStatus(HttpStatus.OK)
@@ -167,13 +120,17 @@ public class PostController {
 
     @PostMapping("/boardlist/write")
     public ResponseEntity<? extends BasicResponse> boardWrite(
-            @SessionAttribute(name = SessionConst.LOGIN_USER, required = false) User user,
-            @RequestBody @Validated PostDto postDto
+            @RequestBody @Validated PostDto postDto,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
     ) {
         log.info("작성한 게시물 정보:{}", postDto);
 
+        User user = customUserDetails.getUser();
+
         Post post = postService.uploadPost(user, postDto);
-        PostToFrontDto postDTO=convertPostDTO(post);
+
+        PostToFrontDto postDTO = Post.convertPostDTO(post);
+
         DefaultResponse<PostToFrontDto> defaultResponse = DefaultResponse.<PostToFrontDto>builder()
                 .code(HttpStatus.OK.value())
                 .httpStatus(HttpStatus.OK)
@@ -183,7 +140,6 @@ public class PostController {
 
         return ResponseEntity.ok()
                 .body(defaultResponse);
-
     }
 
     @PatchMapping("/boardlist/edit/{postId}")
@@ -227,10 +183,18 @@ public class PostController {
 
     @GetMapping("/boardlist/search/{boardTitle}")
     public ResponseEntity<? extends BasicResponse> search(@PathVariable String boardTitle) {
+
         //게시글 검색 (제목으로)
-        List<Post> post = postService.searchByTitle(boardTitle);
-        List<PostToFrontDto> postDTO=convertListPostDTO(post);
-        log.info("검색을 위해 입력한 단어={} ,찾은 결과물 {}", postDTO, post);
+
+        List<Post> posts = postService.searchByTitle(boardTitle);
+
+        List<PostToFrontDto> postDTO = new ArrayList<>();
+
+        for (Post post : posts) {
+            postDTO.add(Post.convertPostDTO(post));
+        }
+
+        log.info("검색을 위해 입력한 단어={} ,찾은 결과물 {}", postDTO, posts);
 
         DefaultResponse<List<PostToFrontDto>> defaultResponse = DefaultResponse.<List<PostToFrontDto>>builder()
                 .code(HttpStatus.OK.value())
@@ -245,16 +209,19 @@ public class PostController {
 
     @PostMapping("/boardlist/{postId}/bookmark")
     public ResponseEntity<? extends BasicResponse> addBookmark(
-            @SessionAttribute(name = SessionConst.LOGIN_USER, required = false) User user,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @PathVariable Long postId
     ) {
-        Post post=postService.findPostById(postId);
-        Bookmark bookmark=new Bookmark();
+
+        User user = customUserDetails.getUser();
+
+        Post post = postService.findPostById(postId);
+        Bookmark bookmark = new Bookmark();
         bookmark.setPost(post);
         bookmark.setUser(user);
         bookmarkService.saveBookmark(bookmark);
 
-        log.info("북마크 하려는 게시물 정보={} , 북마크정보={}",post,bookmark);
+        log.info("북마크 하려는 게시물 정보={} , 북마크정보={}", post, bookmark);
 
         DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
                 .code(HttpStatus.OK.value())
@@ -268,10 +235,17 @@ public class PostController {
     }
 
     @GetMapping("/boardlist/best")
-    public ResponseEntity<? extends BasicResponse> bestPost(){
-        List<Post> post=bookmarkService.getPostByPopular();
-        List<PostToFrontDto> postDTO=convertListPostDTO(post);
-        log.info("북마크가 많이 된 순(조인횟수)의 게시글들 ={}",postDTO);
+    public ResponseEntity<? extends BasicResponse> bestPost() {
+
+        List<Post> posts = bookmarkService.getPostByPopular();
+
+        List<PostToFrontDto> postDTO = new ArrayList<>();
+
+        for (Post post : posts) {
+            postDTO.add(Post.convertPostDTO(post));
+        }
+
+        log.info("북마크가 많이 된 순(조인횟수)의 게시글들 ={}", postDTO);
 
         DefaultResponse<List<PostToFrontDto>> defaultResponse = DefaultResponse.<List<PostToFrontDto>>builder()
                 .code(HttpStatus.OK.value())
@@ -287,10 +261,17 @@ public class PostController {
     @GetMapping("/boardlist/user")
     public ResponseEntity<? extends BasicResponse> userPost(
             @RequestBody Map<String, String> receiverMap
-    ){
-        List<Post> post=postService.showMyPost(receiverMap.get("loginId"));
-        List<PostToFrontDto> postDTO=convertListPostDTO(post);
-        log.info("불러온 본인의 게시글 = {}",post);
+    ) {
+
+        List<Post> posts = postService.showMyPost(receiverMap.get("loginId"));
+
+        List<PostToFrontDto> postDTO = new ArrayList<>();
+
+        for (Post post : posts) {
+            postDTO.add(Post.convertPostDTO(post));
+        }
+
+        log.info("불러온 본인의 게시글 = {}", posts);
 
         DefaultResponse<List<PostToFrontDto>> defaultResponse = DefaultResponse.<List<PostToFrontDto>>builder()
                 .code(HttpStatus.OK.value())

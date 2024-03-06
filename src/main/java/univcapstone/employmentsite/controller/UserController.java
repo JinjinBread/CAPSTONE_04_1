@@ -5,11 +5,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import univcapstone.employmentsite.domain.User;
+import univcapstone.employmentsite.dto.UserEditDto;
 import univcapstone.employmentsite.dto.UserFindDto;
-import univcapstone.employmentsite.util.SessionConst;
+import univcapstone.employmentsite.token.CustomUserDetails;
 import univcapstone.employmentsite.util.response.BasicResponse;
 import univcapstone.employmentsite.util.response.ErrorResponse;
 import univcapstone.employmentsite.service.UserService;
@@ -125,20 +127,20 @@ public class UserController {
 
     @PostMapping(value = "/reset/pw", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<? extends BasicResponse> resetPassword(
-            @SessionAttribute(name = SessionConst.LOGIN_USER, required = false) User loginUser,
-            @RequestBody User user) {
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestBody UserEditDto userEditDto) {
 
-        Long userId = loginUser.getId();
+        User user = customUserDetails.getUser();
 
-        userService.updatePassword(userId, user.getPassword());
+        userService.updatePassword(user.getId(), userEditDto.getPassword());
 
-        log.info("변경된 유저 = {}, 변경된 유저의 비밀번호 = {}", user, user.getPassword());
+        log.info("변경된 유저 = {}, 변경된 유저의 비밀번호 = {}", user, userEditDto.getPassword());
 
-        DefaultResponse<User> defaultResponse = DefaultResponse.<User>builder()
+        DefaultResponse<UserEditDto> defaultResponse = DefaultResponse.<UserEditDto>builder()
                 .code(HttpStatus.OK.value())
                 .httpStatus(HttpStatus.OK)
                 .message("비밀번호 변경완료.")
-                .result(user)
+                .result(userEditDto)
                 .build();
 
         return ResponseEntity.ok().body(defaultResponse);

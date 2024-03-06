@@ -12,7 +12,7 @@ public class UserEditDto {
     @NotEmpty
     private String loginId;
     @NotEmpty
-    private String pw;
+    private String password;
     @NotEmpty
     private String nickname;
     private String photo_id;

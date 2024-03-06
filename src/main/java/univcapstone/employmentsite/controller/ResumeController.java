@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import univcapstone.employmentsite.domain.Resume;
@@ -11,7 +12,7 @@ import univcapstone.employmentsite.domain.User;
 import univcapstone.employmentsite.dto.ResumeDto;
 import univcapstone.employmentsite.service.ResumeService;
 import univcapstone.employmentsite.service.UserService;
-import univcapstone.employmentsite.util.SessionConst;
+import univcapstone.employmentsite.token.CustomUserDetails;
 import univcapstone.employmentsite.util.response.BasicResponse;
 import univcapstone.employmentsite.util.response.DefaultResponse;
 
@@ -25,13 +26,13 @@ public class ResumeController {
     private final ResumeService resumeService;
 
     @Autowired
-    public ResumeController(UserService userService,ResumeService resumeService) {
+    public ResumeController(UserService userService, ResumeService resumeService) {
         this.userService = userService;
         this.resumeService = resumeService;
     }
 
     @GetMapping(value = "/resume/write")
-    public ResponseEntity<? extends BasicResponse> resumeWrite(){
+    public ResponseEntity<? extends BasicResponse> resumeWrite() {
         //자기소개서 첫화면 불러오기
         DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
                 .code(HttpStatus.OK.value())
@@ -46,11 +47,13 @@ public class ResumeController {
 
     @GetMapping(value = "/resume/revise")
     public ResponseEntity<? extends BasicResponse> getResumeRevise(
-            @SessionAttribute(name = SessionConst.LOGIN_USER, required = false) User loginUser
-    ){
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
+    ) {
+
+        User user = customUserDetails.getUser();
+
         //자기소개서 수정하기 불러오기
-        User user=userService.findUserByLoginId(loginUser.getLoginId());
-        List<Resume> resumes=resumeService.getMyResume(user.getId());
+        List<Resume> resumes = resumeService.getMyResume(user.getId());
         log.info("가져오려는 자기소개서들 {}", resumes);
 
         DefaultResponse<List<Resume>> defaultResponse = DefaultResponse.<List<Resume>>builder()
@@ -66,12 +69,14 @@ public class ResumeController {
 
     @PostMapping(value = "/resume/revise")
     public ResponseEntity<? extends BasicResponse> postResumeRevise(
-            @SessionAttribute(name = SessionConst.LOGIN_USER, required = false) User loginUser,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @RequestBody @Validated ResumeDto resumeDto
-    ){
+    ) {
+
+        User user = customUserDetails.getUser();
+
         //자기소개서 수정하기
-        User user=userService.findUserByLoginId(loginUser.getLoginId());
-        resumeService.reviseResume(resumeDto.getResumeId(),resumeDto.getContent());
+        resumeService.reviseResume(resumeDto.getResumeId(), resumeDto.getContent());
         log.info("수정자: {}, 수정 내용 {}", user, resumeDto);
 
         DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
@@ -87,12 +92,14 @@ public class ResumeController {
 
     @PostMapping(value = "/resume/save")
     public ResponseEntity<? extends BasicResponse> resumeSave(
-            @SessionAttribute(name = SessionConst.LOGIN_USER, required = false) User loginUser,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @RequestBody @Validated ResumeDto resumeDto
-    ){
+    ) {
+
+        User user = customUserDetails.getUser();
+
         //자기소개서 저장하기
-        User user=userService.findUserByLoginId(loginUser.getLoginId());
-        Resume resume=resumeService.saveResume(user, resumeDto.getContent());
+        Resume resume = resumeService.saveResume(user, resumeDto.getContent());
 
         log.info("저장하려는 사람 {}, 저장하는 내용 {}", user, resumeDto);
 

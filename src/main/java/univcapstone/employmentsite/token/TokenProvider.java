@@ -12,7 +12,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import univcapstone.employmentsite.dto.TokenDto;
@@ -33,9 +33,13 @@ public class TokenProvider implements InitializingBean {
     private final String secret;
     private Key key;
 
+    private final CustomUserDetailsService customUserDetailsService;
+
     public TokenProvider(
-            @Value("${jwt.secret}") String secret) {
+            @Value("${jwt.secret}") String secret,
+            CustomUserDetailsService customUserDetailsService) {
         this.secret = secret;
+        this.customUserDetailsService = customUserDetailsService;
     }
 
     // 빈이 생성되고 주입을 받은 후에 secret 값을 Base64 Decode해서 key 변수에 할당하기 위해
@@ -91,9 +95,11 @@ public class TokenProvider implements InitializingBean {
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
 
-        User principal = new User(claims.getSubject(), "", authorities);
+//        User principal = new User(claims.getSubject(), "", authorities);
 
-        return new UsernamePasswordAuthenticationToken(principal, accessToken, authorities); //유저 객체와 토큰, 권한 정보를 통해 Authentication 객체 리턴
+        UserDetails userDetails = customUserDetailsService.loadUserByUsername(claims.getSubject());
+
+        return new UsernamePasswordAuthenticationToken(userDetails, accessToken, authorities); //유저 객체와 토큰, 권한 정보를 통해 Authentication 객체 리턴
     }
 
     //토큰의 유효성 검증을 수행

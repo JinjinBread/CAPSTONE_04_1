@@ -12,9 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import univcapstone.employmentsite.domain.User;
 import univcapstone.employmentsite.dto.JobResponseDto;
-import univcapstone.employmentsite.dto.PostToFrontDto;
 import univcapstone.employmentsite.repository.UserRepository;
-import univcapstone.employmentsite.service.AuthService;
 import univcapstone.employmentsite.util.response.BasicResponse;
 import univcapstone.employmentsite.util.response.DefaultResponse;
 

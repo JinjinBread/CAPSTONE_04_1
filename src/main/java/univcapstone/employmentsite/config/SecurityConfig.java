@@ -3,25 +3,25 @@ package univcapstone.employmentsite.config;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.filter.CorsFilter;
 import univcapstone.employmentsite.config.filter.JwtRequestFilter;
-import univcapstone.employmentsite.service.LogoutService;
 import univcapstone.employmentsite.token.JwtAccessDeniedHandler;
 import univcapstone.employmentsite.token.JwtAuthenticationEntryPoint;
 import univcapstone.employmentsite.token.TokenProvider;
 
 
 @Configuration
+@EnableJpaAuditing
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
@@ -30,7 +30,6 @@ public class SecurityConfig {
     private final CorsFilter corsFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
-    private final LogoutService logoutService;
 
     // PasswordEncoder는 BCryptPasswordEncoder를 사용
     @Bean
@@ -42,14 +41,14 @@ public class SecurityConfig {
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring()
                 .requestMatchers("/", "/join", "/joincheck",
-                        "/login/**", "/logout", "/confirm/**",
+                        "/login/**", "/confirm/**",
                         "/verify/**", "/find/**");
     }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
 
-        return httpSecurity.httpBasic(AbstractHttpConfigurer::disable)
+        httpSecurity.httpBasic(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class) //HTTP 기본 인증 및 CSRF 보안 비활성화, CORS 활성화
 
@@ -80,10 +79,13 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .logout(logoutConfig -> logoutConfig
                         .logoutUrl("/logout")
-                        .addLogoutHandler(logoutService)
-                        .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext()))
+//                        .deleteCookies("JSESSIONID")
+                        .logoutSuccessHandler((request, response, authentication) ->
+                                response.sendRedirect("/")
+                        )
+                );
 
-                .build();
+        return httpSecurity.build();
     }
 
 }

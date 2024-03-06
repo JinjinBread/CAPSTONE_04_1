@@ -45,7 +45,6 @@ public class AuthService {
                 .email(userRequestDto.getEmail())
                 .name(userRequestDto.getName())
                 .authority(Authority.ROLE_USER)
-                .activated(true)
                 .build();
 
         return new UserResponseDto(userRepository.save(user));

@@ -16,6 +16,7 @@ import univcapstone.employmentsite.util.response.ErrorResponse;
 @Slf4j
 @RestController
 public class BookmarkController {
+
     private final BookmarkService bookmarkService;
 
     @Autowired
@@ -23,17 +24,17 @@ public class BookmarkController {
         this.bookmarkService = bookmarkService;
     }
 
-
     /**
      * 북마크 삭제
+     *
      * @param bookmarkData
      * @return
      */
-    @DeleteMapping(value="/user/bookmark/delete")
+    @DeleteMapping(value = "/user/bookmark/delete")
     public ResponseEntity<? extends BasicResponse> editUser(
             @RequestBody @Validated BookmarkDeleteDto bookmarkData
-    ){
-        try{
+    ) {
+        try {
             bookmarkService.deleteBookmark(bookmarkData.getBookmarkId());
 
             DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
@@ -44,7 +45,7 @@ public class BookmarkController {
                     .build();
 
             return ResponseEntity.ok().body(defaultResponse);
-        }catch (IllegalStateException e){
+        } catch (IllegalStateException e) {
             return ResponseEntity.badRequest()
                     .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(),
                             "북마크 삭제 실패"));

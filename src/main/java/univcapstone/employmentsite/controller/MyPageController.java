@@ -1,11 +1,11 @@
 package univcapstone.employmentsite.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import univcapstone.employmentsite.domain.Bookmark;
@@ -13,7 +13,8 @@ import univcapstone.employmentsite.domain.User;
 import univcapstone.employmentsite.dto.*;
 import univcapstone.employmentsite.service.BookmarkService;
 import univcapstone.employmentsite.service.UserService;
-import univcapstone.employmentsite.util.SessionConst;
+import univcapstone.employmentsite.token.CustomUserDetails;
+import univcapstone.employmentsite.token.TokenProvider;
 import univcapstone.employmentsite.util.response.BasicResponse;
 import univcapstone.employmentsite.util.response.DefaultResponse;
 import univcapstone.employmentsite.util.response.ErrorResponse;
@@ -27,19 +28,22 @@ public class MyPageController {
 
     private final UserService userService;
     private final BookmarkService bookmarkService;
+    private final TokenProvider tokenProvider;
 
     @Autowired
-    public MyPageController(UserService userService,BookmarkService bookmarkService) {
+    public MyPageController(UserService userService, BookmarkService bookmarkService, TokenProvider tokenProvider) {
         this.userService = userService;
-        this.bookmarkService=bookmarkService;
+        this.bookmarkService = bookmarkService;
+        this.tokenProvider = tokenProvider;
     }
 
     @GetMapping("/user/myInfo")
     public ResponseEntity<? extends BasicResponse> myInfo(
-            @SessionAttribute(name = SessionConst.LOGIN_USER, required = false) User user
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
     ) {
+        User user = customUserDetails.getUser();
 
-        log.info("세션으로 찾은 로그인 유저의 정보 = {}", user);
+        log.info("유저 마이페이지");
 
         DefaultResponse<User> defaultResponse = DefaultResponse.<User>builder()
                 .code(HttpStatus.OK.value())
@@ -53,7 +57,7 @@ public class MyPageController {
 
     @GetMapping("/user/picture")
     public String myPicture(
-            @SessionAttribute(name = SessionConst.LOGIN_USER, required = false) User loginUser
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
     ) {
         //나의 사진 화면
         return "";
@@ -61,13 +65,16 @@ public class MyPageController {
 
     @GetMapping("/user/bookmark")
     public ResponseEntity<? extends BasicResponse> myBookmark(
-            @SessionAttribute(name = SessionConst.LOGIN_USER, required = false) User loginUser
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
     ) {
+
+        User user = customUserDetails.getUser();
+
         //나의 북마크
-        List<Bookmark> bookmarks= bookmarkService.getMyBookmark(loginUser.getId());
-        List<BookmarkToFront> boomarkToFront=new ArrayList<>();
+        List<Bookmark> bookmarks = bookmarkService.getMyBookmark(user.getId());
+        List<BookmarkToFront> bookmarkToFront = new ArrayList<>();
         for (Bookmark bookmark : bookmarks) {
-            boomarkToFront.add(new BookmarkToFront(
+            bookmarkToFront.add(new BookmarkToFront(
                     bookmark.getBookmarkId(),
                     bookmark.getUser().getId(),
                     bookmark.getUser().getLoginId(),
@@ -78,58 +85,29 @@ public class MyPageController {
                     bookmark.getPost().getDate()
             ));
         }
-        log.info("찾은 자기의 북마크={}",boomarkToFront);
+        log.info("찾은 자기의 북마크={}", bookmarkToFront);
 
         DefaultResponse<List<BookmarkToFront>> defaultResponse = DefaultResponse.<List<BookmarkToFront>>builder()
                 .code(HttpStatus.OK.value())
                 .httpStatus(HttpStatus.OK)
                 .message("북마크 가져오기 완료")
-                .result(boomarkToFront)
+                .result(bookmarkToFront)
                 .build();
 
         return ResponseEntity.ok().body(defaultResponse);
     }
 
-    @DeleteMapping(value = "/user/delete")
-    public ResponseEntity<? extends BasicResponse> deleteUser(
-            HttpServletRequest request,
-            @RequestBody @Validated UserDeleteDto userDeleteDto
-    ) {
-        try {
-            log.info("삭제하려는 유저 데이터 {}", userDeleteDto);
-
-            userService.deleteUser(userDeleteDto);
-
-            DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
-                    .code(HttpStatus.OK.value())
-                    .httpStatus(HttpStatus.OK)
-                    .message("계정 삭제 완료")
-                    .result("")
-                    .build();
-
-            HttpSession session = request.getSession(false);
-
-            if (session != null) {
-                session.invalidate();
-            }
-
-            return ResponseEntity.ok().body(defaultResponse);
-        } catch (IllegalStateException e) {
-            log.error(e.getMessage());
-            return ResponseEntity.badRequest()
-                    .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(),
-                            "잘못된 삭제 요청입니다."));
-        }
-    }
-
     @PatchMapping(value = "/user/edit/pw")
     public ResponseEntity<? extends BasicResponse> editPw(
-            @SessionAttribute(name = SessionConst.LOGIN_USER, required = false) User loginUser,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @RequestBody @Validated UserDeleteDto userDeleteDto
-    ){
-        String newPassword= userDeleteDto.getPassword();
+    ) {
 
-        userService.editPass(loginUser,newPassword);
+        User user = customUserDetails.getUser();
+
+        String newPassword = userDeleteDto.getPassword();
+
+        userService.editPass(user, newPassword);
 
         DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
                 .code(HttpStatus.OK.value())
@@ -144,12 +122,15 @@ public class MyPageController {
 
     @PatchMapping(value = "/user/edit")
     public ResponseEntity<? extends BasicResponse> editNickname(
-            @SessionAttribute(name = SessionConst.LOGIN_USER, required = false) User loginUser,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @RequestBody @Validated NicknameDto nicknameDto
-    ){
-        String newNickname=nicknameDto.getNickname();
+    ) {
 
-        userService.editNickname(loginUser,newNickname);
+        User user = customUserDetails.getUser();
+
+        String newNickname = nicknameDto.getNickname();
+
+        userService.editNickname(user, newNickname);
 
         DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
                 .code(HttpStatus.OK.value())
@@ -160,6 +141,38 @@ public class MyPageController {
 
         return ResponseEntity.ok().body(defaultResponse);
 
+    }
+
+    @DeleteMapping(value = "/user/delete")
+    public ResponseEntity<? extends BasicResponse> deleteUser(
+            HttpServletRequest request,
+            @RequestBody @Validated UserDeleteDto userDeleteDto
+    ) {
+        try {
+            log.info("삭제하려는 유저 데이터 {}", userDeleteDto);
+
+            //토큰 삭제 (구현 중)
+            String accessToken = tokenProvider.resolveAccessToken(request);
+
+
+            //DB에서 멤버 삭제
+            userService.deleteUser(userDeleteDto);
+
+            DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
+                    .code(HttpStatus.OK.value())
+                    .httpStatus(HttpStatus.OK)
+                    .message("계정 삭제 완료")
+                    .result("")
+                    .build();
+
+
+            return ResponseEntity.ok().body(defaultResponse);
+        } catch (IllegalStateException e) {
+            log.error(e.getMessage());
+            return ResponseEntity.badRequest()
+                    .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(),
+                            "잘못된 삭제 요청입니다."));
+        }
     }
 }
 /*

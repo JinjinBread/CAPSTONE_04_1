@@ -4,12 +4,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import univcapstone.employmentsite.domain.User;
 import univcapstone.employmentsite.dto.ReplyDto;
 import univcapstone.employmentsite.service.ReplyService;
-import univcapstone.employmentsite.util.SessionConst;
+import univcapstone.employmentsite.token.CustomUserDetails;
 import univcapstone.employmentsite.util.response.BasicResponse;
 import univcapstone.employmentsite.util.response.DefaultResponse;
 
@@ -27,15 +28,18 @@ public class ReplyController {
      * 댓글 달기
      *
      * @param postId
-     * @param user
+     * @param authentication
      * @param replyDto
      * @return
      */
     @PostMapping("/boardlist/detail/{postId}/reply")
     public ResponseEntity<? extends BasicResponse> reply(
             @PathVariable Long postId,
-            @SessionAttribute(name = SessionConst.LOGIN_USER, required = false) User user,
-            @RequestBody @Validated ReplyDto replyDto) {
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestBody @Validated ReplyDto replyDto
+    ) {
+
+        User user = customUserDetails.getUser();
 
         replyService.saveReply(postId, user, replyDto);
         log.info("댓글을 작성한 포스트 id = {}, 댓글을 작성한 유저 = {}, 작성한 댓글 정보 = {}", postId, user.getLoginId(), replyDto);
@@ -64,13 +68,16 @@ public class ReplyController {
     public ResponseEntity<? extends BasicResponse> replyDelete(
             @PathVariable Long postId,
             @PathVariable Long replyId,
-            @SessionAttribute(name = SessionConst.LOGIN_USER, required = false) User loginUser
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
     ) {
+
+        User user = customUserDetails.getUser();
+
         try {
-            replyService.deleteReply(replyId, loginUser);
+            replyService.deleteReply(replyId, user);
         } catch (IllegalStateException e) {
             log.info("댓글 작성자와 삭제하려는 이가 일치하지 않거나 이미 삭제된 댓글입니다.");
-            
+
             DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
                     .code(HttpStatus.BAD_REQUEST.value())
                     .httpStatus(HttpStatus.BAD_REQUEST)
