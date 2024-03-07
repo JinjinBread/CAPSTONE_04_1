@@ -1,6 +1,7 @@
 package univcapstone.employmentsite.config;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
@@ -24,6 +25,7 @@ import univcapstone.employmentsite.token.TokenProvider;
 @EnableJpaAuditing
 @EnableWebSecurity
 @RequiredArgsConstructor
+@Slf4j
 public class SecurityConfig {
 
     private final TokenProvider tokenProvider;
@@ -80,9 +82,11 @@ public class SecurityConfig {
                 .logout(logoutConfig -> logoutConfig
                         .logoutUrl("/logout")
 //                        .deleteCookies("JSESSIONID")
-                        .logoutSuccessHandler((request, response, authentication) ->
-                                response.sendRedirect("/")
-                        )
+                        .logoutSuccessHandler((request, response, authentication) -> {
+                            log.info("로그아웃 성공");
+                            response.sendRedirect("/");
+                        }
+                    )
                 );
 
         return httpSecurity.build();

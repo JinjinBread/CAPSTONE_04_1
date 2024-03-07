@@ -28,7 +28,7 @@ public class ReplyController {
      * 댓글 달기
      *
      * @param postId
-     * @param authentication
+     * @param customUserDetails
      * @param replyDto
      * @return
      */
