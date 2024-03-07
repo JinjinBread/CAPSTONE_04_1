@@ -86,9 +86,9 @@ public class AuthService {
     public TokenDto reissue(TokenRequestDto tokenRequestDto) {
 
         //RefreshToken 유효성 검증
-        if (!tokenProvider.validateToken(tokenRequestDto.getRefreshToken())) {
-            throw new RuntimeException("Refresh Token이 유효하지 않습니다.");
-        }
+//        if (!tokenProvider.validateToken(tokenRequestDto.getRefreshToken())) {
+//            throw new RuntimeException("Refresh Token이 유효하지 않습니다.");
+//        }
 
         Authentication authentication = tokenProvider.getAuthentication(tokenRequestDto.getAccessToken());
 

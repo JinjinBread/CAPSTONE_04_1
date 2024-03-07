@@ -6,6 +6,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class ErrorResponse extends BasicResponse {
+    private String path;
     private Integer code;
     private String message;
 }

@@ -1,5 +1,6 @@
 package univcapstone.employmentsite.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -43,6 +44,7 @@ public class UserController {
 
     @PostMapping("/verify/id")
     public ResponseEntity<? extends BasicResponse> verifyID(
+            HttpServletRequest request,
             @RequestBody @Validated UserFindDto userFindData
     ) {
         try {
@@ -63,7 +65,7 @@ public class UserController {
         } catch (IllegalStateException e) {
             log.error("중복된 아이디 존재 = {}",userFindData.getLoginId());
             return ResponseEntity.badRequest()
-                    .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "이미 ID가 존재합니다."));
+                    .body(new ErrorResponse(request.getServletPath(), HttpStatus.BAD_REQUEST.value(), "이미 ID가 존재합니다."));
         }
     }
 
@@ -74,6 +76,7 @@ public class UserController {
 
     @PostMapping("/find/id")
     public ResponseEntity<? extends BasicResponse> findID(
+            HttpServletRequest request,
             @RequestBody @Validated UserFindDto userFindData
     ) {
         User user = userService.findId(userFindData.getName(),
@@ -83,7 +86,8 @@ public class UserController {
 
         if (user == null) {
             return ResponseEntity.badRequest()
-                    .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(),
+                    .body(new ErrorResponse(request.getServletPath(),
+                            HttpStatus.BAD_REQUEST.value(),
                             "해당하는 이름과 Email의 계정이 없습니다."));
         } else {
             DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
@@ -100,6 +104,7 @@ public class UserController {
 
     @PostMapping("/find/pw")
     public ResponseEntity<? extends BasicResponse> findPassword(
+            HttpServletRequest request,
             @RequestBody @Validated UserFindDto userFindData
     ) {
         //비밀번호 찾기에 대한 로직
@@ -111,7 +116,8 @@ public class UserController {
 
         if (user == null) {
             return ResponseEntity.badRequest()
-                    .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(),
+                    .body(new ErrorResponse(request.getServletPath(),
+                            HttpStatus.BAD_REQUEST.value(),
                             "비밀번호를 찾을 수 없습니다."));
         } else {
             DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()

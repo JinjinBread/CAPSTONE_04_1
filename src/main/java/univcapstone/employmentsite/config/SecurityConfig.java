@@ -14,8 +14,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.filter.CorsFilter;
-import univcapstone.employmentsite.config.filter.JwtRequestFilter;
-import univcapstone.employmentsite.token.JwtAccessDeniedHandler;
+import univcapstone.employmentsite.config.filter.JwtAuthenticationFilter;
+import univcapstone.employmentsite.config.filter.JwtExceptionFilter;
 import univcapstone.employmentsite.token.JwtAuthenticationEntryPoint;
 import univcapstone.employmentsite.token.TokenProvider;
 
@@ -28,8 +28,6 @@ public class SecurityConfig {
 
     private final TokenProvider tokenProvider;
     private final CorsFilter corsFilter;
-    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
     // PasswordEncoder는 BCryptPasswordEncoder를 사용
     @Bean
@@ -59,13 +57,15 @@ public class SecurityConfig {
 
                 //예외 처리 클래스 등록
                 .exceptionHandling(requests -> requests
-                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
-                        .accessDeniedHandler(jwtAccessDeniedHandler)
+                        .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
                 )
 
                 .addFilterBefore(
-                        new JwtRequestFilter(tokenProvider),
+                        new JwtAuthenticationFilter(tokenProvider),
                         UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(
+                        new JwtExceptionFilter(),
+                        JwtAuthenticationFilter.class)
 
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests //요청 인증 무시 목록

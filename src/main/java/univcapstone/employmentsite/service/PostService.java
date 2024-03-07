@@ -22,22 +22,23 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final BookmarkRepository bookmarkRepository;
+
     @Autowired
-    public PostService(PostRepository postRepository,BookmarkRepository bookmarkRepository) {
+    public PostService(PostRepository postRepository, BookmarkRepository bookmarkRepository) {
         this.postRepository = postRepository;
-        this.bookmarkRepository=bookmarkRepository;
+        this.bookmarkRepository = bookmarkRepository;
     }
 
-    public Post findPostById(long postId){
+    public Post findPostById(long postId) {
         return postRepository.findByPostId(postId);
     }
 
     public List<Post> showAllPost(Pageable pageable) {
-        List<Post> post=new ArrayList<>();
-        Page<Post> pagePost= postRepository.findAllByOrderByDateDesc(pageable);
+        List<Post> post = new ArrayList<>();
+        Page<Post> pagePost = postRepository.findAllByOrderByDateDesc(pageable);
 
-        if(pagePost!=null && pagePost.hasContent()){
-            post=pagePost.getContent();
+        if (pagePost != null && pagePost.hasContent()) {
+            post = pagePost.getContent();
         }
         return post;
     }
@@ -78,57 +79,57 @@ public class PostService {
     }
 
     public List<Post> showResumePostOrderByDate(Pageable pageable) {
-        List<Post> post=new ArrayList<>();
-        Page<Post> pagePost= postRepository.findResumeByOrderByDateDesc(pageable);
+        List<Post> post = new ArrayList<>();
+        Page<Post> pagePost = postRepository.findResumeByOrderByDateDesc(pageable);
 
-        if(pagePost!=null && pagePost.hasContent()){
-            post=pagePost.getContent();
+        if (pagePost != null && pagePost.hasContent()) {
+            post = pagePost.getContent();
         }
         return post;
     }
 
     public List<Post> showInterviewPostOrderByDate(Pageable pageable) {
-        List<Post> post=new ArrayList<>();
-        Page<Post> pagePost= postRepository.findInterviewByOrderByDateDesc(pageable);
+        List<Post> post = new ArrayList<>();
+        Page<Post> pagePost = postRepository.findInterviewByOrderByDateDesc(pageable);
 
-        if(pagePost!=null && pagePost.hasContent()){
-            post=pagePost.getContent();
+        if (pagePost != null && pagePost.hasContent()) {
+            post = pagePost.getContent();
         }
         return post;
     }
 
     public List<Post> showSharePostOrderByDate(Pageable pageable) {
-        List<Post> post=new ArrayList<>();
-        Page<Post> pagePost= postRepository.findShareByOrderByDateDesc(pageable);
+        List<Post> post = new ArrayList<>();
+        Page<Post> pagePost = postRepository.findShareByOrderByDateDesc(pageable);
 
-        if(pagePost!=null && pagePost.hasContent()){
-            post=pagePost.getContent();
+        if (pagePost != null && pagePost.hasContent()) {
+            post = pagePost.getContent();
         }
         return post;
     }
 
     public List<Post> showAllPostByPopluar() {
-        List<Post> post= bookmarkRepository.getAllPostByPopular();
+        List<Post> post = bookmarkRepository.getAllPostByPopular();
         return post;
     }
 
     public List<Post> showResumePostOrderByPopular(Pageable pageable) {
-        List<Post> post=bookmarkRepository.getResumePostOrderByPopular();
+        List<Post> post = bookmarkRepository.getResumePostOrderByPopular();
         return post;
     }
 
     public List<Post> showInterviewPostOrderByPopular(Pageable pageable) {
-        List<Post> post=bookmarkRepository.getInterviewPostOrderByPopular();
+        List<Post> post = bookmarkRepository.getInterviewPostOrderByPopular();
         return post;
     }
 
     public List<Post> showSharePostOrderByPopular(Pageable pageable) {
-        List<Post> post=bookmarkRepository.getSharePostOrderByPopular();
+        List<Post> post = bookmarkRepository.getSharePostOrderByPopular();
         return post;
     }
 
     public List<Post> showMyPost(String loginId) {
-        List<Post> post=postRepository.findMyPost(loginId);
+        List<Post> post = postRepository.findMyPost(loginId);
         return post;
     }
 }
