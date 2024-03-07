@@ -258,7 +258,6 @@ public class PostController {
                 .body(defaultResponse);
     }
 
-    //body->param loginId
     @GetMapping("/boardlist/user")
     public ResponseEntity<? extends BasicResponse> userPost(
             @AuthenticationPrincipal CustomUserDetails customUserDetails

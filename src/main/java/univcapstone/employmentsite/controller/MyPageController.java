@@ -170,7 +170,8 @@ public class MyPageController {
         } catch (IllegalStateException e) {
             log.error(e.getMessage());
             return ResponseEntity.badRequest()
-                    .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(),
+                    .body(new ErrorResponse(request.getServletPath(),
+                            HttpStatus.BAD_REQUEST.value(),
                             "잘못된 삭제 요청입니다."));
         }
     }

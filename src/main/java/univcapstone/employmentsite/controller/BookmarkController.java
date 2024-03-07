@@ -1,6 +1,7 @@
 package univcapstone.employmentsite.controller;
 
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,6 +33,7 @@ public class BookmarkController {
      */
     @DeleteMapping(value = "/user/bookmark/delete")
     public ResponseEntity<? extends BasicResponse> editUser(
+            HttpServletRequest request,
             @RequestBody @Validated BookmarkDeleteDto bookmarkData
     ) {
         try {
@@ -47,7 +49,8 @@ public class BookmarkController {
             return ResponseEntity.ok().body(defaultResponse);
         } catch (IllegalStateException e) {
             return ResponseEntity.badRequest()
-                    .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(),
+                    .body(new ErrorResponse(request.getServletPath(),
+                            HttpStatus.BAD_REQUEST.value(),
                             "북마크 삭제 실패"));
         }
 
