@@ -277,7 +277,6 @@ public class PostController {
             postDTO.add(Post.convertPostDTO(post));
         }
 
-        ObjectMapper mapper = new ObjectMapper();
         Map<String, Long> formData = new HashMap<>();
         formData.put("postNum",postDTO.stream().count());
         formData.put("replyNum",replies.stream().count());
@@ -295,4 +294,5 @@ public class PostController {
         return ResponseEntity.ok()
                 .body(defaultResponse);
     }
+
 }
