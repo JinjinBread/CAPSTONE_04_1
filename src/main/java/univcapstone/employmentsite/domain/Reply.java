@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
+@Setter
 @Getter
 @NoArgsConstructor
 @ToString(exclude = "post")

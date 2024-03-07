@@ -7,8 +7,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import univcapstone.employmentsite.domain.Reply;
 import univcapstone.employmentsite.domain.User;
 import univcapstone.employmentsite.dto.ReplyDto;
+import univcapstone.employmentsite.dto.ReplyUpdateDto;
 import univcapstone.employmentsite.service.ReplyService;
 import univcapstone.employmentsite.token.CustomUserDetails;
 import univcapstone.employmentsite.util.response.BasicResponse;
@@ -104,6 +106,23 @@ public class ReplyController {
                 .httpStatus(HttpStatus.OK)
                 .message("댓글 삭제 성공")
                 .result(replyId)
+                .build();
+
+        return ResponseEntity.ok().body(defaultResponse);
+    }
+
+    @PatchMapping("/boardlist/detail/{postId}/reply")
+    public ResponseEntity<? extends BasicResponse> replyUpdate(
+            @PathVariable Long postId,
+            @RequestBody @Validated ReplyUpdateDto replyUpdateDto
+    ) {
+        Reply reply=replyService.updateReply(replyUpdateDto.getReplyId(),replyUpdateDto.getReplyContent());
+        log.info("수정한 댓글 = {}",reply);
+        DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
+                .code(HttpStatus.OK.value())
+                .httpStatus(HttpStatus.OK)
+                .message("댓글 수정 성공")
+                .result("")
                 .build();
 
         return ResponseEntity.ok().body(defaultResponse);

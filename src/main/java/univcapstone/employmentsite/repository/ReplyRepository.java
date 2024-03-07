@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import univcapstone.employmentsite.domain.Bookmark;
 import univcapstone.employmentsite.domain.Reply;
+import univcapstone.employmentsite.domain.Resume;
 
 import java.util.List;
 
@@ -40,5 +41,11 @@ public class ReplyRepository {
                 .setParameter("loginId", loginId)
                 .getResultList();
         return replies;
+    }
+
+    public Reply update(Long replyId, String replyContent) {
+        Reply reply = em.find(Reply.class, replyId);
+        reply.setReplyContent(replyContent);
+        return reply;
     }
 }

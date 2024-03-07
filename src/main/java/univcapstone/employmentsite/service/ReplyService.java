@@ -59,4 +59,9 @@ public class ReplyService {
     public List<Reply> findReplyByLoginId(String loginId){
         return replyRepository.findByLoginId(loginId);
     }
+
+    public Reply updateReply(Long replyId,String replyContent){
+        return replyRepository.update(replyId,replyContent);
+
+    }
 }
