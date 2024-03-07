@@ -258,12 +258,13 @@ public class PostController {
                 .body(defaultResponse);
     }
 
+    //body->param loginId
     @GetMapping("/boardlist/user")
     public ResponseEntity<? extends BasicResponse> userPost(
-            @RequestBody Map<String, String> receiverMap
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
     ) {
 
-        List<Post> posts = postService.showMyPost(receiverMap.get("loginId"));
+        List<Post> posts = postService.showMyPost(customUserDetails.getUser().getLoginId());
 
         List<PostToFrontDto> postDTO = new ArrayList<>();
 
