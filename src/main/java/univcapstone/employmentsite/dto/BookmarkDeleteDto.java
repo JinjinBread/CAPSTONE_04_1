@@ -1,6 +1,7 @@
 package univcapstone.employmentsite.dto;
 
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,6 +10,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class BookmarkDeleteDto {
-    @NotEmpty
+    @NotNull
     private Long bookmarkId;
 }

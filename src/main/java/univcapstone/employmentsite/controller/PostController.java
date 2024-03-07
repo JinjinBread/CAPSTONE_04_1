@@ -1,5 +1,6 @@
 package univcapstone.employmentsite.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,11 +19,13 @@ import univcapstone.employmentsite.dto.PostToFrontDto;
 import univcapstone.employmentsite.dto.ReplyToFrontDto;
 import univcapstone.employmentsite.service.BookmarkService;
 import univcapstone.employmentsite.service.PostService;
+import univcapstone.employmentsite.service.ReplyService;
 import univcapstone.employmentsite.token.CustomUserDetails;
 import univcapstone.employmentsite.util.response.BasicResponse;
 import univcapstone.employmentsite.util.response.DefaultResponse;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,6 +36,7 @@ public class PostController {
 
     private final PostService postService;
     private final BookmarkService bookmarkService;
+    private final ReplyService replyService;
 
     /**
      * 게시글 목록(/boardlist 경로는 /boardlist/0(=메인페이지) /boardlist/1 (게시글 1페이지 목록.. 10개씩?)
@@ -265,20 +269,28 @@ public class PostController {
     ) {
 
         List<Post> posts = postService.showMyPost(customUserDetails.getUser().getLoginId());
-
         List<PostToFrontDto> postDTO = new ArrayList<>();
 
+        List<Reply> replies=replyService.findReplyByLoginId(customUserDetails.getUser().getLoginId());
+
+        List<Bookmark> bookmarks=bookmarkService.getMyBookmark(customUserDetails.getUser().getId());
         for (Post post : posts) {
             postDTO.add(Post.convertPostDTO(post));
         }
 
-        log.info("불러온 본인의 게시글 = {}", posts);
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, Long> formData = new HashMap<>();
+        formData.put("postNum",postDTO.stream().count());
+        formData.put("replyNum",replies.stream().count());
+        formData.put("bookmarkNum",bookmarks.stream().count());
 
-        DefaultResponse<List<PostToFrontDto>> defaultResponse = DefaultResponse.<List<PostToFrontDto>>builder()
+        log.info("불러온 본인의 게시글 = {},댓글 = {},북마크 = {}", posts,replies,bookmarks);
+
+        DefaultResponse<Map<String, Long>> defaultResponse = DefaultResponse.<Map<String, Long>>builder()
                 .code(HttpStatus.OK.value())
                 .httpStatus(HttpStatus.OK)
-                .message("본인이 작성한 게시글")
-                .result(postDTO)
+                .message("본인이 작성한 게시글 수,댓글 수")
+                .result(formData)
                 .build();
 
         return ResponseEntity.ok()

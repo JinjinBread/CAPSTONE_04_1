@@ -12,6 +12,8 @@ import univcapstone.employmentsite.dto.ReplyDto;
 import univcapstone.employmentsite.repository.PostRepository;
 import univcapstone.employmentsite.repository.ReplyRepository;
 
+import java.util.List;
+
 @Slf4j
 @Transactional
 @Service
@@ -53,5 +55,8 @@ public class ReplyService {
         }
 
         replyRepository.delete(replyId);
+    }
+    public List<Reply> findReplyByLoginId(String loginId){
+        return replyRepository.findByLoginId(loginId);
     }
 }

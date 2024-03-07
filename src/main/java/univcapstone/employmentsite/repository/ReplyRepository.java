@@ -3,7 +3,10 @@ package univcapstone.employmentsite.repository;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import univcapstone.employmentsite.domain.Bookmark;
 import univcapstone.employmentsite.domain.Reply;
+
+import java.util.List;
 
 
 @Repository
@@ -30,5 +33,12 @@ public class ReplyRepository {
         // 2. parentReplyId가 replyId인 댓글이 있으면
         // 3. 해당 댓글의 내용, 작성자(유저), 작성 시간 삭제
         return false;
+    }
+
+    public List<Reply> findByLoginId(String loginId) {
+        List<Reply> replies=em.createQuery("select r from Reply r where r.user.loginId = :loginId", Reply.class)
+                .setParameter("loginId", loginId)
+                .getResultList();
+        return replies;
     }
 }
