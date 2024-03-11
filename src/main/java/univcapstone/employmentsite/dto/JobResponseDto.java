@@ -1,6 +1,7 @@
 package univcapstone.employmentsite.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -35,5 +36,7 @@ public class JobResponseDto {
         private int active;
         private Object company;
         private Object position;
+        @JsonProperty("expiration-date")
+        private String expirationDate;
     }
 }

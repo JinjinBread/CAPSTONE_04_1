@@ -43,7 +43,7 @@ public class BasicController {
     UserRepository userRepository;
 
     @GetMapping("/home/saramin")
-    public ResponseEntity<JsonNode> saramin() throws JsonProcessingException {
+    public ResponseEntity<List<JobResponseDto.Job>> saramin() throws JsonProcessingException {
         RestTemplate restTemplate=new RestTemplate();
         String apiUrl = "https://oapi.saramin.co.kr/job-search?access-key=pEyjyJB3XnowAZP5ImZUuNbcGwGGDbUGQXQfdDZqhSFgPkBXKWq&bbs_gb=1&sr=directhire&job_type=1,10&loc_cd=117000&sort=rc&start=0&count=12&fields=expiration-date"; // 취업 사이트의 API URL
         ResponseEntity<String> response = restTemplate.getForEntity(apiUrl, String.class);
@@ -51,22 +51,11 @@ public class BasicController {
         String responseBody=response.getBody();
 
         ObjectMapper mapper = new ObjectMapper();
-        try {
-            JsonNode jsonNode = mapper.readTree(responseBody);
-            String jsonString = mapper.writeValueAsString(jsonNode);
-            log.info("JSON 변환된 내용 = {}", jsonString);
-
-            return ResponseEntity.ok()
-                    .body(jsonNode);
-        } catch (JsonProcessingException e) {
-            log.error("JSON 변환 중 오류 발생: {}", e.getMessage());
-        }
-
-        //JobResponseDto jobResponse = mapper.readValue(responseBody, JobResponseDto.class);
-        //List<JobResponseDto.Job> jobs = jobResponse.getJobs().getJob();
+        JobResponseDto jobResponse = mapper.readValue(responseBody, JobResponseDto.class);
+        List<JobResponseDto.Job> jobs = jobResponse.getJobs().getJob();
 
         return ResponseEntity.ok()
-                .body(null);
+                .body(jobs);
     }
 
     @GetMapping("/home/saramin/href")
