@@ -43,7 +43,7 @@ public class BasicController {
     @GetMapping("/home/saramin")
     public ResponseEntity<List<JobResponseDto.Job>> saramin() throws JsonProcessingException {
         RestTemplate restTemplate=new RestTemplate();
-        String apiUrl = "https://oapi.saramin.co.kr/job-search?access-key=pEyjyJB3XnowAZP5ImZUuNbcGwGGDbUGQXQfdDZqhSFgPkBXKWq&bbs_gb=1&sr=directhire&job_type=1,10&loc_cd=117000&sort=rc&start=0&count=12&fields=2023-03-11"; // 취업 사이트의 API URL
+        String apiUrl = "https://oapi.saramin.co.kr/job-search?access-key=pEyjyJB3XnowAZP5ImZUuNbcGwGGDbUGQXQfdDZqhSFgPkBXKWq&bbs_gb=1&sr=directhire&job_type=1,10&loc_cd=117000&sort=rc&start=0&count=12&&fields=expiration-date"; // 취업 사이트의 API URL
         ResponseEntity<String> response = restTemplate.getForEntity(apiUrl, String.class);
         log.info("응답된 내용 = {}",response);
         String responseBody=response.getBody();
@@ -60,7 +60,7 @@ public class BasicController {
     @GetMapping("/home/saramin/href")
     public ResponseEntity<List<String>> extractImages() throws JsonProcessingException {
         RestTemplate restTemplate=new RestTemplate();
-        String apiUrl = "https://oapi.saramin.co.kr/job-search?access-key=pEyjyJB3XnowAZP5ImZUuNbcGwGGDbUGQXQfdDZqhSFgPkBXKWq&bbs_gb=1&sr=directhire&job_type=1,10&loc_cd=117000&sort=rc&start=0&count=12&fields=2023-03-11"; // 취업 사이트의 API URL
+        String apiUrl = "https://oapi.saramin.co.kr/job-search?access-key=pEyjyJB3XnowAZP5ImZUuNbcGwGGDbUGQXQfdDZqhSFgPkBXKWq&bbs_gb=1&sr=directhire&job_type=1,10&loc_cd=117000&sort=rc&start=0&count=12&&fields=expiration-date"; // 취업 사이트의 API URL
         ResponseEntity<String> response = restTemplate.getForEntity(apiUrl, String.class);
         log.info("응답된 내용 = {}",response);
         String responseBody=response.getBody();
