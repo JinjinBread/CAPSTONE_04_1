@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Getter
@@ -44,10 +43,6 @@ public class User {
     @Column(name = "nickname")
     private String nickname;
 
-    @JsonIgnore
-    @Column(name = "activated")
-    private boolean activated;
-
     @Enumerated(EnumType.STRING)
     private Authority authority;
 
@@ -57,10 +52,6 @@ public class User {
 
     public void updateNickname(String nickname) {
         this.nickname = nickname;
-    }
-
-    public void deactivated() {
-        this.activated = false;
     }
 
 }

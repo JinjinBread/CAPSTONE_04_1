@@ -19,6 +19,7 @@ import univcapstone.employmentsite.dto.ImageAPIHrefDto;
 import univcapstone.employmentsite.dto.JobResponseDto;
 import univcapstone.employmentsite.dto.ReplyToFrontDto;
 import univcapstone.employmentsite.repository.UserRepository;
+import univcapstone.employmentsite.service.UserService;
 import univcapstone.employmentsite.token.CustomUserDetails;
 import univcapstone.employmentsite.util.response.BasicResponse;
 import univcapstone.employmentsite.util.response.DefaultResponse;
@@ -29,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -39,16 +41,16 @@ import org.jsoup.select.Elements;
 @RestController
 @RequiredArgsConstructor
 public class BasicController {
-    @Autowired
-    UserRepository userRepository;
+
+    private final UserService userService;
 
     @GetMapping("/home/saramin")
     public ResponseEntity<List<JobResponseDto.Job>> saramin() throws JsonProcessingException {
-        RestTemplate restTemplate=new RestTemplate();
+        RestTemplate restTemplate = new RestTemplate();
         String apiUrl = "https://oapi.saramin.co.kr/job-search?access-key=pEyjyJB3XnowAZP5ImZUuNbcGwGGDbUGQXQfdDZqhSFgPkBXKWq&bbs_gb=1&sr=directhire&job_type=1,10&loc_cd=117000&sort=rc&start=0&count=12&fields=expiration-date"; // 취업 사이트의 API URL
         ResponseEntity<String> response = restTemplate.getForEntity(apiUrl, String.class);
-        log.info("응답된 내용 = {}",response);
-        String responseBody=response.getBody();
+        log.info("응답된 내용 = {}", response);
+        String responseBody = response.getBody();
 
         ObjectMapper mapper = new ObjectMapper();
         JobResponseDto jobResponse = mapper.readValue(responseBody, JobResponseDto.class);
@@ -60,14 +62,14 @@ public class BasicController {
 
     @GetMapping("/home/saramin/href")
     public ResponseEntity<List<String>> extractImages() throws JsonProcessingException {
-        RestTemplate restTemplate=new RestTemplate();
+        RestTemplate restTemplate = new RestTemplate();
         String apiUrl = "https://oapi.saramin.co.kr/job-search?access-key=pEyjyJB3XnowAZP5ImZUuNbcGwGGDbUGQXQfdDZqhSFgPkBXKWq&bbs_gb=1&sr=directhire&job_type=1,10&loc_cd=117000&sort=rc&start=0&count=12&fields=expiration-date"; // 취업 사이트의 API URL
         ResponseEntity<String> response = restTemplate.getForEntity(apiUrl, String.class);
-        log.info("응답된 내용 = {}",response);
-        String responseBody=response.getBody();
+        log.info("응답된 내용 = {}", response);
+        String responseBody = response.getBody();
 
         ObjectMapper mapper = new ObjectMapper();
-        List<String> hrefList=new ArrayList<>();
+        List<String> hrefList = new ArrayList<>();
         List<String> imageUrlList = new ArrayList<>();
 
         if (responseBody != null) {
@@ -82,7 +84,7 @@ public class BasicController {
                         Elements elements = document.select("div.box_logo img");
 
                         StringBuilder images = new StringBuilder();
-                        log.info("Elements = {}",elements);
+                        log.info("Elements = {}", elements);
 
                         for (Element element : elements) {
                             String imageUrl = element.attr("src");
@@ -91,7 +93,7 @@ public class BasicController {
                         }
 
                         imageUrlList.add(images.toString());
-                    }catch (HttpStatusException e){
+                    } catch (HttpStatusException e) {
                         imageUrlList.add(null);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
@@ -100,8 +102,8 @@ public class BasicController {
                 }
             }
         }
-        log.info("hef URL 데이터 = {}",hrefList);
-        log.info("이미지 URL 데이터 = {}",imageUrlList);
+        log.info("hef URL 데이터 = {}", hrefList);
+        log.info("이미지 URL 데이터 = {}", imageUrlList);
         return ResponseEntity.ok()
                 .body(imageUrlList);
     }
@@ -110,11 +112,12 @@ public class BasicController {
     public ResponseEntity<? extends BasicResponse> home(
             @AuthenticationPrincipal CustomUserDetails customUserDetails
     ) {
-        log.info("current user = {}", customUserDetails.getUser());
-        Optional<User> users=userRepository.findByLoginId(customUserDetails.getUser().getLoginId());
-        User user=users.get();
 
-        if(user==null){
+        User user = userService.findUserByLoginId(customUserDetails.getUsername());
+
+        log.info("current user = {}", user);
+
+        if (user == null) {
             log.info("유저를 찾을 수 없습니다.");
         }
 

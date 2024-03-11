@@ -73,7 +73,7 @@ public class SecurityConfig {
                         authorizeRequests //요청 인증 무시 목록
                                 .requestMatchers("/", "/join", "/joincheck",
                                         "/login/**", "/logout", "/confirm/**",
-                                        "/verify/**", "/find/**").permitAll()
+                                        "/verify/**", "/find/**", "/reissue").permitAll()
                                 //회원가입, 개인정보 동의, 로그인, 로그아웃, 이메일 인증, 아이디 중복 확인, 아이디 및 비밀번호 찾기, 파비콘
                                 .anyRequest().authenticated()
                 ) //위 URI 외의 URI는 모두 인증 필수

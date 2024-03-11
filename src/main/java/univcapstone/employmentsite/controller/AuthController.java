@@ -6,8 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import univcapstone.employmentsite.domain.RefreshToken;
 import univcapstone.employmentsite.dto.TokenDto;
-import univcapstone.employmentsite.dto.TokenRequestDto;
 import univcapstone.employmentsite.dto.UserRequestDto;
 import univcapstone.employmentsite.dto.UserResponseDto;
 import univcapstone.employmentsite.service.AuthService;
@@ -65,11 +65,11 @@ public class AuthController {
     /**
      * 토큰 재발급
      *
-     * @param tokenRequestDto
+     * @param refreshToken
      * @return
      */
     @PostMapping("/reissue")
-    public ResponseEntity<TokenDto> reissue(@RequestBody @Validated TokenRequestDto tokenRequestDto) {
-        return ResponseEntity.ok(authService.reissue(tokenRequestDto));
+    public ResponseEntity<TokenDto> reissue(@RequestBody RefreshToken refreshToken) {
+        return ResponseEntity.ok(authService.reissue(refreshToken));
     }
 }

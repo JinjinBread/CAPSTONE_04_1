@@ -1,32 +1,23 @@
 package univcapstone.employmentsite.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.redis.core.RedisHash;
+import univcapstone.employmentsite.util.AuthConstants;
 
 @Getter
-@NoArgsConstructor
-@Entity
+@RedisHash(value = "refreshToken", timeToLive = AuthConstants.REFRESH_TOKEN_VALID_TIME)
 public class RefreshToken {
 
     @Id
-    @Column(name = "rt_key")
-    private String key; //login_id
+    private String refreshToken;
 
-    @Column(name = "rt_value")
-    private String value; //token value
+    private Long userId;
 
     @Builder
-    public RefreshToken(String key, String value) {
-        this.key = key;
-        this.value = value;
-    }
-
-    public RefreshToken updateValue(String token) {
-        this.value = token;
-        return this;
+    public RefreshToken(String refreshToken, Long userId) {
+        this.refreshToken = refreshToken;
+        this.userId = userId;
     }
 }

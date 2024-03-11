@@ -20,7 +20,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 @Slf4j
-@RestController
+//@RestController
 public class PictureController {
 
     @Autowired
