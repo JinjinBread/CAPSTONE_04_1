@@ -295,4 +295,27 @@ public class PostController {
                 .body(defaultResponse);
     }
 
+    @GetMapping("/boardlist/detail/{postId}/count")
+    public ResponseEntity<? extends BasicResponse> postDetail(
+            @PathVariable Long postId
+    ){
+        Post post=postService.findPostById(postId);
+        Long replyNum=post.getReplies().stream().count();
+        Long bookmarkNum=post.getBookmark().stream().count();
+
+        log.info("게시글의 댓글 수 = {}, 북마크 수 = {}", replyNum,bookmarkNum);
+        Map<String, Long> formData = new HashMap<>();
+        formData.put("replyNum",replyNum);
+        formData.put("bookmarkNum",bookmarkNum);
+
+        DefaultResponse<Map<String, Long>> defaultResponse = DefaultResponse.<Map<String, Long>>builder()
+                .code(HttpStatus.OK.value())
+                .httpStatus(HttpStatus.OK)
+                .message("본인이 작성한 게시글 수,댓글 수")
+                .result(formData)
+                .build();
+
+        return ResponseEntity.ok()
+                .body(defaultResponse);
+    }
 }
