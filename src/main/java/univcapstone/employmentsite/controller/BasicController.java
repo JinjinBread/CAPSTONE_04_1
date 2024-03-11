@@ -1,9 +1,11 @@
 package univcapstone.employmentsite.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jsoup.HttpStatusException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,26 +43,36 @@ public class BasicController {
     UserRepository userRepository;
 
     @GetMapping("/home/saramin")
-    public ResponseEntity<List<JobResponseDto.Job>> saramin() throws JsonProcessingException {
+    public ResponseEntity<JsonNode> saramin() throws JsonProcessingException {
         RestTemplate restTemplate=new RestTemplate();
-        String apiUrl = "https://oapi.saramin.co.kr/job-search?access-key=pEyjyJB3XnowAZP5ImZUuNbcGwGGDbUGQXQfdDZqhSFgPkBXKWq&bbs_gb=1&sr=directhire&job_type=1,10&loc_cd=117000&sort=rc&start=0&count=12&&fields=expiration-date"; // 취업 사이트의 API URL
+        String apiUrl = "https://oapi.saramin.co.kr/job-search?access-key=pEyjyJB3XnowAZP5ImZUuNbcGwGGDbUGQXQfdDZqhSFgPkBXKWq&bbs_gb=1&sr=directhire&job_type=1,10&loc_cd=117000&sort=rc&start=0&count=12&fields=expiration-date"; // 취업 사이트의 API URL
         ResponseEntity<String> response = restTemplate.getForEntity(apiUrl, String.class);
         log.info("응답된 내용 = {}",response);
         String responseBody=response.getBody();
 
         ObjectMapper mapper = new ObjectMapper();
-        JobResponseDto jobResponse = mapper.readValue(responseBody, JobResponseDto.class);
-        List<JobResponseDto.Job> jobs = jobResponse.getJobs().getJob();
+        try {
+            JsonNode jsonNode = mapper.readTree(responseBody);
+            String jsonString = mapper.writeValueAsString(jsonNode);
+            log.info("JSON 변환된 내용 = {}", jsonString);
 
+            return ResponseEntity.ok()
+                    .body(jsonNode);
+        } catch (JsonProcessingException e) {
+            log.error("JSON 변환 중 오류 발생: {}", e.getMessage());
+        }
+
+        //JobResponseDto jobResponse = mapper.readValue(responseBody, JobResponseDto.class);
+        //List<JobResponseDto.Job> jobs = jobResponse.getJobs().getJob();
 
         return ResponseEntity.ok()
-                .body(jobs);
+                .body(null);
     }
 
     @GetMapping("/home/saramin/href")
     public ResponseEntity<List<String>> extractImages() throws JsonProcessingException {
         RestTemplate restTemplate=new RestTemplate();
-        String apiUrl = "https://oapi.saramin.co.kr/job-search?access-key=pEyjyJB3XnowAZP5ImZUuNbcGwGGDbUGQXQfdDZqhSFgPkBXKWq&bbs_gb=1&sr=directhire&job_type=1,10&loc_cd=117000&sort=rc&start=0&count=12&&fields=expiration-date"; // 취업 사이트의 API URL
+        String apiUrl = "https://oapi.saramin.co.kr/job-search?access-key=pEyjyJB3XnowAZP5ImZUuNbcGwGGDbUGQXQfdDZqhSFgPkBXKWq&bbs_gb=1&sr=directhire&job_type=1,10&loc_cd=117000&sort=rc&start=0&count=12&fields=expiration-date"; // 취업 사이트의 API URL
         ResponseEntity<String> response = restTemplate.getForEntity(apiUrl, String.class);
         log.info("응답된 내용 = {}",response);
         String responseBody=response.getBody();
@@ -85,12 +97,15 @@ public class BasicController {
 
                         for (Element element : elements) {
                             String imageUrl = element.attr("src");
-                            images.append("<img src='").append(imageUrl).append("' />");
+                            images.append(imageUrl);
+                            //images.append("<img src='").append(imageUrl).append("' />");
                         }
 
                         imageUrlList.add(images.toString());
+                    }catch (HttpStatusException e){
+                        imageUrlList.add(null);
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        throw new RuntimeException(e);
                     }
                     hrefList.add(href);
                 }
