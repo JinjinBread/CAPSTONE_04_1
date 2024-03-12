@@ -1,6 +1,8 @@
 package univcapstone.employmentsite.util;
 
 public class AuthConstants {
+
+    public static final String AUTHORITIES_KEY = "auth";
     public static final String AUTH_HEADER = "Authorization";
 //    public static final String REFRESH_HEADER = ""
     public static final String BEARER_PREFIX = "Bearer ";

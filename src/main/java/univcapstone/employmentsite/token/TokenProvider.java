@@ -31,10 +31,8 @@ import static univcapstone.employmentsite.util.AuthConstants.*;
 @Slf4j
 public class TokenProvider implements InitializingBean {
 
-    private static final String AUTHORITIES_KEY = "auth";
     private final String secret;
     private Key key;
-
     private final CustomUserDetailsService customUserDetailsService;
 
     public TokenProvider(
