@@ -185,7 +185,7 @@ public class PostController {
     }
 
 
-    @GetMapping("/boardlist/search/{boardTitle}")
+    @PostMapping("/boardlist/search/{boardTitle}")
     public ResponseEntity<? extends BasicResponse> search(@PathVariable String boardTitle) {
 
         //게시글 검색 (제목으로)
