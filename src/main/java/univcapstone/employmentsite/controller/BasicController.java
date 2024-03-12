@@ -1,37 +1,26 @@
 package univcapstone.employmentsite.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.HttpStatusException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
-import univcapstone.employmentsite.domain.Reply;
 import univcapstone.employmentsite.domain.User;
 import univcapstone.employmentsite.dto.ImageAPIHrefDto;
 import univcapstone.employmentsite.dto.JobResponseDto;
-import univcapstone.employmentsite.dto.ReplyToFrontDto;
-import univcapstone.employmentsite.repository.UserRepository;
 import univcapstone.employmentsite.service.UserService;
 import univcapstone.employmentsite.token.CustomUserDetails;
 import univcapstone.employmentsite.util.response.BasicResponse;
 import univcapstone.employmentsite.util.response.DefaultResponse;
 
 import java.io.IOException;
-import java.net.URL;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -57,7 +46,6 @@ public class BasicController {
         JobResponseDto jobResponse = mapper.readValue(responseBody, JobResponseDto.class);
         List<JobResponseDto.Job> jobs = jobResponse.getJobs().getJob();
         for (int i=0; i<jobs.size(); i++) {
-            log.info("expiration-date = {}",jobs.get(i).getExpirationDate().toString());
             jobs.get(i).setDday(jobs.get(i).getExpirationDate().toString());
         }
 
@@ -94,7 +82,6 @@ public class BasicController {
                         for (Element element : elements) {
                             String imageUrl = element.attr("src");
                             images.append(imageUrl);
-                            //images.append("<img src='").append(imageUrl).append("' />");
                         }
 
                         imageUrlList.add(images.toString());

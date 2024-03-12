@@ -1,7 +1,5 @@
 package univcapstone.employmentsite.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -16,7 +14,6 @@ import univcapstone.employmentsite.domain.Reply;
 import univcapstone.employmentsite.domain.User;
 import univcapstone.employmentsite.dto.PostDto;
 import univcapstone.employmentsite.dto.PostToFrontDto;
-import univcapstone.employmentsite.dto.ReplyToFrontDto;
 import univcapstone.employmentsite.service.BookmarkService;
 import univcapstone.employmentsite.service.PostService;
 import univcapstone.employmentsite.service.ReplyService;
@@ -49,10 +46,6 @@ public class PostController {
             @RequestParam(required = false, defaultValue = "latest", value = "sort") String sort,
             @RequestParam(required = false, defaultValue = "all", value = "category") String category
     ) {
-
-        //게시글 메인화면 보기
-        // /boardlist?size=10&page=1
-
         log.info("page={} , category={}", pageNo, category);
 
         PageRequest pageRequest = PageRequest.of(pageNo, 10);
@@ -189,9 +182,7 @@ public class PostController {
     public ResponseEntity<? extends BasicResponse> search(@PathVariable String boardTitle) {
 
         //게시글 검색 (제목으로)
-
         List<Post> posts = postService.searchByTitle(boardTitle);
-
         List<PostToFrontDto> postDTO = new ArrayList<>();
 
         for (Post post : posts) {
@@ -216,7 +207,6 @@ public class PostController {
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @PathVariable Long postId
     ) {
-
         User user = customUserDetails.getUser();
 
         Post post = postService.findPostById(postId);
@@ -240,9 +230,7 @@ public class PostController {
 
     @GetMapping("/boardlist/best")
     public ResponseEntity<? extends BasicResponse> bestPost() {
-
         List<Post> posts = bookmarkService.getPostByPopular();
-
         List<PostToFrontDto> postDTO = new ArrayList<>();
 
         for (Post post : posts) {
@@ -266,7 +254,6 @@ public class PostController {
     public ResponseEntity<? extends BasicResponse> userPost(
             @AuthenticationPrincipal CustomUserDetails customUserDetails
     ) {
-
         List<Post> posts = postService.showMyPost(customUserDetails.getUser().getLoginId());
         List<PostToFrontDto> postDTO = new ArrayList<>();
 
