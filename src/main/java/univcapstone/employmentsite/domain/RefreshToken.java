@@ -7,7 +7,7 @@ import org.springframework.data.redis.core.RedisHash;
 import univcapstone.employmentsite.util.AuthConstants;
 
 @Getter
-@RedisHash(value = "refreshToken", timeToLive = AuthConstants.REFRESH_TOKEN_VALID_TIME)
+@RedisHash(value = "refreshToken", timeToLive = AuthConstants.REFRESH_TOKEN_VALID_TIME / 1000)
 public class RefreshToken {
 
     @Id
