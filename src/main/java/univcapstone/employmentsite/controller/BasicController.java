@@ -26,6 +26,7 @@ import univcapstone.employmentsite.util.response.DefaultResponse;
 
 import java.io.IOException;
 import java.net.URL;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +56,10 @@ public class BasicController {
         ObjectMapper mapper = new ObjectMapper();
         JobResponseDto jobResponse = mapper.readValue(responseBody, JobResponseDto.class);
         List<JobResponseDto.Job> jobs = jobResponse.getJobs().getJob();
+        for (int i=0; i<jobs.size(); i++) {
+            log.info("expiration-date = {}",jobs.get(i).getExpirationDate().toString());
+            jobs.get(i).setDday(jobs.get(i).getExpirationDate().toString());
+        }
 
         return ResponseEntity.ok()
                 .body(jobs);
