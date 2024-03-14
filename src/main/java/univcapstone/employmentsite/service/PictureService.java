@@ -31,12 +31,13 @@ import java.util.List;
 @Transactional
 @Service
 @RequiredArgsConstructor
-public class AwsS3Service {
-    @Autowired
+public class PictureService {
+
     private final AmazonS3 amazonS3;
 
     @Value("jobhakdasik2000-bucket")
     private String bucket;
+
     /*
     public PutObjectResult uploadFile(String fileName, File file, ObjectMetadata metadata){
         metadata.setContentLength(file.length());
@@ -48,12 +49,10 @@ public class AwsS3Service {
         return result;
     }
      */
-    public ResponseEntity<Object> uploadMutipartFile(String fileName, MultipartFile[] multipartFileList) throws IOException {
+    public ResponseEntity<Object> uploadMultipartFile(String fileName, MultipartFile[] multipartFileList) throws IOException {
         List<String> imagePathList = new ArrayList<>();
 
-        for(MultipartFile multipartFile: multipartFileList) {
-            String originalName = multipartFile.getOriginalFilename(); // 파일 이름
-            long size = multipartFile.getSize(); // 파일 크기
+        for (MultipartFile multipartFile : multipartFileList) {
 
             ObjectMetadata objectMetaData = new ObjectMetadata();
             objectMetaData.setContentType(MediaType.IMAGE_JPEG_VALUE);
@@ -70,6 +69,7 @@ public class AwsS3Service {
 
         return new ResponseEntity<Object>(imagePathList, HttpStatus.OK);
     }
+
     public ResponseEntity<File> getObject(String storedFileName) throws IOException {
         S3Object s3Object = amazonS3.getObject(new GetObjectRequest(bucket, storedFileName));
         InputStream inputStream = s3Object.getObjectContent();
@@ -85,9 +85,10 @@ public class AwsS3Service {
 
         return new ResponseEntity<>(file, httpHeaders, HttpStatus.OK);
     }
-    public ResponseEntity<? extends BasicResponse> getImage(User user){
+
+    public ResponseEntity<? extends BasicResponse> getImage(User user) {
         URL url = amazonS3.getUrl(bucket, Long.toString(user.getId()));
-        String urltext = ""+url;
+        String urltext = "" + url;
         StringBuilder images = new StringBuilder();
         images.append("<img src='").append(urltext).append("' />");
         DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()

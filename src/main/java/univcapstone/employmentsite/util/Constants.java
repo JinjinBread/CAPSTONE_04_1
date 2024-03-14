@@ -1,4 +1,4 @@
-package univcapstone.employmentsite.util.response;
+package univcapstone.employmentsite.util;
 
 public class Constants {
     public static String EMAIL_KEY = "email";

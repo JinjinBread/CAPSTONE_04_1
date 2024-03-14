@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import univcapstone.employmentsite.service.MailService;
-import univcapstone.employmentsite.util.response.Constants;
+import univcapstone.employmentsite.util.Constants;
 
 import java.util.Map;
 

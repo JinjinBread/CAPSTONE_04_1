@@ -46,6 +46,9 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Authority authority;
 
+    @OneToMany(mappedBy = "pictureId")
+    private List<Picture> pictures;
+
     public void updatePassword(String password) {
         this.password = password;
     }

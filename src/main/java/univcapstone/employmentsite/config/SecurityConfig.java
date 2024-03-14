@@ -82,10 +82,8 @@ public class SecurityConfig {
                 .logout(logoutConfig -> logoutConfig
                         .logoutUrl("/logout")
 //                        .deleteCookies("JSESSIONID")
-                        .logoutSuccessHandler((request, response, authentication) -> {
-                            log.info("로그아웃 성공");
-                            response.sendRedirect("/");
-                        }
+                        .logoutSuccessHandler((request, response, authentication) ->
+                            log.info("로그아웃 성공")
                     )
                 );
 
