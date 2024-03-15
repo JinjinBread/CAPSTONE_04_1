@@ -27,4 +27,5 @@ public class Picture {
 
     private boolean isProfile;
 
+
 }
