@@ -11,6 +11,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
+import univcapstone.employmentsite.domain.Picture;
 import univcapstone.employmentsite.domain.User;
 import univcapstone.employmentsite.service.PictureService;
 import univcapstone.employmentsite.token.CustomUserDetails;
@@ -20,6 +21,7 @@ import univcapstone.employmentsite.util.response.ErrorResponse;
 import org.springframework.util.StreamUtils;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -34,10 +36,9 @@ public class PictureController {
         this.dirName = dirName;
     }
 
-    @GetMapping("/profile/male/{fileName}")
+    @GetMapping("/profile/male")
     public ResponseEntity<? extends BasicResponse> downloadMalePicture(
-            @AuthenticationPrincipal CustomUserDetails customUserDetails,
-            @PathVariable String fileName
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
     ) {
         User user = customUserDetails.getUser();
         return pictureService.getImage(user);
@@ -96,11 +97,13 @@ public class PictureController {
     //받을 수 있는 최대 파일 수를 정하는 게 좋을 것 같음
     @PostMapping(value = "/profile/save", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<? extends BasicResponse> save(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
             HttpServletRequest request,
             @RequestPart(value = "files") @Nullable List<MultipartFile> multipartFiles) throws IOException {
 
         try {
-            List<String> uploadImagesUrl = pictureService.uploadFile(multipartFiles, dirName);
+            User user = customUserDetails.getUser();
+            List<String> uploadImagesUrl = pictureService.uploadFile(multipartFiles, dirName,user);
 
             return ResponseEntity.ok(
                     DefaultResponse.builder()

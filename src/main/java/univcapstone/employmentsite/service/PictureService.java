@@ -13,7 +13,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import univcapstone.employmentsite.domain.Authority;
+import univcapstone.employmentsite.domain.Picture;
 import univcapstone.employmentsite.domain.User;
+import univcapstone.employmentsite.repository.PictureRepository;
 import univcapstone.employmentsite.util.response.BasicResponse;
 import univcapstone.employmentsite.util.response.DefaultResponse;
 
@@ -31,11 +34,12 @@ import java.util.UUID;
 public class PictureService {
 
     private final AmazonS3 amazonS3;
+    private final PictureRepository pictureRepository;
 
     @Value("${aws.s3.bucket}")
     private String bucket;
 
-    public List<String> uploadFile(List<MultipartFile> multipartFiles, String dirName) throws IOException {
+    public List<String> uploadFile(List<MultipartFile> multipartFiles, String dirName,User user) throws IOException {
 
         if (multipartFiles.isEmpty()) {
             log.error("업로드한 파일이 존재하지 않습니다.");
@@ -54,7 +58,7 @@ public class PictureService {
             log.info("uploadFilename = {}", uploadFilename);
 
             //S3에 업로드
-            String imagePath = uploadS3(uploadFilename, file);
+            String imagePath = uploadS3(uploadFilename, file,user);
             imagePathList.add(imagePath);
 
             //S3 업로드 후 로컬에 저장된 사진 삭제
@@ -81,15 +85,22 @@ public class PictureService {
     }
 
     public ResponseEntity<? extends BasicResponse> getImage(User user) {
-        URL url = amazonS3.getUrl(bucket, Long.toString(user.getId()));
-        String urltext = "" + url;
-        StringBuilder images = new StringBuilder();
-        images.append("<img src='").append(urltext).append("' />");
-        DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
+        List<Picture> pictures=pictureRepository.findAllByUserId(user.getId());
+
+        List<String> imagesURL=new ArrayList<>();
+        for(Picture picture : pictures){
+            URL url = amazonS3.getUrl(bucket,picture.getUploadFileName());
+            String urltext = "" + url;
+            StringBuilder images = new StringBuilder();
+            images.append("<img src='").append(urltext).append("' />");
+            imagesURL.add(images.toString());
+        }
+
+        DefaultResponse<List<String>> defaultResponse = DefaultResponse.<List<String>>builder()
                 .code(HttpStatus.OK.value())
                 .httpStatus(HttpStatus.OK)
                 .message("아마존 S3로부터 가져온 이미지 url")
-                .result(images.toString())
+                .result(imagesURL)
                 .build();
 
         return ResponseEntity.ok()
@@ -97,13 +108,21 @@ public class PictureService {
     }
 
     //AWS S3에 사용자가 업로드한 사진을 업로드한다.
-    private String uploadS3(String uploadFilename, File file) {
+    private String uploadS3(String uploadFilename, File file,User user) {
         amazonS3.putObject(new PutObjectRequest(bucket, uploadFilename, file)
                 .withCannedAcl(CannedAccessControlList.PublicRead));
 
         log.info("uploadFilename = {}", uploadFilename);
 
         String imagePath = amazonS3.getUrl(bucket, uploadFilename).toString(); // 접근가능한 URL 가져오기
+
+        Picture picture = Picture.builder()
+                .uploadFileName(uploadFilename)
+                .isProfile(true)
+                .user(user)
+                .build();
+
+        pictureRepository.save(picture);
         return imagePath;
     }
 
