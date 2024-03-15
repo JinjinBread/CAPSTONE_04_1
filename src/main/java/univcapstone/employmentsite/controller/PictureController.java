@@ -3,6 +3,7 @@ package univcapstone.employmentsite.controller;
 import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.util.LinkedMultiValueMap;
@@ -19,14 +20,18 @@ import univcapstone.employmentsite.util.response.ErrorResponse;
 import org.springframework.util.StreamUtils;
 
 import java.io.*;
+import java.util.List;
 
 @Slf4j
 @RestController
 public class PictureController {
-    private final PictureService pictureService;
 
-    public PictureController(PictureService pictureService) {
+    private final PictureService pictureService;
+    private final String dirName;
+
+    public PictureController(PictureService pictureService, @Value("${aws.s3.idPhoto.dirName}") String dirName) {
         this.pictureService = pictureService;
+        this.dirName = dirName;
     }
 
     @GetMapping("/profile/male/{fileName}")
@@ -88,101 +93,29 @@ public class PictureController {
         return "";
     }
 
-    @PostMapping("/profile/save")
+    //받을 수 있는 최대 파일 수를 정하는 게 좋을 것 같음
+    @PostMapping(value = "/profile/save", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<? extends BasicResponse> save(
             HttpServletRequest request,
-            @AuthenticationPrincipal CustomUserDetails customUserDetails,
-            @RequestBody @Nullable MultipartFile[] multipartFileList
-    ) throws IOException {
-        User user = customUserDetails.getUser();
+            @RequestPart(value = "files") @Nullable List<MultipartFile> multipartFiles) throws IOException {
+
         try {
-            if (multipartFileList == null) {
-                // 원래는 null이면 저장하지말고 에러처리 해야하나 일단 테스트 용도로 남김
-                String filePath = "tommy.jpg";
-                log.info("filePath = {}", filePath);
-                // S3에 업로드 할 임의의 파일 객체 생성
-                File uploadFile = new File(filePath);
-                multipartFileList = new MultipartFile[1];
-                multipartFileList[0] = convert(uploadFile);
-                ResponseEntity<Object> result = pictureService.uploadMultipartFile(user.getId().toString(), multipartFileList);
-                DefaultResponse<ResponseEntity<Object>> defaultResponse = DefaultResponse.<ResponseEntity<Object>>builder()
-                        .code(HttpStatus.OK.value())
-                        .httpStatus(HttpStatus.OK)
-                        .message("아마존 S3 더미 사진 저장 완료")
-                        .result(result)
-                        .build();
+            List<String> uploadImagesUrl = pictureService.uploadFile(multipartFiles, dirName);
 
-
-                return ResponseEntity.ok()
-                        .body(defaultResponse);
-            } else {
-                ResponseEntity<Object> result = pictureService.uploadMultipartFile(user.getId().toString(), multipartFileList);
-                DefaultResponse<ResponseEntity<Object>> defaultResponse = DefaultResponse.<ResponseEntity<Object>>builder()
-                        .code(HttpStatus.OK.value())
-                        .httpStatus(HttpStatus.OK)
-                        .message("아마존 S3 요청 사진 저장 완료")
-                        .result(result)
-                        .build();
-
-
-                return ResponseEntity.ok()
-                        .body(defaultResponse);
-            }
-
-        } catch (Exception e) {
-            log.info("에러 = {} ", e);
+            return ResponseEntity.ok(
+                    DefaultResponse.builder()
+                            .code(HttpStatus.OK.value())
+                            .httpStatus(HttpStatus.OK)
+                            .message("사진 업로드 완료")
+                            .result(uploadImagesUrl)
+                            .build()
+            );
+        } catch (FileNotFoundException e) {
             return ResponseEntity.badRequest()
                     .body(new ErrorResponse(request.getServletPath(),
-                            HttpStatus.BAD_REQUEST.value(),
-                            "잘못된 저장 요청입니다."));
+                            HttpStatus.BAD_REQUEST.value(), e.getMessage()));
         }
+
     }
 
-
-    public static MultipartFile convert(File file) throws IOException {
-        FileInputStream fileInputStream = new FileInputStream(file);
-        byte[] bytes = StreamUtils.copyToByteArray(fileInputStream);
-        fileInputStream.close();
-        return new MultipartFile() {
-            @Override
-            public String getName() {
-                return file.getName();
-            }
-
-            @Override
-            public String getOriginalFilename() {
-                return file.getName();
-            }
-
-            @Override
-            public String getContentType() {
-                return "application/octet-stream";
-            }
-
-            @Override
-            public boolean isEmpty() {
-                return bytes == null || bytes.length == 0;
-            }
-
-            @Override
-            public long getSize() {
-                return bytes.length;
-            }
-
-            @Override
-            public byte[] getBytes() throws IOException {
-                return bytes;
-            }
-
-            @Override
-            public InputStream getInputStream() throws IOException {
-                return new ByteArrayInputStream(bytes);
-            }
-
-            @Override
-            public void transferTo(File dest) throws IOException, IllegalStateException {
-                new FileOutputStream(dest).write(bytes);
-            }
-        };
-    }
 }

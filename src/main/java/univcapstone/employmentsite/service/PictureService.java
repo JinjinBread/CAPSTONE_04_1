@@ -5,7 +5,6 @@ import com.amazonaws.services.s3.model.*;
 import com.amazonaws.util.IOUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -18,14 +17,12 @@ import univcapstone.employmentsite.domain.User;
 import univcapstone.employmentsite.util.response.BasicResponse;
 import univcapstone.employmentsite.util.response.DefaultResponse;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Transactional
@@ -35,39 +32,36 @@ public class PictureService {
 
     private final AmazonS3 amazonS3;
 
-    @Value("jobhakdasik2000-bucket")
+    @Value("${aws.s3.bucket}")
     private String bucket;
 
-    /*
-    public PutObjectResult uploadFile(String fileName, File file, ObjectMetadata metadata){
-        metadata.setContentLength(file.length());
-        metadata.setContentDisposition(MediaType.IMAGE_JPEG_VALUE);
-        metadata.setContentType(MediaType.IMAGE_JPEG_VALUE);
-        PutObjectResult result= amazonS3.putObject(
-                new PutObjectRequest(bucket, fileName, file).withMetadata(metadata)
-        );
-        return result;
-    }
-     */
-    public ResponseEntity<Object> uploadMultipartFile(String fileName, MultipartFile[] multipartFileList) throws IOException {
-        List<String> imagePathList = new ArrayList<>();
+    public List<String> uploadFile(List<MultipartFile> multipartFiles, String dirName) throws IOException {
 
-        for (MultipartFile multipartFile : multipartFileList) {
-
-            ObjectMetadata objectMetaData = new ObjectMetadata();
-            objectMetaData.setContentType(MediaType.IMAGE_JPEG_VALUE);
-
-            // S3에 업로드
-            amazonS3.putObject(
-                    new PutObjectRequest(bucket, fileName, multipartFile.getInputStream(), objectMetaData)
-                            .withCannedAcl(CannedAccessControlList.PublicRead)
-            );
-
-            String imagePath = amazonS3.getUrl(bucket, fileName).toString(); // 접근가능한 URL 가져오기
-            imagePathList.add(imagePath);
+        if (multipartFiles.isEmpty()) {
+            log.error("업로드한 파일이 존재하지 않습니다.");
+            throw new FileNotFoundException("업로드한 파일이 존재하지 않습니다.");
         }
 
-        return new ResponseEntity<Object>(imagePathList, HttpStatus.OK);
+        //사용자가 업로드한 파일들의 URI를 저장하는 자료구조
+        List<String> imagePathList = new ArrayList<>();
+
+        for (MultipartFile multipartFile : multipartFiles) {
+
+            File file = convertToFile(multipartFile);
+
+            //S3에 올릴 파일명(UUID 이용)
+            String uploadFilename = dirName + UUID.randomUUID() + file.getName();
+            log.info("uploadFilename = {}", uploadFilename);
+
+            //S3에 업로드
+            String imagePath = uploadS3(uploadFilename, file);
+            imagePathList.add(imagePath);
+
+            //S3 업로드 후 로컬에 저장된 사진 삭제
+            removeCreatedFile(file);
+        }
+
+        return imagePathList;
     }
 
     public ResponseEntity<File> getObject(String storedFileName) throws IOException {
@@ -101,4 +95,41 @@ public class PictureService {
         return ResponseEntity.ok()
                 .body(defaultResponse);
     }
+
+    //AWS S3에 사용자가 업로드한 사진을 업로드한다.
+    private String uploadS3(String uploadFilename, File file) {
+        amazonS3.putObject(new PutObjectRequest(bucket, uploadFilename, file)
+                .withCannedAcl(CannedAccessControlList.PublicRead));
+
+        log.info("uploadFilename = {}", uploadFilename);
+
+        String imagePath = amazonS3.getUrl(bucket, uploadFilename).toString(); // 접근가능한 URL 가져오기
+        return imagePath;
+    }
+
+    //MultipartFile to File
+    //업로드할때 파일이 로컬에 없으면 에러가 발생하기 때문에 입력받은 파일을 로컬에 저장하고 업로드해야 함
+    //따라서 S3에 업로드 이후 로컬에 저장된 사진을 삭제해야 함
+    private File convertToFile(MultipartFile multipartFile) throws IOException {
+        //확장자를 포함한 파일 이름을 가져온다.
+        String filename = multipartFile.getOriginalFilename();
+        log.info("filename = {}", filename);
+
+        File file = new File("src/main/resources/temp/" + filename);
+        FileOutputStream fileOutputStream = new FileOutputStream(file);
+        fileOutputStream.write(multipartFile.getBytes());
+
+        return file;
+    }
+
+    //로컬에 저장된 사진 삭제
+    private void removeCreatedFile(File createdFile) {
+        if (createdFile.delete()) {
+            log.info("Created File delete success");
+            return;
+        }
+
+        log.info("Created File delete fail");
+    }
+
 }

@@ -1,6 +1,7 @@
 package univcapstone.employmentsite.util.response;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 @Data

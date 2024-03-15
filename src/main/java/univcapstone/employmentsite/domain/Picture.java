@@ -1,6 +1,7 @@
 package univcapstone.employmentsite.domain;
 
 import jakarta.persistence.*;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -13,7 +14,9 @@ public class Picture {
     @Column(name = "picture_id")
     private Long pictureId;
 
-    private String pictureFileName;
+    private String uploadFileName;
+
+    private String storeFileName;
 
     private boolean isProfile;
 
