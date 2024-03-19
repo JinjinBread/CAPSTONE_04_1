@@ -27,7 +27,6 @@ import java.util.List;
 @Slf4j
 @RestController
 public class PictureController {
-
     private final PictureService pictureService;
     private final String dirName;
 
