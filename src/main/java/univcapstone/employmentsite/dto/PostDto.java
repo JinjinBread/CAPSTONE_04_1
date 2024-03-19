@@ -9,6 +9,8 @@ import lombok.Setter;
 import univcapstone.employmentsite.domain.Post;
 import univcapstone.employmentsite.domain.User;
 
+import java.util.List;
+
 @Data
 @Getter
 @Setter
@@ -21,9 +23,6 @@ public class PostDto {
     private String content;
 
     @Nullable
-    private String fileName;
-
-    @Nullable
     private String category;
 
     public Post toEntity(User user, PostDto postDto) {
@@ -31,7 +30,6 @@ public class PostDto {
                 .user(user)
                 .title(postDto.getTitle())
                 .content(postDto.getContent())
-                .fileName(postDto.getFileName())
                 .category(postDto.getCategory())
                 .build();
     }
@@ -40,7 +38,6 @@ public class PostDto {
         return Post.builder()
                 .title(postDto.getTitle())
                 .content(postDto.getContent())
-                .fileName(postDto.getFileName())
                 .build();
     }
 }

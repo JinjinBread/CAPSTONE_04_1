@@ -69,7 +69,6 @@ public class PostService {
         Post findPost = postRepository.findByPostId(postId);
         findPost.setTitle(postDto.getTitle());
         findPost.setContent(postDto.getContent());
-        findPost.setFileName(postDto.getFileName());
         postRepository.save(findPost);
     }
 

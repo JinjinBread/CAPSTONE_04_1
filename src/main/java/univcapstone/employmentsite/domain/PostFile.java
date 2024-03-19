@@ -10,23 +10,16 @@ import lombok.*;
 @AllArgsConstructor
 @EqualsAndHashCode
 @ToString
-public class Picture {
-
+public class PostFile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "picture_id")
     private Long pictureId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "post_id")
+    private Post post;
 
     private String uploadFileName;
-
     private String storeFileName;
-
-    @Column(name="is_profile")
-    private boolean isProfile;
-
-
 }

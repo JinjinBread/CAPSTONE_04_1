@@ -1,17 +1,22 @@
 package univcapstone.employmentsite.controller;
 
+import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import univcapstone.employmentsite.domain.Bookmark;
 import univcapstone.employmentsite.domain.User;
 import univcapstone.employmentsite.dto.*;
 import univcapstone.employmentsite.service.BookmarkService;
+import univcapstone.employmentsite.service.PictureService;
 import univcapstone.employmentsite.service.UserService;
 import univcapstone.employmentsite.token.CustomUserDetails;
 import univcapstone.employmentsite.token.TokenProvider;
@@ -19,6 +24,8 @@ import univcapstone.employmentsite.util.response.BasicResponse;
 import univcapstone.employmentsite.util.response.DefaultResponse;
 import univcapstone.employmentsite.util.response.ErrorResponse;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,12 +36,18 @@ public class MyPageController {
     private final UserService userService;
     private final BookmarkService bookmarkService;
     private final TokenProvider tokenProvider;
-
+    private final PictureService pictureService;
+    private final String dirName;
     @Autowired
-    public MyPageController(UserService userService, BookmarkService bookmarkService, TokenProvider tokenProvider) {
+    public MyPageController(UserService userService, BookmarkService bookmarkService,
+                            PictureService pictureService,
+                            TokenProvider tokenProvider,
+                            @Value("${aws.s3.profile.dirName}")String dirName) {
         this.userService = userService;
         this.bookmarkService = bookmarkService;
+        this.pictureService=pictureService;
         this.tokenProvider = tokenProvider;
+        this.dirName=dirName;
     }
 
     @GetMapping("/user/myInfo")
@@ -56,12 +69,54 @@ public class MyPageController {
     }
 
     @GetMapping("/user/picture")
-    public String myPicture(
+    public ResponseEntity<? extends BasicResponse> myPicture(
             @AuthenticationPrincipal CustomUserDetails customUserDetails
     ) {
-        //나의 사진 화면
-        return "";
+        User user = customUserDetails.getUser();
+        return pictureService.getProfileImage(user);
     }
+
+    @PostMapping(value = "/user/image/save", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<? extends BasicResponse> saveProfile(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            HttpServletRequest request,
+            @RequestPart(value = "files") @Nullable MultipartFile multipartFiles) throws IOException {
+
+        try {
+            User user = customUserDetails.getUser();
+            List<String> uploadImagesUrl = pictureService.uploadProfileFile(multipartFiles, dirName,user);
+
+            return ResponseEntity.ok(
+                    DefaultResponse.builder()
+                            .code(HttpStatus.OK.value())
+                            .httpStatus(HttpStatus.OK)
+                            .message("사진 업로드 완료")
+                            .result(uploadImagesUrl)
+                            .build()
+            );
+        } catch (FileNotFoundException e) {
+            return ResponseEntity.badRequest()
+                    .body(new ErrorResponse(request.getServletPath(),
+                            HttpStatus.BAD_REQUEST.value(), e.getMessage()));
+        }
+
+    }
+    @DeleteMapping(value ="/user/image/delete",consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<? extends BasicResponse> deleteProfile(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestPart(value = "filePath") String filePath
+    ){
+        String result=pictureService.deleteFile(filePath);
+        return ResponseEntity.ok(
+                DefaultResponse.builder()
+                        .code(HttpStatus.OK.value())
+                        .httpStatus(HttpStatus.OK)
+                        .message("사진 삭제 완료")
+                        .result(result)
+                        .build()
+        );
+    }
+
 
     @GetMapping("/user/bookmark")
     public ResponseEntity<? extends BasicResponse> myBookmark(

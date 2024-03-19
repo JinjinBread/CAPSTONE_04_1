@@ -13,9 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import univcapstone.employmentsite.domain.Authority;
-import univcapstone.employmentsite.domain.Picture;
-import univcapstone.employmentsite.domain.User;
+import univcapstone.employmentsite.domain.*;
 import univcapstone.employmentsite.repository.PictureRepository;
 import univcapstone.employmentsite.util.response.BasicResponse;
 import univcapstone.employmentsite.util.response.DefaultResponse;
@@ -39,8 +37,47 @@ public class PictureService {
     @Value("${aws.s3.bucket}")
     private String bucket;
 
-    public List<String> uploadFile(List<MultipartFile> multipartFiles, String dirName,User user) throws IOException {
+    public List<String> uploadProfileFile(MultipartFile multipartFile, String dirName,User user) throws IOException {
+        if (multipartFile.isEmpty()) {
+            log.error("업로드한 파일이 존재하지 않습니다.");
+            throw new FileNotFoundException("업로드한 파일이 존재하지 않습니다.");
+        }
 
+        //사용자가 업로드한 파일들의 URI를 저장하는 자료구조
+        List<String> imagePathList = new ArrayList<>();
+        File file = convertToFile(multipartFile);
+
+        //S3에 올릴 파일명(UUID 이용)
+        String uploadFilename = dirName + UUID.randomUUID() + file.getName();
+        log.info("uploadFilename = {}", uploadFilename);
+
+        //S3에 업로드
+        String imagePath = uploadS3Profile(uploadFilename, file,user);
+        imagePathList.add(imagePath);
+
+        //S3 업로드 후 로컬에 저장된 사진 삭제
+        removeCreatedFile(file);
+        return imagePathList;
+    }
+    private String uploadS3Profile(String uploadFilename, File file,User user) {
+        amazonS3.putObject(new PutObjectRequest(bucket, uploadFilename, file)
+                .withCannedAcl(CannedAccessControlList.PublicRead));
+
+        log.info("uploadFilename = {}", uploadFilename);
+
+        String imagePath = amazonS3.getUrl(bucket, uploadFilename).toString(); // 접근가능한 URL 가져오기
+
+        Picture picture = Picture.builder()
+                .uploadFileName(uploadFilename)
+                .storeFileName(file.getName())
+                .isProfile(true)
+                .user(user)
+                .build();
+        pictureRepository.setProfileFalse(user.getId());
+        pictureRepository.save(picture);
+        return imagePath;
+    }
+    public List<String> uploadFile(List<MultipartFile> multipartFiles, String dirName,User user) throws IOException {
         if (multipartFiles.isEmpty()) {
             log.error("업로드한 파일이 존재하지 않습니다.");
             throw new FileNotFoundException("업로드한 파일이 존재하지 않습니다.");
@@ -67,23 +104,25 @@ public class PictureService {
 
         return imagePathList;
     }
+    //AWS S3에 사용자가 업로드한 사진을 업로드한다.
+    private String uploadS3(String uploadFilename, File file,User user) {
+        amazonS3.putObject(new PutObjectRequest(bucket, uploadFilename, file)
+                .withCannedAcl(CannedAccessControlList.PublicRead));
 
-    public ResponseEntity<File> getObject(String storedFileName) throws IOException {
-        S3Object s3Object = amazonS3.getObject(new GetObjectRequest(bucket, storedFileName));
-        InputStream inputStream = s3Object.getObjectContent();
-        File file = new File(storedFileName);
-        try (FileOutputStream outputStream = new FileOutputStream(file)) {
-            IOUtils.copy(inputStream, outputStream);
-        }
+        log.info("uploadFilename = {}", uploadFilename);
 
-        String encodedFileName = URLEncoder.encode(storedFileName, "UTF-8").replaceAll("\\+", "%20");
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setContentType(MediaType.IMAGE_JPEG);
-        httpHeaders.setContentDispositionFormData("attachment", encodedFileName);
+        String imagePath = amazonS3.getUrl(bucket, uploadFilename).toString(); // 접근가능한 URL 가져오기
 
-        return new ResponseEntity<>(file, httpHeaders, HttpStatus.OK);
+        Picture picture = Picture.builder()
+                .uploadFileName(uploadFilename)
+                .storeFileName(file.getName())
+                .isProfile(true)
+                .user(user)
+                .build();
+
+        pictureRepository.save(picture);
+        return imagePath;
     }
-
     public ResponseEntity<? extends BasicResponse> getImage(User user) {
         List<Picture> pictures=pictureRepository.findAllByUserId(user.getId());
 
@@ -106,26 +145,27 @@ public class PictureService {
         return ResponseEntity.ok()
                 .body(defaultResponse);
     }
+    public ResponseEntity<? extends BasicResponse> getProfileImage(User user) {
+        Picture picture=pictureRepository.findAllByProfile(user.getId());
 
-    //AWS S3에 사용자가 업로드한 사진을 업로드한다.
-    private String uploadS3(String uploadFilename, File file,User user) {
-        amazonS3.putObject(new PutObjectRequest(bucket, uploadFilename, file)
-                .withCannedAcl(CannedAccessControlList.PublicRead));
+        List<String> imagesURL=new ArrayList<>();
 
-        log.info("uploadFilename = {}", uploadFilename);
+        URL url = amazonS3.getUrl(bucket,picture.getUploadFileName());
+        String urltext = "" + url;
+        StringBuilder images = new StringBuilder();
+        images.append("<img src='").append(urltext).append("' />");
+        imagesURL.add(images.toString());
 
-        String imagePath = amazonS3.getUrl(bucket, uploadFilename).toString(); // 접근가능한 URL 가져오기
-
-        Picture picture = Picture.builder()
-                .uploadFileName(uploadFilename)
-                .isProfile(true)
-                .user(user)
+        DefaultResponse<List<String>> defaultResponse = DefaultResponse.<List<String>>builder()
+                .code(HttpStatus.OK.value())
+                .httpStatus(HttpStatus.OK)
+                .message("아마존 S3로부터 가져온 이미지 url")
+                .result(imagesURL)
                 .build();
 
-        pictureRepository.save(picture);
-        return imagePath;
+        return ResponseEntity.ok()
+                .body(defaultResponse);
     }
-
     //MultipartFile to File
     //업로드할때 파일이 로컬에 없으면 에러가 발생하기 때문에 입력받은 파일을 로컬에 저장하고 업로드해야 함
     //따라서 S3에 업로드 이후 로컬에 저장된 사진을 삭제해야 함
@@ -150,5 +190,27 @@ public class PictureService {
 
         log.info("Created File delete fail");
     }
+
+    public String deleteFile(String uploadFilePath) {
+        amazonS3.deleteObject(new DeleteObjectRequest(bucket, uploadFilePath));
+        return "success";
+    }
+
+    public ResponseEntity<File> getObject(String storedFileName) throws IOException {
+        S3Object s3Object = amazonS3.getObject(new GetObjectRequest(bucket, storedFileName));
+        InputStream inputStream = s3Object.getObjectContent();
+        File file = new File(storedFileName);
+        try (FileOutputStream outputStream = new FileOutputStream(file)) {
+            IOUtils.copy(inputStream, outputStream);
+        }
+
+        String encodedFileName = URLEncoder.encode(storedFileName, "UTF-8").replaceAll("\\+", "%20");
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.IMAGE_JPEG);
+        httpHeaders.setContentDispositionFormData("attachment", encodedFileName);
+
+        return new ResponseEntity<>(file, httpHeaders, HttpStatus.OK);
+    }
+
 
 }

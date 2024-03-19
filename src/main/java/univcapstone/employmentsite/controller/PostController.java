@@ -1,39 +1,55 @@
 package univcapstone.employmentsite.controller;
 
+import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import univcapstone.employmentsite.domain.Bookmark;
 import univcapstone.employmentsite.domain.Post;
 import univcapstone.employmentsite.domain.Reply;
 import univcapstone.employmentsite.domain.User;
 import univcapstone.employmentsite.dto.PostDto;
 import univcapstone.employmentsite.dto.PostToFrontDto;
-import univcapstone.employmentsite.service.BookmarkService;
-import univcapstone.employmentsite.service.PostService;
-import univcapstone.employmentsite.service.ReplyService;
+import univcapstone.employmentsite.service.*;
 import univcapstone.employmentsite.token.CustomUserDetails;
 import univcapstone.employmentsite.util.response.BasicResponse;
 import univcapstone.employmentsite.util.response.DefaultResponse;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Slf4j
-@RequiredArgsConstructor
 @RestController
 public class PostController {
 
     private final PostService postService;
     private final BookmarkService bookmarkService;
     private final ReplyService replyService;
+    private final PostFileService postFileService;
+    private final String dirName;
+
+    public PostController(PostService postService,
+                          BookmarkService bookmarkService,
+                          ReplyService replyService,
+                          PostFileService postFileService,
+                          @Value("${aws.s3.post.dirName}")String dirName) {
+        this.postService = postService;
+        this.bookmarkService = bookmarkService;
+        this.replyService = replyService;
+        this.postFileService = postFileService;
+        this.dirName = dirName;
+    }
 
     /**
      * 게시글 목록(/boardlist 경로는 /boardlist/0(=메인페이지) /boardlist/1 (게시글 1페이지 목록.. 10개씩?)
@@ -115,17 +131,23 @@ public class PostController {
                 .body(defaultResponse);
     }
 
-    @PostMapping("/boardlist/write")
+    @PostMapping(value="/boardlist/write", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<? extends BasicResponse> boardWrite(
-            @RequestBody @Validated PostDto postDto,
-            @AuthenticationPrincipal CustomUserDetails customUserDetails
+            //@RequestBody @Validated PostDto postDto,
+            @RequestPart(value="PostDto") PostDto postDto,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestPart(value = "files") @Nullable List<MultipartFile> multipartFiles
     ) {
         log.info("작성한 게시물 정보:{}", postDto);
 
         User user = customUserDetails.getUser();
 
         Post post = postService.uploadPost(user, postDto);
-
+        try {
+            postFileService.uploadPostFile(multipartFiles, post, dirName);
+        }catch (IOException e){
+            log.info("사진 업로드 에러:{}", postDto);
+        }
         PostToFrontDto postDTO = Post.convertPostDTO(post);
 
         DefaultResponse<PostToFrontDto> defaultResponse = DefaultResponse.<PostToFrontDto>builder()
