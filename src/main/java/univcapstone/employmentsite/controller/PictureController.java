@@ -40,10 +40,7 @@ public class PictureController {
         log.info("images = {}",images);
         if(images.isEmpty()){
             log.info("이미지가 없어서 default 이미지 전송");
-            String urltext="https://jobhakdasik2000-bucket.s3.ap-northeast-2.amazonaws.com/default/default.png";
-            StringBuilder URL = new StringBuilder();
-            URL.append("<img src='").append(urltext).append("' />");
-            String result=URL.toString();
+            String result="https://jobhakdasik2000-bucket.s3.ap-northeast-2.amazonaws.com/default/default.png";
             DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
                     .code(HttpStatus.OK.value())
                     .httpStatus(HttpStatus.OK)

@@ -127,10 +127,7 @@ public class PictureService {
         List<String> imagesURL=new ArrayList<>();
         for(Picture picture : pictures){
             URL url = amazonS3.getUrl(bucket,picture.getUploadFileName());
-            String urltext = "" + url;
-            StringBuilder images = new StringBuilder();
-            images.append("<img src='").append(urltext).append("' />");
-            imagesURL.add(images.toString());
+            imagesURL.add(url.toString());
         }
 
         return imagesURL;
@@ -139,20 +136,13 @@ public class PictureService {
         Picture picture=pictureRepository.findAllByProfile(user.getId());
         String imagesURL;
         if(picture==null){
-            StringBuilder images = new StringBuilder();
-            String urltext="https://jobhakdasik2000-bucket.s3.ap-northeast-2.amazonaws.com/default/default.png";
-            images.append("<img src='").append(urltext).append("' />");
-            imagesURL=images.toString();
-
+            imagesURL="https://jobhakdasik2000-bucket.s3.ap-northeast-2.amazonaws.com/default/default.png";
             log.info("이미지가 없어서 default 이미지 전송");
             return imagesURL;
         }
 
         URL url = amazonS3.getUrl(bucket,picture.getUploadFileName());
-        String urltext = "" + url;
-        StringBuilder images = new StringBuilder();
-        images.append("<img src='").append(urltext).append("' />");
-        imagesURL=images.toString();
+        imagesURL=url.toString();
 
         return imagesURL;
     }

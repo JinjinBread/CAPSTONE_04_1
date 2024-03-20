@@ -85,10 +85,7 @@ public class PostFileService {
         List<String> imageURL = new ArrayList<>();
         for(PostFile file : files){
             URL url = amazonS3.getUrl(bucket,file.getUploadFileName());
-            String urltext = "" + url;
-            StringBuilder images = new StringBuilder();
-            images.append(urltext);
-            imageURL.add(images.toString());
+            imageURL.add(url.toString());
         }
         return imageURL;
     }
