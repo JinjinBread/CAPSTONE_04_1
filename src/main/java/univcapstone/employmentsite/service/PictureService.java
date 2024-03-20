@@ -15,8 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import univcapstone.employmentsite.domain.*;
 import univcapstone.employmentsite.repository.PictureRepository;
-import univcapstone.employmentsite.util.response.BasicResponse;
-import univcapstone.employmentsite.util.response.DefaultResponse;
 
 import java.io.*;
 import java.net.URL;
@@ -123,7 +121,7 @@ public class PictureService {
         pictureRepository.save(picture);
         return imagePath;
     }
-    public ResponseEntity<? extends BasicResponse> getImage(User user) {
+    public List<String> getImage(User user) {
         List<Picture> pictures=pictureRepository.findAllByUserId(user.getId());
 
         List<String> imagesURL=new ArrayList<>();
@@ -135,36 +133,28 @@ public class PictureService {
             imagesURL.add(images.toString());
         }
 
-        DefaultResponse<List<String>> defaultResponse = DefaultResponse.<List<String>>builder()
-                .code(HttpStatus.OK.value())
-                .httpStatus(HttpStatus.OK)
-                .message("아마존 S3로부터 가져온 이미지 url")
-                .result(imagesURL)
-                .build();
-
-        return ResponseEntity.ok()
-                .body(defaultResponse);
+        return imagesURL;
     }
-    public ResponseEntity<? extends BasicResponse> getProfileImage(User user) {
+    public String getProfileImage(User user) {
         Picture picture=pictureRepository.findAllByProfile(user.getId());
+        String imagesURL;
+        if(picture==null){
+            StringBuilder images = new StringBuilder();
+            String urltext="https://jobhakdasik2000-bucket.s3.ap-northeast-2.amazonaws.com/default/default.png";
+            images.append("<img src='").append(urltext).append("' />");
+            imagesURL=images.toString();
 
-        List<String> imagesURL=new ArrayList<>();
+            log.info("이미지가 없어서 default 이미지 전송");
+            return imagesURL;
+        }
 
         URL url = amazonS3.getUrl(bucket,picture.getUploadFileName());
         String urltext = "" + url;
         StringBuilder images = new StringBuilder();
         images.append("<img src='").append(urltext).append("' />");
-        imagesURL.add(images.toString());
+        imagesURL=images.toString();
 
-        DefaultResponse<List<String>> defaultResponse = DefaultResponse.<List<String>>builder()
-                .code(HttpStatus.OK.value())
-                .httpStatus(HttpStatus.OK)
-                .message("아마존 S3로부터 가져온 이미지 url")
-                .result(imagesURL)
-                .build();
-
-        return ResponseEntity.ok()
-                .body(defaultResponse);
+        return imagesURL;
     }
     //MultipartFile to File
     //업로드할때 파일이 로컬에 없으면 에러가 발생하기 때문에 입력받은 파일을 로컬에 저장하고 업로드해야 함

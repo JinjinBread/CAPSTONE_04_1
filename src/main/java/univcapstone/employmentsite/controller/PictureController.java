@@ -1,6 +1,5 @@
 package univcapstone.employmentsite.controller;
 
-import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,17 +10,14 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
-import univcapstone.employmentsite.domain.Picture;
 import univcapstone.employmentsite.domain.User;
 import univcapstone.employmentsite.service.PictureService;
 import univcapstone.employmentsite.token.CustomUserDetails;
 import univcapstone.employmentsite.util.response.BasicResponse;
 import univcapstone.employmentsite.util.response.DefaultResponse;
 import univcapstone.employmentsite.util.response.ErrorResponse;
-import org.springframework.util.StreamUtils;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -30,7 +26,7 @@ public class PictureController {
     private final PictureService pictureService;
     private final String dirName;
 
-    public PictureController(PictureService pictureService, @Value("${aws.s3.idPhoto.dirName}") String dirName) {
+    public PictureController(PictureService pictureService, @Value("${aws.s3.profile.dirName}") String dirName) {
         this.pictureService = pictureService;
         this.dirName = dirName;
     }
@@ -40,7 +36,33 @@ public class PictureController {
             @AuthenticationPrincipal CustomUserDetails customUserDetails
     ) {
         User user = customUserDetails.getUser();
-        return pictureService.getImage(user);
+        List<String> images=pictureService.getImage(user);
+        log.info("images = {}",images);
+        if(images.isEmpty()){
+            log.info("이미지가 없어서 default 이미지 전송");
+            String urltext="https://jobhakdasik2000-bucket.s3.ap-northeast-2.amazonaws.com/default/default.png";
+            StringBuilder URL = new StringBuilder();
+            URL.append("<img src='").append(urltext).append("' />");
+            String result=URL.toString();
+            DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
+                    .code(HttpStatus.OK.value())
+                    .httpStatus(HttpStatus.OK)
+                    .message("임시 프로필")
+                    .result(result)
+                    .build();
+
+            return ResponseEntity.ok()
+                    .body(defaultResponse);
+        }
+        DefaultResponse<List<String>> defaultResponse = DefaultResponse.<List<String>>builder()
+                .code(HttpStatus.OK.value())
+                .httpStatus(HttpStatus.OK)
+                .message("아마존에서 온 프로필")
+                .result(images)
+                .build();
+
+        return ResponseEntity.ok()
+                .body(defaultResponse);
     }
 
     @GetMapping("/profile/female")
@@ -98,7 +120,7 @@ public class PictureController {
     public ResponseEntity<? extends BasicResponse> save(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             HttpServletRequest request,
-            @RequestPart(value = "files") @Nullable List<MultipartFile> multipartFiles) throws IOException {
+            @RequestPart(value = "files") List<MultipartFile> multipartFiles) throws IOException {
 
         try {
             User user = customUserDetails.getUser();

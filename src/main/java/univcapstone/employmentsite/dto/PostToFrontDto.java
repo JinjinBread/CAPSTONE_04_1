@@ -18,7 +18,7 @@ public class PostToFrontDto {
     private String category;
     private String title;
     private String content;
-    private String fileName;
+    private List<String> fileName;
     private Long userId;
     private String nickname;
     private String date;

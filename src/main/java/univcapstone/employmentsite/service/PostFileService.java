@@ -3,23 +3,17 @@ package univcapstone.employmentsite.service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import univcapstone.employmentsite.domain.Picture;
 import univcapstone.employmentsite.domain.Post;
 import univcapstone.employmentsite.domain.PostFile;
-import univcapstone.employmentsite.domain.User;
-import univcapstone.employmentsite.repository.PictureRepository;
 import univcapstone.employmentsite.repository.PostFileRepository;
-import univcapstone.employmentsite.util.response.BasicResponse;
-import univcapstone.employmentsite.util.response.DefaultResponse;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -43,7 +37,7 @@ public class PostFileService {
 
     public List<String> uploadPostFile(List<MultipartFile> multipartFiles, Post post, String dirName) throws IOException {
         if (multipartFiles.isEmpty()) {
-            log.error("업로드한 파일이 존재하지 않습니다.");
+            log.error("업로드한 파일이 존재하지 않습니다. 파일 생략");
             throw new FileNotFoundException("업로드한 파일이 존재하지 않습니다.");
         }
 
@@ -86,27 +80,25 @@ public class PostFileService {
         return imagePath;
     }
 
-    public ResponseEntity<? extends BasicResponse> getImage(Post post) {
-        List<PostFile> pictures=postFileRepository.findAllByPostId(post.getPostId());
-
-        List<String> imagesURL=new ArrayList<>();
-        for(PostFile picture : pictures){
-            URL url = amazonS3.getUrl(bucket,picture.getUploadFileName());
+    public List<String> findFileByPostId(Long postId) {
+        List<PostFile> files = postFileRepository.findAllByPostId(postId);
+        List<String> imageURL = new ArrayList<>();
+        for(PostFile file : files){
+            URL url = amazonS3.getUrl(bucket,file.getUploadFileName());
             String urltext = "" + url;
             StringBuilder images = new StringBuilder();
-            images.append("<img src='").append(urltext).append("' />");
-            imagesURL.add(images.toString());
+            images.append(urltext);
+            imageURL.add(images.toString());
         }
+        return imageURL;
+    }
 
-        DefaultResponse<List<String>> defaultResponse = DefaultResponse.<List<String>>builder()
-                .code(HttpStatus.OK.value())
-                .httpStatus(HttpStatus.OK)
-                .message("아마존 S3로부터 가져온 이미지 url")
-                .result(imagesURL)
-                .build();
+    public void deleteFilesByPostId(Long postId) {
+        List<PostFile> postFiles=postFileRepository.findAllByPostId(postId);
 
-        return ResponseEntity.ok()
-                .body(defaultResponse);
+        for(PostFile postFile : postFiles){
+            amazonS3.deleteObject(new DeleteObjectRequest(bucket, postFile.getUploadFileName()));
+        }
     }
     private File convertToFile(MultipartFile multipartFile) throws IOException {
         //확장자를 포함한 파일 이름을 가져온다.
@@ -129,4 +121,6 @@ public class PostFileService {
 
         log.info("Created File delete fail");
     }
+
+
 }

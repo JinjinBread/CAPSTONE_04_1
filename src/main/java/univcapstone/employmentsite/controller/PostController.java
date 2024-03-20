@@ -1,7 +1,6 @@
 package univcapstone.employmentsite.controller;
 
 import jakarta.annotation.Nullable;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
@@ -115,10 +114,11 @@ public class PostController {
             @PathVariable(name = "postId") Long postId) {
 
         Post post = postService.showPost(postId);
-
-        log.info("클릭한 게시물 정보:{}", post);
+        List<String> postImageURL=postFileService.findFileByPostId(postId);
+        log.info("클릭한 게시물 정보:{} , 첨부된 파일 주소 = {} ", post,postImageURL);
 
         PostToFrontDto postDTO = Post.convertPostDTO(post);
+        postDTO.setFileName(postImageURL);
 
         DefaultResponse<PostToFrontDto> defaultResponse = DefaultResponse.<PostToFrontDto>builder()
                 .code(HttpStatus.OK.value())
@@ -143,10 +143,12 @@ public class PostController {
         User user = customUserDetails.getUser();
 
         Post post = postService.uploadPost(user, postDto);
-        try {
-            postFileService.uploadPostFile(multipartFiles, post, dirName);
-        }catch (IOException e){
-            log.info("사진 업로드 에러:{}", postDto);
+        if(multipartFiles!=null){
+            try {
+                postFileService.uploadPostFile(multipartFiles, post, dirName);
+            }catch (IOException e){
+                log.info("사진 업로드 에러:{}", postDto);
+            }
         }
         PostToFrontDto postDTO = Post.convertPostDTO(post);
 
@@ -187,6 +189,7 @@ public class PostController {
         //게시글 삭제
         log.info("삭제하려는 게시물 id : {}", postId);
         postService.deletePost(postId);
+        postFileService.deleteFilesByPostId(postId);
 
         DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
                 .code(HttpStatus.OK.value())

@@ -38,6 +38,10 @@ public class MyPageController {
     private final TokenProvider tokenProvider;
     private final PictureService pictureService;
     private final String dirName;
+
+    @Value("${aws.s3.bucket}")
+    private String bucket;
+
     @Autowired
     public MyPageController(UserService userService, BookmarkService bookmarkService,
                             PictureService pictureService,
@@ -73,14 +77,24 @@ public class MyPageController {
             @AuthenticationPrincipal CustomUserDetails customUserDetails
     ) {
         User user = customUserDetails.getUser();
-        return pictureService.getProfileImage(user);
+        String images = pictureService.getProfileImage(user);
+
+        DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
+                .code(HttpStatus.OK.value())
+                .httpStatus(HttpStatus.OK)
+                .message("아마존에서 온 프로필")
+                .result(images)
+                .build();
+
+        return ResponseEntity.ok()
+                .body(defaultResponse);
     }
 
     @PostMapping(value = "/user/image/save", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<? extends BasicResponse> saveProfile(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             HttpServletRequest request,
-            @RequestPart(value = "files") @Nullable MultipartFile multipartFiles) throws IOException {
+            @RequestPart(value = "files") MultipartFile multipartFiles) throws IOException {
 
         try {
             User user = customUserDetails.getUser();
@@ -103,7 +117,6 @@ public class MyPageController {
     }
     @DeleteMapping(value ="/user/image/delete",consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<? extends BasicResponse> deleteProfile(
-            @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @RequestPart(value = "filePath") String filePath
     ){
         String result=pictureService.deleteFile(filePath);

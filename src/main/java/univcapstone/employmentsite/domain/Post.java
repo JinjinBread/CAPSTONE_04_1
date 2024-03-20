@@ -35,6 +35,10 @@ public class Post {
     private String title;
     private String content;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
+    private List<PostFile> postFile;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
