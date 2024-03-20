@@ -108,22 +108,30 @@ public class UserController {
             @RequestBody @Validated UserFindDto userFindData
     ) {
         //비밀번호 찾기에 대한 로직
-        User user = userService.findPassword(userFindData.getLoginId(),
+        User user = userService.findUserByLoginIdAndNameAndEmail(
+                userFindData.getLoginId(),
                 userFindData.getName(),
                 userFindData.getEmail());
-
-        log.info("아이디와 이름, 이메일로 찾은 비밀번호 = {}", user);
 
         if (user == null) {
             return ResponseEntity.badRequest()
                     .body(new ErrorResponse(request.getServletPath(),
                             HttpStatus.BAD_REQUEST.value(),
-                            "비밀번호를 찾을 수 없습니다."));
+                            "유저를 찾을 수 없습니다."));
         } else {
+            log.info("아이디와 이름, 이메일로 찾은 사용자 = {}", user);
+
+            //1. 임시 비밀번호를 생성함
+            //2. 해당 임시 비밀번호를 key: 사용자 id, value: 임시 비밀번호 구조로 redis에 저장한다.
+            //3. 임시 번호를 사용자의 이메일로 보낸다.
+            //4. N분 후 임시 비밀번호를 파기한다.
+
+            //사용자는 자신의 원래 비밀번호를 맞게 입력하거나 (제한 시간 이내로) 임시 비밀번호를 입력하면 로그인을 할 수 있다.
+
             DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
                     .code(HttpStatus.OK.value())
                     .httpStatus(HttpStatus.OK)
-                    .message("비밀번호를 찾았습니다.")
+                    .message("")
                     .result(user.getPassword())
                     .build();
 

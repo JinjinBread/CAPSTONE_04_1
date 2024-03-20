@@ -1,6 +1,7 @@
 package univcapstone.employmentsite.config.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -33,10 +34,19 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
     private void setErrorResponse(HttpServletRequest request, HttpServletResponse response, JwtException exception) throws RuntimeException, IOException {
 
         final ObjectMapper mapper = new ObjectMapper();
+        ErrorResponse errorResponse;
 
-        ErrorResponse errorResponse = new ErrorResponse(request.getServletPath(),
-                HttpServletResponse.SC_UNAUTHORIZED,
-                exception.getMessage());
+        //토큰 기한 만료 코드 999
+        if (exception instanceof ExpiredJwtException) {
+            errorResponse = new ErrorResponse(request.getServletPath(),
+                    999,
+                    exception.getMessage());
+        } else {
+            errorResponse = new ErrorResponse(request.getServletPath(),
+                    response.getStatus(),
+                    exception.getMessage());
+        }
+
 
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");

@@ -8,6 +8,9 @@ import org.springframework.web.filter.CorsFilter;
 
 import java.util.List;
 
+import static univcapstone.employmentsite.util.AuthConstants.AUTH_HEADER;
+import static univcapstone.employmentsite.util.AuthConstants.REFRESH_HEADER;
+
 @Configuration
 public class CorsConfig {
 
@@ -19,6 +22,9 @@ public class CorsConfig {
         config.setAllowedOrigins(List.of("http://localhost:3000"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowedMethods(List.of("*"));
+
+        config.addExposedHeader(AUTH_HEADER);
+        config.addExposedHeader(REFRESH_HEADER);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);

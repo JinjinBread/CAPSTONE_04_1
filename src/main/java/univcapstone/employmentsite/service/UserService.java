@@ -44,13 +44,13 @@ public class UserService {
     /**
      * 비밀번호 찾기
      *
-     * @param userId
+     * @param loginId
      * @param name
      * @param email
      * @return
      */
-    public User findPassword(String userId, String name, String email) {
-        return userRepository.findByLoginId(userId)
+    public User findUserByLoginIdAndNameAndEmail(String loginId, String name, String email) {
+        return userRepository.findByLoginId(loginId)
                 .filter(u -> u.getName().equals(name))
                 .filter(u -> u.getEmail().equals(email))
                 .orElse(null);
@@ -87,12 +87,6 @@ public class UserService {
     /**
      * 로그인 ID 중복 검사 함수
      */
-    private void validateDuplicateLoginId(User user) {
-        userRepository.findByLoginId(user.getLoginId())
-                .ifPresent(u -> {
-                    throw new IllegalStateException(u + "은(는) 이미 존재하는 아이디입니다.");
-                });
-    }
 
     public void validateDuplicateLoginId(String userId) {
         if (userId == null) {
@@ -104,14 +98,6 @@ public class UserService {
 
                 });
     }
-
-//    public void editUser(UserEditDto editDto) {
-//        User user = userRepository.findByLoginId(editDto.getLoginId())
-//                .orElseThrow(() -> new RuntimeException("존재하지 않는 계정입니다."));
-//        user.
-//        userRepository.findByLoginId(editDto.getLoginId())
-//                .orElseThrow(() -> new IllegalStateException("수정하려는 계정을 찾을 수 없습니다."));
-//    }
 
     public void editPass(User user, String newPass) {
         User findUser = userRepository.findById(user.getId())

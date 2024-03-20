@@ -1,5 +1,7 @@
 package univcapstone.employmentsite.domain;
 
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.data.annotation.Id;
@@ -11,13 +13,12 @@ import univcapstone.employmentsite.util.AuthConstants;
 public class RefreshToken {
 
     @Id
+    private String loginId;
     private String refreshToken;
 
-    private Long userId;
-
     @Builder
-    public RefreshToken(String refreshToken, Long userId) {
+    public RefreshToken(String refreshToken, String loginId) {
         this.refreshToken = refreshToken;
-        this.userId = userId;
+        this.loginId = loginId;
     }
 }

@@ -1,16 +1,30 @@
 package univcapstone.employmentsite.controller;
 
+import io.jsonwebtoken.Claims;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import univcapstone.employmentsite.domain.RefreshToken;
+import univcapstone.employmentsite.domain.User;
 import univcapstone.employmentsite.dto.TokenDto;
 import univcapstone.employmentsite.dto.UserRequestDto;
 import univcapstone.employmentsite.dto.UserResponseDto;
 import univcapstone.employmentsite.service.AuthService;
+import univcapstone.employmentsite.token.CustomUserDetails;
+import univcapstone.employmentsite.token.TokenProvider;
+import univcapstone.employmentsite.util.AuthConstants;
+import univcapstone.employmentsite.util.response.BasicResponse;
+import univcapstone.employmentsite.util.response.DefaultResponse;
+import univcapstone.employmentsite.util.response.ErrorResponse;
+
+import static univcapstone.employmentsite.util.AuthConstants.REFRESH_HEADER;
 
 @Slf4j
 @RestController
@@ -18,6 +32,7 @@ import univcapstone.employmentsite.service.AuthService;
 public class AuthController {
 
     private final AuthService authService;
+    private final TokenProvider tokenProvider;
 
     /**
      * 회원가입
@@ -42,7 +57,7 @@ public class AuthController {
      * 로그인
      *
      * @param userRequestDto
-     * @return
+     * @return 액세스 토큰, 리프레시 토큰
      */
     @PostMapping("/")
     public ResponseEntity<TokenDto> login(@RequestBody @Validated UserRequestDto userRequestDto) {
@@ -53,13 +68,24 @@ public class AuthController {
         return ResponseEntity.ok(tokenDto);
     }
 
-//    @PatchMapping("/logout")
-//    public ResponseEntity logout(HttpServletRequest request) {
+//    @GetMapping("/logout")
+//    public ResponseEntity<? extends BasicResponse> logout(HttpServletRequest request) {
+//        //logout URI는 필터에서 걸러지지 않는다.
+//        //Access Token 유효성 검증
 //        String accessToken = tokenProvider.resolveAccessToken(request);
-//        Authentication authentication = tokenProvider.getAuthentication(accessToken);
-//        authService.deleteToken(authentication.getName());
 //
-//        return ResponseEntity.ok("logout success");
+//        if (tokenProvider.validateToken(accessToken)) {
+//            return ResponseEntity.badRequest()
+//                    .body(new ErrorResponse(request.getContextPath(), HttpStatus.BAD_REQUEST.value(), "test"));
+//        }
+//
+//        return ResponseEntity.ok(
+//                DefaultResponse.builder()
+//                        .code(HttpStatus.OK.value())
+//                        .httpStatus(HttpStatus.OK)
+//                        .message("로그아웃 성공")
+//                        .result(accessToken)
+//                        .build());
 //    }
 
     /**
@@ -69,7 +95,7 @@ public class AuthController {
      * @return
      */
     @PostMapping("/reissue")
-    public ResponseEntity<TokenDto> reissue(@RequestBody RefreshToken refreshToken) {
+    public ResponseEntity<TokenDto> reissue(@RequestHeader(REFRESH_HEADER) String refreshToken) {
         return ResponseEntity.ok(authService.reissue(refreshToken));
     }
 }

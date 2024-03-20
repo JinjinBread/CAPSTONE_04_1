@@ -12,6 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
+@ToString
 public class User {
 
     @Id
@@ -45,8 +46,9 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Authority authority;
 
-    //@OneToMany(mappedBy = "pictureId")
-    //private List<Picture> pictures;
+    @JsonIgnore
+    @OneToMany(mappedBy = "pictureId")
+    private List<Picture> pictures;
 
     public void updatePassword(String password) {
         this.password = password;

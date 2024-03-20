@@ -10,20 +10,15 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import univcapstone.employmentsite.domain.User;
-import univcapstone.employmentsite.dto.TokenDto;
 
 import java.security.Key;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.stream.Collectors;
 
 import static univcapstone.employmentsite.util.AuthConstants.*;
 
@@ -131,14 +126,18 @@ public class TokenProvider implements InitializingBean {
     }
 
     //토큰의 유효성 검증을 수행
-//    public boolean validateToken(String token) {
-//        try {
-//            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
-//            return true;
-//        } catch (JwtException e) {
-//            return false;
-//        }
-//    }
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public String getLoginId(String token) {
+        return parseClaims(token).getSubject();
+    }
 
     private Claims parseClaims(String token) {
         try {

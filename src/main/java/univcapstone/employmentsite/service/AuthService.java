@@ -18,7 +18,6 @@ import univcapstone.employmentsite.dto.UserResponseDto;
 import univcapstone.employmentsite.repository.RefreshTokenRepository;
 import univcapstone.employmentsite.repository.UserRepository;
 import univcapstone.employmentsite.token.TokenProvider;
-import univcapstone.employmentsite.util.AuthConstants;
 
 import static univcapstone.employmentsite.util.AuthConstants.*;
 
@@ -75,7 +74,7 @@ public class AuthService {
         //RefreshToken 저장
         RefreshToken storedRefreshToken = RefreshToken.builder()
                 .refreshToken(refreshToken)
-                .userId(user.getId())
+                .loginId(user.getLoginId())
                 .build();
 
         refreshTokenRepository.save(storedRefreshToken);
@@ -91,28 +90,36 @@ public class AuthService {
      * JWT는 한 번 발급하면 만료되기 전까지 삭제할 수 없다.
      * 따라서 짧은 유효시간을 갖는 Access Token과 (접근에 관여하는 토큰)
      * 저장소에 저장해서 Access Token을 재발급이 가능한 Refresh Token이 있다. (재발급에 관여하는 토큰)
-     *
-     * @param refreshToken (Access Token, Refresh Token)
+     * @param refreshToken
      * @return
      */
-    public TokenDto reissue(RefreshToken refreshToken) {
+    public TokenDto reissue(String refreshToken) {
+
+        String loginId = tokenProvider.getLoginId(refreshToken);
+        User user = userRepository.findByLoginId(loginId)
+                .orElseThrow(() -> new RuntimeException(loginId + "에 해당하는 유저가 존재하지 않습니다."));
 
         //RefreshToken 유효성 검증 (RefreshToken의 TTL로 인해 refreshToken이 만료되면 데이터가 자동 삭제됨)
-        RefreshToken findRefreshToken = refreshTokenRepository.findById(refreshToken.getRefreshToken())
+        RefreshToken findRefreshToken = refreshTokenRepository.findById(user.getLoginId())
                 .orElseThrow(() -> new MalformedJwtException("만료된 Refresh Token 입니다. 다시 로그인 하세요."));
 
-        User user = userRepository.findById(findRefreshToken.getUserId())
-                .orElseThrow(() -> new RuntimeException("존재하지 않는 유저입니다."));
+        User findUser = userRepository.findByLoginId(findRefreshToken.getLoginId())
+                .orElseThrow(() -> new RuntimeException("존재하지 않는 유저입니다.")); //해당 리프레쉬 토큰의 유저를 찾는다.
+
+        if (!user.getId().equals(findUser.getId())) {
+            throw new RuntimeException("일치하지 않는 유저 정보입니다.");
+        }
 
         //Access Token 재발급 진행
         String newAccessToken = tokenProvider.createAccessToken(user);
 
+        log.info("재발급된 Access Token = {}", newAccessToken);
+
         return TokenDto.builder()
                 .grantType(BEARER_PREFIX)
                 .accessToken(newAccessToken)
-                .refreshToken(refreshToken.getRefreshToken())
+                .refreshToken(findRefreshToken.getRefreshToken())
                 .build();
     }
-
 
 }

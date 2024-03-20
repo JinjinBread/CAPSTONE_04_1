@@ -35,6 +35,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             tokenProvider.setAccessTokenHeader(accessToken, response);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
+        //accessToken이 null이면 아예 토큰이 넘어오지 않았거나 Bearer 인증 타입의 토큰이 아닌 경우임
 
         filterChain.doFilter(request, response);
     }
