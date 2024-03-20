@@ -42,6 +42,7 @@ public class MyPageController {
     @Value("${aws.s3.bucket}")
     private String bucket;
 
+    @Autowired
     public MyPageController(UserService userService, BookmarkService bookmarkService,
                             PictureService pictureService,
                             TokenProvider tokenProvider,

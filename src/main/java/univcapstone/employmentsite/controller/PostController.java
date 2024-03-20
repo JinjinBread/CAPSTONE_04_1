@@ -2,6 +2,7 @@ package univcapstone.employmentsite.controller;
 
 import jakarta.annotation.Nullable;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -38,6 +39,7 @@ public class PostController {
     private final PostFileService postFileService;
     private final String dirName;
 
+    @Autowired
     public PostController(PostService postService,
                           BookmarkService bookmarkService,
                           ReplyService replyService,
