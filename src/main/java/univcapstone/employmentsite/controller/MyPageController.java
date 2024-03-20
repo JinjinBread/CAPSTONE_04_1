@@ -42,7 +42,6 @@ public class MyPageController {
     @Value("${aws.s3.bucket}")
     private String bucket;
 
-    @Autowired
     public MyPageController(UserService userService, BookmarkService bookmarkService,
                             PictureService pictureService,
                             TokenProvider tokenProvider,
@@ -54,7 +53,7 @@ public class MyPageController {
         this.dirName=dirName;
     }
 
-    @GetMapping("/user/myInfo")
+    @GetMapping("/user/myinfo")
     public ResponseEntity<? extends BasicResponse> myInfo(
             @AuthenticationPrincipal CustomUserDetails customUserDetails
     ) {
