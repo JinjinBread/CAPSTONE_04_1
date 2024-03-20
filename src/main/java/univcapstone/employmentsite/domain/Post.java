@@ -67,19 +67,6 @@ public class Post {
         this.content = content;
     }
 
-    @Override
-    public String toString() {
-        return "Post{" +
-                "postId=" + postId +
-                ", replies=" + replies +
-                ", category='" + category + '\'' +
-                ", title='" + title + '\'' +
-                ", content='" + content + '\'' +
-                ", date=" + date +
-                '}';
-    }
-
-
     public static PostToFrontDto convertPostDTO(Post post) {
         List<ReplyToFrontDto> replyToFront = new ArrayList<>();
 
