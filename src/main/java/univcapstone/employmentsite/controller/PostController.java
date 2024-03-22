@@ -219,8 +219,8 @@ public class PostController {
     public ResponseEntity<? extends BasicResponse> delete(@PathVariable("postId") Long postId) {
         //게시글 삭제
         log.info("삭제하려는 게시물 id : {}", postId);
-        postService.deletePost(postId);
         postFileService.deleteFilesByPostId(postId);
+        postService.deletePost(postId);
 
         DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
                 .code(HttpStatus.OK.value())
