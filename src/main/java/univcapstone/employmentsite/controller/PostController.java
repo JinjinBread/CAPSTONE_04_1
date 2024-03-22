@@ -129,7 +129,7 @@ public class PostController {
 
         PostToFrontDto postDTO = Post.convertPostDTO(post);
         postDTO.setFileName(postImageURL);
-        
+
         //글쓴이 프로필 사진 가져오기
         Long writerId=postDTO.getUserId();
         User user=userService.findUserById(writerId);

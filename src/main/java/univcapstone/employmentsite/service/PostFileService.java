@@ -92,7 +92,7 @@ public class PostFileService {
 
     public void deleteFilesByPostId(Long postId) {
         List<PostFile> postFiles=postFileRepository.findAllByPostId(postId);
-
+        log.info("삭제하려는 url = {}",postFiles.get(0).getUploadFileName());
         for(PostFile postFile : postFiles){
             amazonS3.deleteObject(new DeleteObjectRequest(bucket, postFile.getUploadFileName()));
         }

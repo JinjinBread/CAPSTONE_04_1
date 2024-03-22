@@ -36,5 +36,6 @@ public class PostDetailToFrontDto {
         this.userId = post.getUserId();
         this.nickname = post.getNickname();
         this.date = post.getDate();
+        this.fileName=post.getFileName();
     }
 }
