@@ -3,6 +3,7 @@ package univcapstone.employmentsite.domain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 
@@ -50,8 +51,10 @@ public class User {
     @OneToMany(mappedBy = "pictureId")
     private List<Picture> pictures;
 
-    public void updatePassword(String password) {
-        this.password = password;
+    public String updatePassword(String password, PasswordEncoder passwordEncoder) {;
+        String encodedNewPassword = passwordEncoder.encode(password);
+        this.password = encodedNewPassword;
+        return encodedNewPassword;
     }
 
     public void updateNickname(String nickname) {

@@ -1,6 +1,7 @@
 package univcapstone.employmentsite.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import univcapstone.employmentsite.domain.User;
 import univcapstone.employmentsite.dto.*;
@@ -18,6 +19,7 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     /**
      * 아이디로 회원 찾기
@@ -64,10 +66,11 @@ public class UserService {
      * @param id
      * @param newPassword
      */
-    public void updatePassword(Long id, String newPassword) {
+    public String updatePassword(Long id, String newPassword) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 계정입니다."));
-        user.updatePassword(newPassword);
+        //
+        return user.updatePassword(newPassword, passwordEncoder);
     }
 
     /**
@@ -113,7 +116,7 @@ public class UserService {
     public void editPass(User user, String newPass) {
         User findUser = userRepository.findById(user.getId())
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 계정입니다."));
-        findUser.updatePassword(newPass);
+        findUser.updatePassword(newPass, passwordEncoder);
     }
 
     public void editNickname(User user, String newNickname) {

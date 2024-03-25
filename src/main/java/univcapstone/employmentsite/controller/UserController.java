@@ -145,10 +145,9 @@ public class UserController {
             @RequestBody UserEditDto userEditDto) {
 
         User user = customUserDetails.getUser();
+        String updatedPassword = userService.updatePassword(user.getId(), userEditDto.getPassword());
 
-        userService.updatePassword(user.getId(), userEditDto.getPassword());
-
-        log.info("변경된 유저 = {}, 변경된 유저의 비밀번호 = {}", user, userEditDto.getPassword());
+        log.info("변경된 유저 = {}, 변경된 유저의 비밀번호 = {}", userEditDto.getLoginId(), updatedPassword);
 
         DefaultResponse<UserEditDto> defaultResponse = DefaultResponse.<UserEditDto>builder()
                 .code(HttpStatus.OK.value())
