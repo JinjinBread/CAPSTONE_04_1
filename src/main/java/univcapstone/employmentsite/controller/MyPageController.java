@@ -13,6 +13,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import univcapstone.employmentsite.domain.Bookmark;
+import univcapstone.employmentsite.domain.Picture;
 import univcapstone.employmentsite.domain.User;
 import univcapstone.employmentsite.dto.*;
 import univcapstone.employmentsite.service.BookmarkService;
@@ -97,7 +98,7 @@ public class MyPageController {
 
         try {
             User user = customUserDetails.getUser();
-            List<String> uploadImagesUrl = pictureService.uploadProfileFile(multipartFiles, dirName,user);
+            String uploadImagesUrl = pictureService.uploadProfileFile(multipartFiles, dirName,user);
 
             return ResponseEntity.ok(
                     DefaultResponse.builder()
@@ -116,9 +117,11 @@ public class MyPageController {
     }
     @DeleteMapping(value ="/user/image/delete",consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<? extends BasicResponse> deleteProfile(
-            @RequestPart(value = "filePath") String filePath
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
     ){
-        String result=pictureService.deleteFile(filePath);
+        Picture picture=pictureService.getProfilePicture(customUserDetails.getUser());
+        log.info("filePath= {} ",picture.getUploadFileName());
+        String result=pictureService.deleteFile(picture);
         return ResponseEntity.ok(
                 DefaultResponse.builder()
                         .code(HttpStatus.OK.value())

@@ -122,39 +122,39 @@ public class PostController {
     @GetMapping("/boardlist/detail/{postId}")
     public ResponseEntity<? extends BasicResponse> board(
             @PathVariable(name = "postId") Long postId) {
-
+        // 게시글을 찾고 게시글 작성자의 정보를 찾음
         Post post = postService.showPost(postId);
         Map<String,String> postImageURL=postFileService.findFileByPostId(postId);
-        log.info("클릭한 게시물 정보:{} , 첨부된 파일 주소 = {} ", post,postImageURL);
-
+        Long writerId=post.getUser().getId();
+        User writer=userService.findUserById(writerId);
+        String writerProfile=pictureService.getProfileImage(writer);
+        Map<String,String> writerProfileName=pictureService.getProfileImageName(writer);
+        log.info("클릭한 게시물 정보:{} , 게시글의 이미지 URL = {} ", post,postImageURL);
+        
+        // 프론트로 보내주기 위해 Entitiy -> DTO로 변환
         PostToFrontDto postDTO = Post.convertPostDTO(post);
         postDTO.setFileName(postImageURL);
 
-        //글쓴이 프로필 사진 가져오기
-        Long writerId=postDTO.getUserId();
-        User user=userService.findUserById(writerId);
-        if(user==null){
-            log.info("글쓴이를 찾을 수 없습니다.");
-        }
-        String writerProfile=pictureService.getProfileImage(user);
-        Map<String,String> writerProfileName=pictureService.getProfileImageName(user);
-
-        //댓글 작성자 프로필 사진 가져오기
+        // 게시글에 대한 댓글 작성자의 정보를 찾음
         List<ReplyToFrontDto> replies=postDTO.getReplies();
         Map<String, String> repliersProfile = new HashMap<>();
         List<Map<String,String>> repliersProfileName=new ArrayList<>();
         for(ReplyToFrontDto reply:replies){
             Long replierId=reply.getUserId();
             User replier=userService.findUserById(replierId);
-            String replierProfile=pictureService.getProfileImage(user);
+            String replierProfile=pictureService.getProfileImage(replier);
             repliersProfile.put(replier.getLoginId(),replierProfile);
-            repliersProfileName.add(pictureService.getProfileImageName(user));
+            repliersProfileName.add(pictureService.getProfileImageName(replier));
         }
+        
+        //게시글 작성자,댓글 작성자의 정보(아마존 S3 프로필 URL,File name을 보낼 데이터에 추가)
         PostDetailToFrontDto detail=new PostDetailToFrontDto(postDTO);
         detail.setWriterProfile(writerProfile);
         detail.setReplierProfile(repliersProfile);
         detail.setWriterRealFileName(writerProfileName);
         detail.setReplierRealFileName(repliersProfileName);
+
+
         DefaultResponse<PostDetailToFrontDto> defaultResponse = DefaultResponse.<PostDetailToFrontDto>builder()
                 .code(HttpStatus.OK.value())
                 .httpStatus(HttpStatus.OK)
