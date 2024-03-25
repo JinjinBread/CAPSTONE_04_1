@@ -1,30 +1,22 @@
 package univcapstone.employmentsite.controller;
 
-import io.jsonwebtoken.Claims;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import univcapstone.employmentsite.domain.RefreshToken;
-import univcapstone.employmentsite.domain.User;
 import univcapstone.employmentsite.dto.TokenDto;
 import univcapstone.employmentsite.dto.UserRequestDto;
 import univcapstone.employmentsite.dto.UserResponseDto;
 import univcapstone.employmentsite.service.AuthService;
-import univcapstone.employmentsite.token.CustomUserDetails;
 import univcapstone.employmentsite.token.TokenProvider;
-import univcapstone.employmentsite.util.AuthConstants;
-import univcapstone.employmentsite.util.response.BasicResponse;
-import univcapstone.employmentsite.util.response.DefaultResponse;
-import univcapstone.employmentsite.util.response.ErrorResponse;
 
-import static univcapstone.employmentsite.util.AuthConstants.REFRESH_HEADER;
+import java.util.Arrays;
+
+import static univcapstone.employmentsite.util.AuthConstants.REFRESH_COOKIE_NAME;
 
 @Slf4j
 @RestController
@@ -90,12 +82,24 @@ public class AuthController {
 
     /**
      * 토큰 재발급
-     *
-     * @param refreshToken
+     * @param request
      * @return
      */
     @PostMapping("/reissue")
-    public ResponseEntity<TokenDto> reissue(@RequestHeader(REFRESH_HEADER) String refreshToken) {
+    public ResponseEntity<TokenDto> reissue(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+//        for (Cookie cookie : cookies) {
+//            if (cookie.getName().equals(REFRESH_COOKIE_NAME)) {
+//                String refreshToken = cookie.getValue();
+//            }
+//        }
+
+        String refreshToken = Arrays.stream(cookies)
+                .filter(cookie -> cookie.getName().equals(REFRESH_COOKIE_NAME))
+                .findAny()
+                .orElseThrow(() -> new RuntimeException("Refresh Token이 존재하지 않습니다."))
+                .getValue();
+
         return ResponseEntity.ok(authService.reissue(refreshToken));
     }
 }
