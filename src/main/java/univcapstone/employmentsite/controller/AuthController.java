@@ -13,6 +13,7 @@ import univcapstone.employmentsite.dto.UserRequestDto;
 import univcapstone.employmentsite.dto.UserResponseDto;
 import univcapstone.employmentsite.service.AuthService;
 import univcapstone.employmentsite.token.TokenProvider;
+import univcapstone.employmentsite.util.response.BasicResponse;
 
 import java.util.Arrays;
 
@@ -60,6 +61,9 @@ public class AuthController {
         return ResponseEntity.ok(tokenDto);
     }
 
+//    @PostMapping("/login/kakao")
+//    public ResponseEntity<? extends BasicResponse> loginKakao()
+
 //    @GetMapping("/logout")
 //    public ResponseEntity<? extends BasicResponse> logout(HttpServletRequest request) {
 //        //logout URI는 필터에서 걸러지지 않는다.
@@ -87,18 +91,8 @@ public class AuthController {
      */
     @PostMapping("/reissue")
     public ResponseEntity<TokenDto> reissue(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-//        for (Cookie cookie : cookies) {
-//            if (cookie.getName().equals(REFRESH_COOKIE_NAME)) {
-//                String refreshToken = cookie.getValue();
-//            }
-//        }
 
-        String refreshToken = Arrays.stream(cookies)
-                .filter(cookie -> cookie.getName().equals(REFRESH_COOKIE_NAME))
-                .findAny()
-                .orElseThrow(() -> new RuntimeException("Refresh Token이 존재하지 않습니다."))
-                .getValue();
+        String refreshToken = tokenProvider.getRefreshTokenFromCookies(request);
 
         return ResponseEntity.ok(authService.reissue(refreshToken));
     }

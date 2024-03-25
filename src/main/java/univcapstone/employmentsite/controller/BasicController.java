@@ -123,9 +123,4 @@ public class BasicController {
         return ResponseEntity.ok()
                 .body(defaultResponse);
     }
-
-    @GetMapping("/")
-    public String loginForm() {
-        return "login form"; // 로그인 페이지
-    }
 }

@@ -3,6 +3,7 @@ package univcapstone.employmentsite.token;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,7 @@ import org.springframework.util.StringUtils;
 import univcapstone.employmentsite.domain.User;
 
 import java.security.Key;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 
@@ -137,6 +139,16 @@ public class TokenProvider implements InitializingBean {
 
     public String getLoginId(String token) {
         return parseClaims(token).getSubject();
+    }
+
+    public String getRefreshTokenFromCookies(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+
+        return Arrays.stream(cookies)
+                .filter(cookie -> cookie.getName().equals(REFRESH_COOKIE_NAME))
+                .findAny()
+                .orElseThrow(() -> new RuntimeException("Refresh Token이 존재하지 않습니다."))
+                .getValue();
     }
 
     private Claims parseClaims(String token) {
