@@ -16,6 +16,7 @@ import univcapstone.employmentsite.domain.Bookmark;
 import univcapstone.employmentsite.domain.Picture;
 import univcapstone.employmentsite.domain.User;
 import univcapstone.employmentsite.dto.*;
+import univcapstone.employmentsite.service.AuthService;
 import univcapstone.employmentsite.service.BookmarkService;
 import univcapstone.employmentsite.service.PictureService;
 import univcapstone.employmentsite.service.UserService;
@@ -37,8 +38,8 @@ public class MyPageController {
 
     private final UserService userService;
     private final BookmarkService bookmarkService;
-    private final TokenProvider tokenProvider;
     private final PictureService pictureService;
+    private final AuthService authService;
     private final String dirName;
 
     @Value("${aws.s3.bucket}")
@@ -46,12 +47,12 @@ public class MyPageController {
 
     public MyPageController(UserService userService, BookmarkService bookmarkService,
                             PictureService pictureService,
-                            TokenProvider tokenProvider,
+                            AuthService authService,
                             @Value("${aws.s3.profile.dirName}")String dirName) {
         this.userService = userService;
         this.bookmarkService = bookmarkService;
         this.pictureService=pictureService;
-        this.tokenProvider = tokenProvider;
+        this.authService = authService;
         this.dirName=dirName;
     }
 
@@ -221,9 +222,8 @@ public class MyPageController {
         try {
             log.info("삭제하려는 유저 데이터 {}", userDeleteDto);
 
-            //토큰 삭제 (구현 중)
-            String accessToken = tokenProvider.resolveAccessToken(request);
-
+            //리프레시 토큰 삭제
+            authService.deleteRefreshToken(userDeleteDto.getLoginId());
 
             //DB에서 멤버 삭제
             userService.deleteUser(userDeleteDto);

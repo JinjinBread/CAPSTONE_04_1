@@ -122,4 +122,8 @@ public class AuthService {
                 .build();
     }
 
+    public void deleteRefreshToken(String loginId) {
+        refreshTokenRepository.deleteById(loginId);
+    }
+
 }
