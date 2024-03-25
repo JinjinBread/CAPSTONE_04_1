@@ -8,6 +8,8 @@ import univcapstone.employmentsite.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 
 @Slf4j
 @Transactional
@@ -99,6 +101,15 @@ public class UserService {
                 });
     }
 
+    public User findUserById(Long userId){
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            return user;
+        } else {
+            return null;
+        }
+    }
     public void editPass(User user, String newPass) {
         User findUser = userRepository.findById(user.getId())
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 계정입니다."));

@@ -16,8 +16,10 @@ import univcapstone.employmentsite.domain.Bookmark;
 import univcapstone.employmentsite.domain.Post;
 import univcapstone.employmentsite.domain.Reply;
 import univcapstone.employmentsite.domain.User;
+import univcapstone.employmentsite.dto.PostDetailToFrontDto;
 import univcapstone.employmentsite.dto.PostDto;
 import univcapstone.employmentsite.dto.PostToFrontDto;
+import univcapstone.employmentsite.dto.ReplyToFrontDto;
 import univcapstone.employmentsite.service.*;
 import univcapstone.employmentsite.token.CustomUserDetails;
 import univcapstone.employmentsite.util.response.BasicResponse;
@@ -37,6 +39,8 @@ public class PostController {
     private final BookmarkService bookmarkService;
     private final ReplyService replyService;
     private final PostFileService postFileService;
+    private final PictureService pictureService;
+    private final UserService userService;
     private final String dirName;
 
     @Autowired
@@ -44,11 +48,15 @@ public class PostController {
                           BookmarkService bookmarkService,
                           ReplyService replyService,
                           PostFileService postFileService,
+                          PictureService pictureService,
+                          UserService userService,
                           @Value("${aws.s3.post.dirName}")String dirName) {
         this.postService = postService;
         this.bookmarkService = bookmarkService;
         this.replyService = replyService;
         this.postFileService = postFileService;
+        this.pictureService=pictureService;
+        this.userService=userService;
         this.dirName = dirName;
     }
 
@@ -122,11 +130,32 @@ public class PostController {
         PostToFrontDto postDTO = Post.convertPostDTO(post);
         postDTO.setFileName(postImageURL);
 
-        DefaultResponse<PostToFrontDto> defaultResponse = DefaultResponse.<PostToFrontDto>builder()
+        //글쓴이 프로필 사진 가져오기
+        Long writerId=postDTO.getUserId();
+        User user=userService.findUserById(writerId);
+        if(user==null){
+            log.info("글쓴이를 찾을 수 없습니다.");
+        }
+        String writerProfile=pictureService.getProfileImage(user);
+
+        //댓글 작성자 프로필 사진 가져오기
+        List<ReplyToFrontDto> replies=postDTO.getReplies();
+        Map<String, String> repliersProfile = new HashMap<>();
+        for(ReplyToFrontDto reply:replies){
+            Long replierId=reply.getUserId();
+            User replier=userService.findUserById(replierId);
+            String replierProfile=pictureService.getProfileImage(user);
+            repliersProfile.put(replier.getLoginId(),replierProfile);
+        }
+        PostDetailToFrontDto detail=new PostDetailToFrontDto(postDTO);
+        detail.setWriterProfile(writerProfile);
+        detail.setReplierProfile(repliersProfile);
+
+        DefaultResponse<PostDetailToFrontDto> defaultResponse = DefaultResponse.<PostDetailToFrontDto>builder()
                 .code(HttpStatus.OK.value())
                 .httpStatus(HttpStatus.OK)
                 .message("게시물 상세 정보")
-                .result(postDTO)
+                .result(detail)
                 .build();
 
         return ResponseEntity.ok()
@@ -190,8 +219,8 @@ public class PostController {
     public ResponseEntity<? extends BasicResponse> delete(@PathVariable("postId") Long postId) {
         //게시글 삭제
         log.info("삭제하려는 게시물 id : {}", postId);
-        postService.deletePost(postId);
         postFileService.deleteFilesByPostId(postId);
+        postService.deletePost(postId);
 
         DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
                 .code(HttpStatus.OK.value())

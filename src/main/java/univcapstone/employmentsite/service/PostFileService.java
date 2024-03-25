@@ -92,8 +92,8 @@ public class PostFileService {
 
     public void deleteFilesByPostId(Long postId) {
         List<PostFile> postFiles=postFileRepository.findAllByPostId(postId);
-
         for(PostFile postFile : postFiles){
+            log.info("삭제한 파일 이름 = {}",postFile.getUploadFileName());
             amazonS3.deleteObject(new DeleteObjectRequest(bucket, postFile.getUploadFileName()));
         }
     }
