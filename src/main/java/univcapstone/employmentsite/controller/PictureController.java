@@ -18,7 +18,10 @@ import univcapstone.employmentsite.util.response.DefaultResponse;
 import univcapstone.employmentsite.util.response.ErrorResponse;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -36,7 +39,8 @@ public class PictureController {
             @AuthenticationPrincipal CustomUserDetails customUserDetails
     ) {
         User user = customUserDetails.getUser();
-        List<String> images=pictureService.getImage(user);
+        Map<String,String> images=pictureService.getProfileImageName(user);
+
         log.info("images = {}",images);
         if(images.isEmpty()){
             log.info("이미지가 없어서 default 이미지 전송");
@@ -51,7 +55,7 @@ public class PictureController {
             return ResponseEntity.ok()
                     .body(defaultResponse);
         }
-        DefaultResponse<List<String>> defaultResponse = DefaultResponse.<List<String>>builder()
+        DefaultResponse<Map<String,String>> defaultResponse = DefaultResponse.<Map<String,String>>builder()
                 .code(HttpStatus.OK.value())
                 .httpStatus(HttpStatus.OK)
                 .message("아마존에서 온 프로필")

@@ -19,7 +19,7 @@ public class PostDetailToFrontDto {
     private String category;
     private String title;
     private String content;
-    private List<String> fileName;
+    private Map<String,String> fileName;
     private Long userId;
     private String nickname;
     private String date;
@@ -27,6 +27,8 @@ public class PostDetailToFrontDto {
     private String writerProfile;
     private Map<String,String> replierProfile;
 
+    private Map<String,String> WriterRealFileName;
+    private List<Map<String,String>> ReplierRealFileName;
     public PostDetailToFrontDto(PostToFrontDto post) {
         this.postId = post.getPostId();
         this.replies = post.getReplies();

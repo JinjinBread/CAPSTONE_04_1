@@ -124,7 +124,7 @@ public class PostController {
             @PathVariable(name = "postId") Long postId) {
 
         Post post = postService.showPost(postId);
-        List<String> postImageURL=postFileService.findFileByPostId(postId);
+        Map<String,String> postImageURL=postFileService.findFileByPostId(postId);
         log.info("클릭한 게시물 정보:{} , 첨부된 파일 주소 = {} ", post,postImageURL);
 
         PostToFrontDto postDTO = Post.convertPostDTO(post);
@@ -137,20 +137,24 @@ public class PostController {
             log.info("글쓴이를 찾을 수 없습니다.");
         }
         String writerProfile=pictureService.getProfileImage(user);
+        Map<String,String> writerProfileName=pictureService.getProfileImageName(user);
 
         //댓글 작성자 프로필 사진 가져오기
         List<ReplyToFrontDto> replies=postDTO.getReplies();
         Map<String, String> repliersProfile = new HashMap<>();
+        List<Map<String,String>> repliersProfileName=new ArrayList<>();
         for(ReplyToFrontDto reply:replies){
             Long replierId=reply.getUserId();
             User replier=userService.findUserById(replierId);
             String replierProfile=pictureService.getProfileImage(user);
             repliersProfile.put(replier.getLoginId(),replierProfile);
+            repliersProfileName.add(pictureService.getProfileImageName(user));
         }
         PostDetailToFrontDto detail=new PostDetailToFrontDto(postDTO);
         detail.setWriterProfile(writerProfile);
         detail.setReplierProfile(repliersProfile);
-
+        detail.setWriterRealFileName(writerProfileName);
+        detail.setReplierRealFileName(repliersProfileName);
         DefaultResponse<PostDetailToFrontDto> defaultResponse = DefaultResponse.<PostDetailToFrontDto>builder()
                 .code(HttpStatus.OK.value())
                 .httpStatus(HttpStatus.OK)

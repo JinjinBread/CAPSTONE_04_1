@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Data
 @Getter
@@ -18,7 +19,7 @@ public class PostToFrontDto {
     private String category;
     private String title;
     private String content;
-    private List<String> fileName;
+    private Map<String,String> fileName;
     private Long userId;
     private String nickname;
     private String date;

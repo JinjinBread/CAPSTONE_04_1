@@ -19,9 +19,7 @@ import univcapstone.employmentsite.repository.PictureRepository;
 import java.io.*;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Slf4j
 @Transactional
@@ -129,6 +127,21 @@ public class PictureService {
             URL url = amazonS3.getUrl(bucket,picture.getUploadFileName());
             imagesURL.add(url.toString());
         }
+
+        return imagesURL;
+    }
+    public Map<String,String> getProfileImageName(User user) {
+        Picture picture=pictureRepository.findAllByProfile(user.getId());
+        Map<String,String> imagesURL=new HashMap<>();
+        if(picture==null){
+            imagesURL.put("https://jobhakdasik2000-bucket.s3.ap-northeast-2.amazonaws.com/default/default.png",
+                    "default.png");
+            log.info("이미지가 없어서 default 이미지 전송");
+            return imagesURL;
+        }
+
+        URL url = amazonS3.getUrl(bucket,picture.getUploadFileName());
+        imagesURL.put(url.toString(),picture.getStoreFileName());
 
         return imagesURL;
     }

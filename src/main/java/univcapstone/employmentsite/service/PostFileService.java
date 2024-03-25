@@ -20,9 +20,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Slf4j
 @Transactional
@@ -80,12 +78,12 @@ public class PostFileService {
         return imagePath;
     }
 
-    public List<String> findFileByPostId(Long postId) {
+    public Map<String,String> findFileByPostId(Long postId) {
         List<PostFile> files = postFileRepository.findAllByPostId(postId);
-        List<String> imageURL = new ArrayList<>();
+        Map<String,String> imageURL=new HashMap<>();
         for(PostFile file : files){
             URL url = amazonS3.getUrl(bucket,file.getUploadFileName());
-            imageURL.add(url.toString());
+            imageURL.put(url.toString(),file.getStoreFileName());
         }
         return imageURL;
     }

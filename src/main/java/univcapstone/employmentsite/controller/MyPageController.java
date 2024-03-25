@@ -28,6 +28,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -76,13 +77,12 @@ public class MyPageController {
             @AuthenticationPrincipal CustomUserDetails customUserDetails
     ) {
         User user = customUserDetails.getUser();
-        String images = pictureService.getProfileImage(user);
-
-        DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
+        Map<String,String> image=pictureService.getProfileImageName(user);
+        DefaultResponse<Map<String,String>> defaultResponse = DefaultResponse.<Map<String,String>>builder()
                 .code(HttpStatus.OK.value())
                 .httpStatus(HttpStatus.OK)
                 .message("아마존에서 온 프로필")
-                .result(images)
+                .result(image)
                 .build();
 
         return ResponseEntity.ok()
