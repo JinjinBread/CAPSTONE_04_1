@@ -60,7 +60,44 @@ public class PictureService {
                 .isProfile(true)
                 .user(user)
                 .build();
-        pictureRepository.setProfileFalse(user.getId());
+        List<Picture> formerProfiles=pictureRepository.findAllByProfiles(user.getId());
+        for(Picture profile : formerProfiles){
+            deleteFile(profile);
+        }
+        pictureRepository.deleteFormerProfile(user.getId());
+        pictureRepository.save(picture);
+        return imagePath;
+    }
+
+    public String uploadConversionFile(MultipartFile multipartFile, String dirName,User user) throws IOException {
+        if (multipartFile.isEmpty()) {
+            log.error("업로드 할 파일이 존재하지 않습니다.");
+            throw new FileNotFoundException("업로드 할 파일이 존재하지 않습니다.");
+        }
+
+        File file = convertToFile(multipartFile);
+
+        String uploadFilename = dirName + UUID.randomUUID() + file.getName();
+        log.info("uploadFilename = {}", uploadFilename);
+
+        String imagePath = uploadS3ConverionFile(uploadFilename, file,user);
+
+        removeCreatedFile(file);
+        return imagePath;
+    }
+    private String uploadS3ConverionFile(String uploadFilename, File file,User user) {
+        log.info("uploadFilename = {}", uploadFilename);
+
+        amazonS3.putObject(new PutObjectRequest(bucket, uploadFilename, file)
+                .withCannedAcl(CannedAccessControlList.PublicRead));
+        String imagePath = amazonS3.getUrl(bucket, uploadFilename).toString();
+
+        Picture picture = Picture.builder()
+                .uploadFileName(uploadFilename)
+                .storeFileName(file.getName())
+                .isProfile(false)
+                .user(user)
+                .build();
         pictureRepository.save(picture);
         return imagePath;
     }
@@ -123,10 +160,12 @@ public class PictureService {
 
         List<Map<String,String>> imagesURL=new ArrayList<>();
         for(Picture picture : pictures){
-            URL url = amazonS3.getUrl(bucket,picture.getUploadFileName());
-            Map<String,String> data=new HashMap<>();
-            data.put(url.toString(),picture.getStoreFileName());
-            imagesURL.add(data);
+            if(!picture.isProfile()){
+                URL url = amazonS3.getUrl(bucket,picture.getUploadFileName());
+                Map<String,String> data=new HashMap<>();
+                data.put(url.toString(),picture.getStoreFileName());
+                imagesURL.add(data);
+            }
         }
 
         return imagesURL;

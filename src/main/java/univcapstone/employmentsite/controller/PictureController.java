@@ -152,7 +152,7 @@ public class PictureController {
 
         try {
             User user = customUserDetails.getUser();
-            String uploadImagesUrl = pictureService.uploadProfileFile(multipartFiles, transformDir,user);
+            String uploadImagesUrl = pictureService.uploadConversionFile(multipartFiles, transformDir,user);
 
             return ResponseEntity.ok(
                     DefaultResponse.builder()

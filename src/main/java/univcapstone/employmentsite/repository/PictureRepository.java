@@ -26,4 +26,8 @@ public interface PictureRepository extends JpaRepository<Picture, Long> {
     @Transactional
     @Query("UPDATE Picture p SET p.isProfile = false WHERE p.user.id = :userId")
     void setProfileFalse(Long userId);
+
+    @Modifying
+    @Query("DELETE FROM Picture p WHERE p.isProfile=true AND p.user.id = :userId")
+    void deleteFormerProfile(Long userId);
 }
