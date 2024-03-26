@@ -31,7 +31,7 @@ public class PictureController {
 
     public PictureController(PictureService pictureService,
                              @Value("${aws.s3.profile.dirName}") String dirName,
-                             @Value("aws.s3.idPhoto.dirName") String transformDir) {
+                             @Value("${aws.s3.idPhoto.dirName}") String transformDir) {
         this.pictureService = pictureService;
         this.dirName = dirName;
         this.transformDir=transformDir;
