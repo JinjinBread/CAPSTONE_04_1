@@ -82,14 +82,13 @@ public class UserController {
         User user = userService.findId(userFindData.getName(),
                 userFindData.getEmail());
 
-        log.info("이름과 이메일로 찾은 아이디 = {}", user);
-
         if (user == null) {
             return ResponseEntity.badRequest()
                     .body(new ErrorResponse(request.getServletPath(),
                             HttpStatus.BAD_REQUEST.value(),
                             "해당하는 이름과 Email의 계정이 없습니다."));
         } else {
+            log.info("이름과 이메일로 찾은 아이디 = {}", user.getLoginId());
             DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
                     .code(HttpStatus.OK.value())
                     .httpStatus(HttpStatus.OK)
@@ -119,7 +118,7 @@ public class UserController {
                             HttpStatus.BAD_REQUEST.value(),
                             "유저를 찾을 수 없습니다."));
         } else {
-            log.info("아이디와 이름, 이메일로 찾은 사용자 = {}", user);
+            log.info("아이디와 이름, 이메일로 찾은 사용자 = {}", user.getLoginId());
 
             //1. 임시 비밀번호를 생성함
             //2. 해당 임시 비밀번호를 key: 사용자 id, value: 임시 비밀번호 구조로 redis에 저장한다.

@@ -62,8 +62,6 @@ public class MyPageController {
     ) {
         User user = customUserDetails.getUser();
 
-        log.info("유저 마이페이지");
-
         DefaultResponse<User> defaultResponse = DefaultResponse.<User>builder()
                 .code(HttpStatus.OK.value())
                 .httpStatus(HttpStatus.OK)

@@ -22,12 +22,10 @@ import java.util.List;
 @RestController
 public class ResumeController {
 
-    private final UserService userService;
     private final ResumeService resumeService;
 
     @Autowired
-    public ResumeController(UserService userService, ResumeService resumeService) {
-        this.userService = userService;
+    public ResumeController(ResumeService resumeService) {
         this.resumeService = resumeService;
     }
 
@@ -54,7 +52,7 @@ public class ResumeController {
 
         //자기소개서 수정하기 불러오기
         List<Resume> resumes = resumeService.getMyResume(user.getId());
-        log.info("가져오려는 자기소개서들 {}", resumes);
+        log.info("불러온 자기소개서들 중 첫 번째 ID= {}", resumes.get(0).getResumeId());
 
         DefaultResponse<List<Resume>> defaultResponse = DefaultResponse.<List<Resume>>builder()
                 .code(HttpStatus.OK.value())
@@ -77,7 +75,7 @@ public class ResumeController {
 
         //자기소개서 수정하기
         resumeService.reviseResume(resumeDto.getResumeId(), resumeDto.getContent());
-        log.info("수정자: {}, 수정 내용 {}", user, resumeDto);
+        log.info("수정자: {}, 수정 내용 {}", user.getLoginId(), resumeDto);
 
         DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
                 .code(HttpStatus.OK.value())
@@ -101,7 +99,7 @@ public class ResumeController {
         //자기소개서 저장하기
         Resume resume = resumeService.saveResume(user, resumeDto.getContent());
 
-        log.info("저장하려는 사람 {}, 저장하는 내용 {}", user, resumeDto);
+        log.info("저장하려는 사람 {}, 저장하는 내용 {}", user.getLoginId(), resumeDto);
 
         DefaultResponse<Resume> defaultResponse = DefaultResponse.<Resume>builder()
                 .code(HttpStatus.OK.value())

@@ -117,7 +117,7 @@ public class ReplyController {
             @RequestBody @Validated ReplyUpdateDto replyUpdateDto
     ) {
         Reply reply=replyService.updateReply(replyUpdateDto.getReplyId(),replyUpdateDto.getReplyContent());
-        log.info("수정한 댓글 = {}",reply);
+        log.info("수정한 댓글ID,댓글내용 = {} {}",reply.getReplyId(),reply.getReplyContent());
         DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
                 .code(HttpStatus.OK.value())
                 .httpStatus(HttpStatus.OK)

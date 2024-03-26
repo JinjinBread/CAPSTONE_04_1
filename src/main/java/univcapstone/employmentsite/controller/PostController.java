@@ -249,7 +249,7 @@ public class PostController {
             postDTO.add(Post.convertPostDTO(post));
         }
 
-        log.info("검색을 위해 입력한 단어={} ,찾은 결과물 {}", postDTO, posts);
+        log.info("검색을 위해 입력한 단어={} ,찾은 결과물 {}", boardTitle, posts);
 
         DefaultResponse<List<PostToFrontDto>> defaultResponse = DefaultResponse.<List<PostToFrontDto>>builder()
                 .code(HttpStatus.OK.value())
@@ -275,7 +275,7 @@ public class PostController {
         bookmark.setUser(user);
         bookmarkService.saveBookmark(bookmark);
 
-        log.info("북마크 하려는 게시물 정보={} , 북마크정보={}", post, bookmark);
+        log.info("북마크 하려는 게시물ID ={} , 북마크ID ={}", post.getPostId(), bookmark.getBookmarkId());
 
         DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
                 .code(HttpStatus.OK.value())
