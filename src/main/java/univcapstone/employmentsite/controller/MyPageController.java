@@ -140,7 +140,6 @@ public class MyPageController {
             @AuthenticationPrincipal CustomUserDetails customUserDetails
     ){
         List<Picture> pictures=pictureService.getAllProfileImageName(customUserDetails.getUser());
-        log.info("filePath , name = {} ",pictures);
         for(Picture picture : pictures){
             if(picture.isProfile()){
                 pictureService.deleteFile(picture);
