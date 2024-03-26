@@ -102,6 +102,19 @@ public class PictureService {
         }
         return picture;
     }
+    public List<Map<String,String>> getConversionImage(User user) {
+        List<Picture> pictures=pictureRepository.findAllByUserId(user.getId());
+
+        List<Map<String,String>> imagesURL=new ArrayList<>();
+        for(Picture picture : pictures){
+            URL url = amazonS3.getUrl(bucket,picture.getUploadFileName());
+            Map<String,String> data=new HashMap<>();
+            data.put(url.toString(),picture.getStoreFileName());
+            imagesURL.add(data);
+        }
+
+        return imagesURL;
+    }
     //MultipartFile to File
     //업로드할때 파일이 로컬에 없으면 에러가 발생하기 때문에 입력받은 파일을 로컬에 저장하고 업로드해야 함
     //따라서 S3에 업로드 이후 로컬에 저장된 사진을 삭제해야 함

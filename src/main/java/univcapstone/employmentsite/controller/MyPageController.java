@@ -79,11 +79,11 @@ public class MyPageController {
             @AuthenticationPrincipal CustomUserDetails customUserDetails
     ) {
         User user = customUserDetails.getUser();
-        Map<String,String> image=pictureService.getProfileImageName(user);
-        DefaultResponse<Map<String,String>> defaultResponse = DefaultResponse.<Map<String,String>>builder()
+        List<Map<String,String>> image=pictureService.getConversionImage(user);
+        DefaultResponse<List<Map<String,String>>> defaultResponse = DefaultResponse.<List<Map<String,String>>>builder()
                 .code(HttpStatus.OK.value())
                 .httpStatus(HttpStatus.OK)
-                .message("아마존에서 온 프로필")
+                .message("아마존에서 온 합성된 사진들")
                 .result(image)
                 .build();
 
