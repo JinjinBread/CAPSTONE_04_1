@@ -92,24 +92,8 @@ public class MyPageController {
         return ResponseEntity.ok()
                 .body(defaultResponse);
     }
-    //ㅅ
-    @GetMapping("/user/picture")
-    public ResponseEntity<? extends BasicResponse> myPicture(
-            @AuthenticationPrincipal CustomUserDetails customUserDetails
-    ) {
-        User user = customUserDetails.getUser();
-        List<Map<String,String>> image=pictureService.getConversionImage(user);
-        DefaultResponse<List<Map<String,String>>> defaultResponse = DefaultResponse.<List<Map<String,String>>>builder()
-                .code(HttpStatus.OK.value())
-                .httpStatus(HttpStatus.OK)
-                .message("아마존에서 온 합성된 사진들")
-                .result(image)
-                .build();
 
-        return ResponseEntity.ok()
-                .body(defaultResponse);
-    }
-
+    //프로필 사진 저장
     @PostMapping(value = "/user/image/save", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<? extends BasicResponse> saveProfile(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
@@ -135,6 +119,8 @@ public class MyPageController {
         }
 
     }
+
+    //현재 프로필 사진 삭제
     @DeleteMapping(value ="/user/image/delete")
     public ResponseEntity<? extends BasicResponse> deleteProfile(
             @AuthenticationPrincipal CustomUserDetails customUserDetails
@@ -156,7 +142,47 @@ public class MyPageController {
         );
     }
 
+    //프로필 사진 업데이트
+    @PatchMapping("/user/image/update")
+    public ResponseEntity<? extends BasicResponse> updateProfile(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestPart(value = "files") MultipartFile multipartFiles
+    ) throws IOException {
+        User user = customUserDetails.getUser();
+        List<Picture> pictures=pictureService.getAllProfileImageName(user);
+        for(Picture picture : pictures){
+            if(picture.isProfile()){
+                pictureService.deleteFile(picture);
+            }
+        }
+        String uploadImagesUrl = pictureService.uploadProfileFile(multipartFiles, dirName,user);
 
+        return ResponseEntity.ok(
+                DefaultResponse.builder()
+                        .code(HttpStatus.OK.value())
+                        .httpStatus(HttpStatus.OK)
+                        .message("사진 업데이트 완료")
+                        .result(uploadImagesUrl)
+                        .build()
+        );
+    }
+    //합성(만들어진) 사진 모두를 가져오기
+    @GetMapping("/user/picture")
+    public ResponseEntity<? extends BasicResponse> myPicture(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
+    ) {
+        User user = customUserDetails.getUser();
+        List<Map<String,String>> image=pictureService.getConversionImage(user);
+        DefaultResponse<List<Map<String,String>>> defaultResponse = DefaultResponse.<List<Map<String,String>>>builder()
+                .code(HttpStatus.OK.value())
+                .httpStatus(HttpStatus.OK)
+                .message("아마존에서 온 합성된 사진들")
+                .result(image)
+                .build();
+
+        return ResponseEntity.ok()
+                .body(defaultResponse);
+    }
     @GetMapping("/user/bookmark")
     public ResponseEntity<? extends BasicResponse> myBookmark(
             @AuthenticationPrincipal CustomUserDetails customUserDetails
