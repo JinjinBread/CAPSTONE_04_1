@@ -74,6 +74,7 @@ public class MyPageController {
         return ResponseEntity.ok().body(defaultResponse);
     }
 
+    //프로필 사진만 가져오기(URL)
     @GetMapping("user/image/show")
     public ResponseEntity<? extends BasicResponse> getMyProfile(
             @AuthenticationPrincipal CustomUserDetails customUserDetails
@@ -91,6 +92,7 @@ public class MyPageController {
         return ResponseEntity.ok()
                 .body(defaultResponse);
     }
+    //ㅅ
     @GetMapping("/user/picture")
     public ResponseEntity<? extends BasicResponse> myPicture(
             @AuthenticationPrincipal CustomUserDetails customUserDetails
@@ -133,19 +135,24 @@ public class MyPageController {
         }
 
     }
-    @DeleteMapping(value ="/user/image/delete",consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    @DeleteMapping(value ="/user/image/delete")
     public ResponseEntity<? extends BasicResponse> deleteProfile(
             @AuthenticationPrincipal CustomUserDetails customUserDetails
     ){
-        Picture picture=pictureService.getProfilePicture(customUserDetails.getUser());
-        log.info("filePath= {} ",picture.getUploadFileName());
-        String result=pictureService.deleteFile(picture);
+        List<Picture> pictures=pictureService.getAllProfileImageName(customUserDetails.getUser());
+        log.info("filePath , name = {} ",pictures);
+        for(Picture picture : pictures){
+            if(picture.isProfile()){
+                pictureService.deleteFile(picture);
+            }
+        }
+
         return ResponseEntity.ok(
                 DefaultResponse.builder()
                         .code(HttpStatus.OK.value())
                         .httpStatus(HttpStatus.OK)
                         .message("사진 삭제 완료")
-                        .result(result)
+                        .result("")
                         .build()
         );
     }

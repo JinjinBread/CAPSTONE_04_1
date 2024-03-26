@@ -80,6 +80,10 @@ public class PictureService {
 
         return imagesURL;
     }
+    public List<Picture> getAllProfileImageName(User user) {
+        List<Picture> pictures=pictureRepository.findAllByProfiles(user.getId());
+        return pictures;
+    }
     public String getProfileImageOne(User user) {
         Picture picture=pictureRepository.findAllByProfile(user.getId());
         String imagesURL;

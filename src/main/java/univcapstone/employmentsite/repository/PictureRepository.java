@@ -19,6 +19,9 @@ public interface PictureRepository extends JpaRepository<Picture, Long> {
     @Query("SELECT p FROM Picture p WHERE p.user.id=:userId and p.isProfile=true")
     Picture findAllByProfile(Long userId);
 
+    @Query("SELECT p FROM Picture p WHERE p.user.id=:userId and p.isProfile=true")
+    List<Picture> findAllByProfiles(Long userId);
+
     @Modifying
     @Transactional
     @Query("UPDATE Picture p SET p.isProfile = false WHERE p.user.id = :userId")
