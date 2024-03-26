@@ -80,6 +80,19 @@ public class PictureService {
 
         return imagesURL;
     }
+    public String getProfileImageOne(User user) {
+        Picture picture=pictureRepository.findAllByProfile(user.getId());
+        String imagesURL;
+        if(picture==null){
+            imagesURL="https://jobhakdasik2000-bucket.s3.ap-northeast-2.amazonaws.com/default/default.png";
+            log.info("이미지가 없어서 default 이미지 전송");
+            return imagesURL;
+        }
+
+        URL url = amazonS3.getUrl(bucket,picture.getUploadFileName());
+        imagesURL=url.toString();
+        return imagesURL;
+    }
     public String getProfileImage(User user) {
         Picture picture=pictureRepository.findAllByProfile(user.getId());
         String imagesURL;

@@ -74,6 +74,23 @@ public class MyPageController {
         return ResponseEntity.ok().body(defaultResponse);
     }
 
+    @GetMapping("user/image/show")
+    public ResponseEntity<? extends BasicResponse> getMyProfile(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
+    ){
+        User user = customUserDetails.getUser();
+        String image=pictureService.getProfileImageOne(user);
+
+        DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
+                .code(HttpStatus.OK.value())
+                .httpStatus(HttpStatus.OK)
+                .message("사용자의 프로필 사진")
+                .result(image)
+                .build();
+
+        return ResponseEntity.ok()
+                .body(defaultResponse);
+    }
     @GetMapping("/user/picture")
     public ResponseEntity<? extends BasicResponse> myPicture(
             @AuthenticationPrincipal CustomUserDetails customUserDetails
