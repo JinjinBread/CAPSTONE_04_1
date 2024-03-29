@@ -8,6 +8,7 @@ import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.retry.policy.SimpleRetryPolicy;
 import org.springframework.retry.support.RetryTemplate;
 import org.springframework.web.client.RestTemplate;
@@ -22,12 +23,15 @@ import java.util.stream.Collectors;
 @Configuration
 public class RestTemplateConfig {
     @Bean
-    public RestTemplate restTemplate(RestTemplateBuilder restTemplateBuilder){
-        return new RestTemplateBuilder()
-                .setConnectTimeout(Duration.ofSeconds(7))
-                .setReadTimeout(Duration.ofSeconds(7))
-                .additionalInterceptors(clientHttpRequestInterceptor())
-                .build();
+    public RestTemplate restTemplate() {
+        RestTemplate restTemplate = new RestTemplate();
+        SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(7000);
+        requestFactory.setReadTimeout(7000);
+
+        restTemplate.setRequestFactory(requestFactory);
+
+        return restTemplate;
     }
 
     public ClientHttpRequestInterceptor clientHttpRequestInterceptor() {

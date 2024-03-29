@@ -129,7 +129,7 @@ public class PostController {
         User writer=userService.findUserById(writerId);
         String writerProfile=pictureService.getProfileImage(writer);
         Map<String,String> writerProfileName=pictureService.getProfileImageName(writer);
-        log.info("클릭한 게시물 정보:{} , 게시글의 이미지 URL = {} ", post,postImageURL);
+        log.info("클릭한 게시물 정보:{} , 게시글의 이미지 URL = {} ", post.getPostId(),postImageURL);
         
         // 프론트로 보내주기 위해 Entitiy -> DTO로 변환
         PostToFrontDto postDTO = Post.convertPostDTO(post);
@@ -249,7 +249,7 @@ public class PostController {
             postDTO.add(Post.convertPostDTO(post));
         }
 
-        log.info("검색을 위해 입력한 단어={} ,찾은 결과물 {}", boardTitle, posts);
+        log.info("검색을 위해 입력한 단어={}", boardTitle);
 
         DefaultResponse<List<PostToFrontDto>> defaultResponse = DefaultResponse.<List<PostToFrontDto>>builder()
                 .code(HttpStatus.OK.value())
@@ -329,7 +329,6 @@ public class PostController {
         formData.put("replyNum",replies.stream().count());
         formData.put("bookmarkNum",bookmarks.stream().count());
 
-        log.info("불러온 본인의 게시글 = {},댓글 = {},북마크 = {}", posts,replies,bookmarks);
 
         DefaultResponse<Map<String, Long>> defaultResponse = DefaultResponse.<Map<String, Long>>builder()
                 .code(HttpStatus.OK.value())
