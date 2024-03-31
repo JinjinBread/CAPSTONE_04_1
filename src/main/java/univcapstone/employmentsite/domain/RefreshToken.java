@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.redis.core.index.Indexed;
 import univcapstone.employmentsite.util.AuthConstants;
 
 @Getter
@@ -14,6 +15,7 @@ public class RefreshToken {
 
     @Id
     private String loginId;
+    @Indexed
     private String refreshToken;
 
     @Builder

@@ -54,7 +54,7 @@ public class BasicController {
     }
 
     @GetMapping("/home/saramin/href")
-    public ResponseEntity<List<String>> extractImages() throws JsonProcessingException {
+    public ResponseEntity<List<String>> extractImages() throws IOException {
         RestTemplate restTemplate = new RestTemplate();
         String apiUrl = "https://oapi.saramin.co.kr/job-search?access-key=pEyjyJB3XnowAZP5ImZUuNbcGwGGDbUGQXQfdDZqhSFgPkBXKWq&bbs_gb=1&sr=directhire&job_type=1,10&loc_cd=117000&sort=rc&start=0&count=12&fields=expiration-date"; // 취업 사이트의 API URL
         ResponseEntity<String> response = restTemplate.getForEntity(apiUrl, String.class);
@@ -62,39 +62,37 @@ public class BasicController {
         String responseBody = response.getBody();
 
         ObjectMapper mapper = new ObjectMapper();
-        List<String> hrefList = new ArrayList<>();
         List<String> imageUrlList = new ArrayList<>();
 
         if (responseBody != null) {
             ImageAPIHrefDto imageAPIResponse = mapper.readValue(responseBody, ImageAPIHrefDto.class);
 
             List<ImageAPIHrefDto.Job> jobs = imageAPIResponse.getJobs().getJob();
+            log.info("가져온 job의 갯수 = {}",jobs.size());
             for (ImageAPIHrefDto.Job job : jobs) {
-                if (job.getCompany() != null && job.getCompany().getDetail() != null) {
-                    String href = job.getCompany().getDetail().getHref();
-                    try {
+                String href = job.getCompany().getDetail().getHref();
+                log.info("href = {}",href);
+                try {
+                    if (href != null) {
                         Document document = Jsoup.connect(href).get();
-                        Elements elements = document.select("div.box_logo img");
-
-                        StringBuilder images = new StringBuilder();
-                        log.info("Elements = {}", elements);
-
-                        for (Element element : elements) {
-                            String imageUrl = element.attr("src");
-                            images.append(imageUrl);
+                        Element imgElement = document.select(".box_logo img").first(); // box_logo class를 가지는 첫번째 div 태그 선택
+                        if(imgElement!=null){
+                            String src = imgElement.attr("src");
+                            log.info("img 태그 = {}",imgElement);
+                            imageUrlList.add(src);
+                        }else{
+                            imageUrlList.add(null);
                         }
-
-                        imageUrlList.add(images.toString());
-                    } catch (HttpStatusException e) {
-                        imageUrlList.add(null);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
                     }
-                    hrefList.add(href);
+                    else{
+                        imageUrlList.add(null);
+                    }
+                } catch (HttpStatusException e) {
+                    imageUrlList.add(null);
                 }
             }
         }
-        log.info("hef URL 데이터 = {}", hrefList);
+
         log.info("이미지 URL 데이터 = {}", imageUrlList);
         return ResponseEntity.ok()
                 .body(imageUrlList);
@@ -107,7 +105,7 @@ public class BasicController {
 
         User user = userService.findUserByLoginId(customUserDetails.getUsername());
 
-        log.info("current user = {}", user);
+        log.info("current user = {}", user.getLoginId());
 
         if (user == null) {
             log.info("유저를 찾을 수 없습니다.");

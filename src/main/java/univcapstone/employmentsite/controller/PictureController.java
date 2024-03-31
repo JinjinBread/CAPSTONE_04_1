@@ -31,7 +31,7 @@ public class PictureController {
 
     public PictureController(PictureService pictureService,
                              @Value("${aws.s3.profile.dirName}") String dirName,
-                             @Value("aws.s3.idPhoto.dirName") String transformDir) {
+                             @Value("${aws.s3.idPhoto.dirName}") String transformDir) {
         this.pictureService = pictureService;
         this.dirName = dirName;
         this.transformDir=transformDir;
@@ -152,7 +152,7 @@ public class PictureController {
 
         try {
             User user = customUserDetails.getUser();
-            String uploadImagesUrl = pictureService.uploadProfileFile(multipartFiles, transformDir,user);
+            String uploadImagesUrl = pictureService.uploadConversionFile(multipartFiles, transformDir,user);
 
             return ResponseEntity.ok(
                     DefaultResponse.builder()

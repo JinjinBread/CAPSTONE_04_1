@@ -95,20 +95,12 @@ public class AuthService {
      */
     public TokenDto reissue(String refreshToken) {
 
-        String loginId = tokenProvider.getLoginId(refreshToken);
-        User user = userRepository.findByLoginId(loginId)
-                .orElseThrow(() -> new RuntimeException(loginId + "에 해당하는 유저가 존재하지 않습니다."));
-
         //RefreshToken 유효성 검증 (RefreshToken의 TTL로 인해 refreshToken이 만료되면 데이터가 자동 삭제됨)
-        RefreshToken findRefreshToken = refreshTokenRepository.findById(user.getLoginId())
+        RefreshToken findRefreshToken = refreshTokenRepository.findRefreshTokenByRefreshToken(refreshToken)
                 .orElseThrow(() -> new MalformedJwtException("만료된 Refresh Token 입니다. 다시 로그인 하세요."));
 
-        User findUser = userRepository.findByLoginId(findRefreshToken.getLoginId())
+        User user = userRepository.findByLoginId(findRefreshToken.getLoginId())
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 유저입니다.")); //해당 리프레쉬 토큰의 유저를 찾는다.
-
-        if (!user.getId().equals(findUser.getId())) {
-            throw new RuntimeException("일치하지 않는 유저 정보입니다.");
-        }
 
         //Access Token 재발급 진행
         String newAccessToken = tokenProvider.createAccessToken(user);
