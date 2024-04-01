@@ -62,6 +62,7 @@ public class AuthController {
         log.info("login success");
         return ResponseEntity.ok(tokenDto);
     }
+
     @PostMapping("/login/naver")
     public ResponseEntity<TokenDto> naverLogin(@RequestBody NaverLoginDto naverLoginDto){
         UserRequestDto socialData=new UserRequestDto();
