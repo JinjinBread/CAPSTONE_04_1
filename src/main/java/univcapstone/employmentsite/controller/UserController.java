@@ -1,6 +1,7 @@
 package univcapstone.employmentsite.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,8 +11,11 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import univcapstone.employmentsite.domain.User;
+import univcapstone.employmentsite.dto.MailDto;
 import univcapstone.employmentsite.dto.UserEditDto;
 import univcapstone.employmentsite.dto.UserFindDto;
+import univcapstone.employmentsite.service.MailService;
+import univcapstone.employmentsite.service.OtpService;
 import univcapstone.employmentsite.token.CustomUserDetails;
 import univcapstone.employmentsite.util.response.BasicResponse;
 import univcapstone.employmentsite.util.response.ErrorResponse;
@@ -20,14 +24,13 @@ import univcapstone.employmentsite.util.response.DefaultResponse;
 
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
-
-    @Autowired
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
+    private final MailService mailService;
+    private final OtpService otpService;
+    private final int otpLength = 10;
 
     @GetMapping("/join")
     public String join() {
@@ -38,9 +41,6 @@ public class UserController {
     public String joinCheck() {
         return "join check list";
     }
-
-//    @GetMapping("/error")
-//    public S
 
     @PostMapping("/verify/id")
     public ResponseEntity<? extends BasicResponse> verifyID(
@@ -117,25 +117,35 @@ public class UserController {
                     .body(new ErrorResponse(request.getServletPath(),
                             HttpStatus.BAD_REQUEST.value(),
                             "유저를 찾을 수 없습니다."));
-        } else {
-            log.info("아이디와 이름, 이메일로 찾은 사용자 = {}", user.getLoginId());
-
-            //1. 임시 비밀번호를 생성함
-            //2. 해당 임시 비밀번호를 key: 사용자 id, value: 임시 비밀번호 구조로 redis에 저장한다.
-            //3. 임시 번호를 사용자의 이메일로 보낸다.
-            //4. N분 후 임시 비밀번호를 파기한다.
-
-            //사용자는 자신의 원래 비밀번호를 맞게 입력하거나 (제한 시간 이내로) 임시 비밀번호를 입력하면 로그인을 할 수 있다.
-
-            DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
-                    .code(HttpStatus.OK.value())
-                    .httpStatus(HttpStatus.OK)
-                    .message("")
-                    .result(user.getPassword())
-                    .build();
-
-            return ResponseEntity.ok().body(defaultResponse);
         }
+
+        log.info("아이디와 이름, 이메일로 찾은 사용자 로그인 ID = {}", user.getLoginId());
+
+        //1. 임시 비밀번호를 생성함
+        //2. 해당 임시 비밀번호를 key: 사용자 id, value: 임시 비밀번호 구조로 redis에 저장한다.
+        //3. 임시 번호를 사용자의 이메일로 보낸다.
+        //4. N분 후 임시 비밀번호를 파기한다.
+
+        // //사용자는 자신의 원래 비밀번호를 맞게 입력하거나 (제한 시간 이내로)
+        // 사용자는 임시 비밀번호를 입력하면 로그인을 할 수 있다. 임시 비밀번호 발급 이후에는 반드시 비밀번호를 변경해야 한다.
+
+        String otp = otpService.saveOtp(user.getId(), otpLength);
+
+        mailService.sendMail(MailDto.builder()
+                .receiver(user.getEmail())
+                .subject("임시 비밀번호 입니다.")
+                .content(otp)
+                .build());
+
+        DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
+                .code(HttpStatus.OK.value())
+                .httpStatus(HttpStatus.OK)
+                .message("사용자의 이메일로 임시 비밀번호를 전송했습니다.")
+                .result(user.getEmail())
+                .build();
+
+        return ResponseEntity.ok().body(defaultResponse);
+
     }
 
     @PostMapping(value = "/reset/pw", produces = MediaType.APPLICATION_JSON_VALUE)

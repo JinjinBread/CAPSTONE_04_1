@@ -70,7 +70,7 @@ public class UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 계정입니다."));
         //
-        return user.updatePassword(newPassword, passwordEncoder);
+        return user.updatePassword(passwordEncoder.encode(newPassword));
     }
 
     /**
@@ -116,7 +116,7 @@ public class UserService {
     public void editPass(User user, String newPass) {
         User findUser = userRepository.findById(user.getId())
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 계정입니다."));
-        findUser.updatePassword(newPass, passwordEncoder);
+        findUser.updatePassword(passwordEncoder.encode(newPass));
     }
 
     public void editNickname(User user, String newNickname) {
