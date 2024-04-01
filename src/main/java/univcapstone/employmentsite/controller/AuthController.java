@@ -8,10 +8,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import univcapstone.employmentsite.dto.NaverLoginDto;
 import univcapstone.employmentsite.dto.TokenDto;
 import univcapstone.employmentsite.dto.UserRequestDto;
 import univcapstone.employmentsite.dto.UserResponseDto;
 import univcapstone.employmentsite.service.AuthService;
+import univcapstone.employmentsite.service.UserService;
 import univcapstone.employmentsite.token.TokenProvider;
 import univcapstone.employmentsite.util.response.BasicResponse;
 
@@ -26,7 +28,7 @@ public class AuthController {
 
     private final AuthService authService;
     private final TokenProvider tokenProvider;
-
+    private final UserService userService;
     /**
      * 회원가입
      *
@@ -60,7 +62,26 @@ public class AuthController {
         log.info("login success");
         return ResponseEntity.ok(tokenDto);
     }
+    @GetMapping("/login/naver")
+    public ResponseEntity<TokenDto> naverLogin(@RequestBody NaverLoginDto naverLoginDto){
+        UserRequestDto socialData=new UserRequestDto();
+        socialData.setLoginId(naverLoginDto.getLoginId());
+        socialData.setPassword("");
+        socialData.setName(naverLoginDto.getNickname());
+        socialData.setEmail(naverLoginDto.getEmail());
 
+        if(userService.findUserByLoginId(socialData.getLoginId())==null){
+            UserResponseDto userResponseDto = authService.join(socialData);
+            log.info("[{}] success join: {}", userResponseDto.getId(), userResponseDto);
+            TokenDto tokenDto = authService.login(socialData);
+            log.info("login success");
+            return ResponseEntity.ok(tokenDto);
+        }else{
+            TokenDto tokenDto = authService.login(socialData);
+            log.info("login success");
+            return ResponseEntity.ok(tokenDto);
+        }
+    }
 //    @PostMapping("/login/kakao")
 //    public ResponseEntity<? extends BasicResponse> loginKakao()
 
