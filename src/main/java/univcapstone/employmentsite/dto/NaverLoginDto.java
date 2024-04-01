@@ -10,7 +10,7 @@ public class NaverLoginDto {
     @NotEmpty
     private String loginId;
 
-    private String password;
+    private String name;
 
     private String nickname;
 

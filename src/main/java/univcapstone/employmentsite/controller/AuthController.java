@@ -68,7 +68,8 @@ public class AuthController {
         UserRequestDto socialData=new UserRequestDto();
         socialData.setLoginId(naverLoginDto.getLoginId());
         socialData.setPassword("");
-        socialData.setName(naverLoginDto.getNickname());
+        socialData.setName(naverLoginDto.getName());
+        socialData.setNickname(naverLoginDto.getNickname());
         socialData.setEmail(naverLoginDto.getEmail());
 
         if(userService.findUserByLoginId(socialData.getLoginId())==null){
