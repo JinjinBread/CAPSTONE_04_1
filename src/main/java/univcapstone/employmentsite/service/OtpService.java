@@ -20,32 +20,32 @@ import java.util.Date;
 public class OtpService {
 
     private final OtpRepository otpRepository;
-    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserService userService;
     private final String chars =
             "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" +
-            "0123456789" +
-            "~`!@#$%^&*()-_=+\\|[{]};:'\",<.>/?";
+                    "0123456789" +
+                    "~`!@#$%^&*()-_=+\\|[{]};:'\",<.>/?";
 
     //임시 비밀번호를 사용자의 비밀번호로 변경하는 방식
     public String saveOtp(Long userId, int length) {
-        String strOtp = generateOtp(length);
+        String randomPassword = generateOtp(length);
 
-        String encodedOtp = passwordEncoder.encode(strOtp);
+        log.info("생성한 랜덤 패스워드 = {}", randomPassword);
+
+        String encodedOtp = userService.updatePassword(userId, randomPassword);
+
+        log.info("암호화한 비밀번호 = {}, 복호화한 비밀번호 isEqual? = {}", encodedOtp,
+                passwordEncoder.matches(randomPassword, encodedOtp));
 
         Otp otp = Otp.builder()
                 .id(userId)
                 .otp(encodedOtp)
                 .build();
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("존재하지 않는 계정입니다."));
-
-        user.updatePassword(encodedOtp);
-
         otpRepository.save(otp);
 
-        return strOtp;
+        return randomPassword;
     }
 
     private String generateOtp(int length) {

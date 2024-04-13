@@ -106,6 +106,8 @@ public class UserController {
             HttpServletRequest request,
             @RequestBody @Validated UserFindDto userFindData
     ) {
+        log.info("loginId = {}, name = {}, email = {}", userFindData.getLoginId(), userFindData.getName(), userFindData.getEmail());
+
         //비밀번호 찾기에 대한 로직
         User user = userService.findUserByLoginIdAndNameAndEmail(
                 userFindData.getLoginId(),

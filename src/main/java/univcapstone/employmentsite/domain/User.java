@@ -59,4 +59,10 @@ public class User {
         this.nickname = nickname;
     }
 
+    public User updateNameAndNickname(String name, String nickname) {
+        this.name = name;
+        this.nickname = nickname;
+        return this;
+    }
+
 }

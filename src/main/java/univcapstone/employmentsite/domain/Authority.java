@@ -3,12 +3,16 @@ package univcapstone.employmentsite.domain;
 
 
 public enum Authority {
-    ROLE_USER("user"),
-    ROLE_ADMIN("admin");
+    USER("ROLE_USER"),
+    ADMIN("ROLE_USER");
 
     private String role;
 
     Authority(String role) {
         this.role = role;
+    }
+
+    public String getRole() {
+        return role;
     }
 }

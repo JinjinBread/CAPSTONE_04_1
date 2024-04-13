@@ -15,7 +15,9 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-import univcapstone.employmentsite.domain.User;
+import univcapstone.employmentsite.domain.Authority;
+import univcapstone.employmentsite.domain.RefreshToken;
+import univcapstone.employmentsite.repository.RefreshTokenRepository;
 
 import java.security.Key;
 import java.util.Arrays;
@@ -31,12 +33,14 @@ public class TokenProvider implements InitializingBean {
     private final String secret;
     private Key key;
     private final CustomUserDetailsService customUserDetailsService;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     public TokenProvider(
             @Value("${jwt.secret}") String secret,
-            CustomUserDetailsService customUserDetailsService) {
+            CustomUserDetailsService customUserDetailsService, RefreshTokenRepository refreshTokenRepository) {
         this.secret = secret;
         this.customUserDetailsService = customUserDetailsService;
+        this.refreshTokenRepository = refreshTokenRepository;
     }
 
     // 빈이 생성되고 주입을 받은 후에 secret 값을 Base64 Decode해서 key 변수에 할당하기 위해
@@ -63,42 +67,33 @@ public class TokenProvider implements InitializingBean {
 //                .build();
 //    }
 
-    public String createAccessToken(User user) {
-        Claims claims = Jwts.claims().setSubject(user.getLoginId()); //토큰 제목 정보 -> 여기에 loginId가 들어간다.
-        Date date = new Date();
-        Date expiredDate = new Date(date.getTime() + ACCESS_TOKEN_VALID_TIME);
+    public String createAccessToken(Authentication authentication) {
+        return createToken(authentication);
+    }
+//
+    public String createRefreshToken(Authentication authentication) {
+        String refreshToken = createToken(authentication);
 
-        //권한 가져오기
-        String authority = user.getAuthority().toString();
-//        String authorities = authentication.getAuthorities().stream()
-//                .map(GrantedAuthority::getAuthority)
-//                .collect(Collectors.joining(","));
+        //RefreshToken 저장
+        RefreshToken storedRefreshToken = RefreshToken.builder()
+                .refreshToken(refreshToken)
+                .loginId(authentication.getName())
+                .build();
 
-        return Jwts.builder()
-//                .setSubject(authentication.getName())
-                .setClaims(claims)
-                .claim(AUTHORITIES_KEY, authority) // 정보 저장
-                .setIssuedAt(date)
-                .setExpiration(expiredDate) //토큰 만료 시간 (해당 옵션 안 넣으면 만료 안 함)
-                .signWith(key, SignatureAlgorithm.HS512) // 사용할 암호화 알고리즘과 , signature 에 들어갈 secret값 세팅
-                .compact();
+        refreshTokenRepository.save(storedRefreshToken);
+
+        return refreshToken;
     }
 
-    public String createRefreshToken(User user) {
-        Claims claims = Jwts.claims().setSubject(user.getLoginId()); //토큰 제목 정보 -> 여기에 loginId가 들어간다.
+    private String createToken(Authentication authentication) {
+        Claims claims = Jwts.claims().setSubject(authentication.getName()); //토큰 제목 정보 -> 여기에 loginId 들어간다.
         Date date = new Date();
         Date expiredDate = new Date(date.getTime() + REFRESH_TOKEN_VALID_TIME);
 
-        //권한 가져오기
-        String authority = user.getAuthority().toString();
-//        String authorities = authentication.getAuthorities().stream()
-//                .map(GrantedAuthority::getAuthority)
-//                .collect(Collectors.joining(","));
-
         return Jwts.builder()
 //                .setSubject(authentication.getName())
                 .setClaims(claims)
-                .claim(AUTHORITIES_KEY, authority) // 정보 저장
+                .claim(AUTHORITIES_KEY, Collections.singleton(new SimpleGrantedAuthority(Authority.USER.getRole()))) // 정보 저장
                 .setIssuedAt(date)
                 .setExpiration(expiredDate) //토큰 만료 시간 (해당 옵션 안 넣으면 만료 안 함)
                 .signWith(key, SignatureAlgorithm.HS512) // 사용할 암호화 알고리즘과 , signature 에 들어갈 secret값 세팅
@@ -115,16 +110,10 @@ public class TokenProvider implements InitializingBean {
             throw new RuntimeException("권한 정보가 없는 토큰입니다.");
         }
 
-        // 클레임에서 권한 정보 가져오기
-//        Collections.singleton(new SimpleGrantedAuthority(claims.get(AUTHORITIES_KEY).toString()));
-
-//        User principal = new User(claims.getSubject(), "", authorities);
-
         UserDetails userDetails = customUserDetailsService.loadUserByUsername(claims.getSubject());
 
-//        return new UsernamePasswordAuthenticationToken(userDetails, accessToken, authorities); //유저 객체와 토큰, 권한 정보를 통해 Authentication 객체 리턴
         return new UsernamePasswordAuthenticationToken(userDetails, accessToken,
-                Collections.singleton(new SimpleGrantedAuthority(claims.get(AUTHORITIES_KEY).toString()))); //유저 객체와 토큰을 통해 Authentication 객체 리턴
+                Collections.singleton(new SimpleGrantedAuthority(Authority.USER.getRole()))); //유저 객체와 토큰을 통해 Authentication 객체 리턴
     }
 
     //토큰의 유효성 검증을 수행

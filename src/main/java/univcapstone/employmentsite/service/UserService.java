@@ -69,7 +69,7 @@ public class UserService {
     public String updatePassword(Long id, String newPassword) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 계정입니다."));
-        //
+
         return user.updatePassword(passwordEncoder.encode(newPassword));
     }
 

@@ -2,15 +2,18 @@ package univcapstone.employmentsite.controller;
 
 import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import univcapstone.employmentsite.domain.Bookmark;
 import univcapstone.employmentsite.domain.Picture;
@@ -28,6 +31,8 @@ import univcapstone.employmentsite.util.response.ErrorResponse;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -40,20 +45,23 @@ public class MyPageController {
     private final BookmarkService bookmarkService;
     private final PictureService pictureService;
     private final AuthService authService;
-    private final String dirName;
+
+    @Value("${aws.s3.profile.dirName}")
+    private String dirName;
+
+    @Value("${spring.security.oauth2.client.provider.naver.token-uri}")
+    private String tokenUri;
 
     @Value("${aws.s3.bucket}")
     private String bucket;
 
     public MyPageController(UserService userService, BookmarkService bookmarkService,
                             PictureService pictureService,
-                            AuthService authService,
-                            @Value("${aws.s3.profile.dirName}")String dirName) {
+                            AuthService authService) {
         this.userService = userService;
         this.bookmarkService = bookmarkService;
         this.pictureService=pictureService;
         this.authService = authService;
-        this.dirName=dirName;
     }
 
     @GetMapping("/user/myInfo")
@@ -292,6 +300,31 @@ public class MyPageController {
                             "잘못된 삭제 요청입니다."));
         }
     }
+
+//    @GetMapping(value = "/user/naver/delete")
+//    public ResponseEntity<? extends BasicResponse> deleteNaverUser(@Validated NaverDto naverDto) throws URISyntaxException {
+//
+//        RestTemplate restTemplate = new RestTemplate();
+//
+//        naverDto.setGrantType("delete");
+//
+//        URI uri = new URI(tokenUri +
+//                "?grant_type=" + naverDto.getGrantType() +
+//                "&client_id=" + naverDto.getClientId() +
+//                "&client_secret=" + naverDto.getClientSecret() +
+//                "&access_token=" + naverDto.getAccessToken());
+//
+//        ResponseEntity<Object> response = restTemplate.exchange(uri, HttpMethod.POST, null, Object.class);
+//
+//        if (response != null) {
+//            log.info("네이버 연동 해제에 성공했습니다.");
+//        }
+//
+//
+//
+//
+//    }
+
 }
 /*
 @PatchMapping(value = "/user/edit")
