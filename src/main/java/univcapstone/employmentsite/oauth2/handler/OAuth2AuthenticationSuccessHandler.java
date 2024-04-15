@@ -33,6 +33,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     private final RefreshTokenRepository refreshTokenRepository;
     private final HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
     private final OAuth2UnlinkManager oAuth2UserUnlinkManager;
+    private final String REDIRECT_URI = "https://localhost:3000/login/callback";
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -62,7 +63,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
 
         if (customOAuth2User == null) {
-            return UriComponentsBuilder.fromUriString("https://localhost:3000/redirectNaver")
+            return UriComponentsBuilder.fromUriString(REDIRECT_URI)
                     .queryParam("error", "Login failed")
                     .build().toUriString();
         }
@@ -96,7 +97,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             String accessToken = tokenProvider.createAccessToken(authentication);
             String refreshToken = tokenProvider.createRefreshToken(authentication);
 
-            return UriComponentsBuilder.fromUriString("https://localhost:3000/redirectNaver")
+            return UriComponentsBuilder.fromUriString(REDIRECT_URI)
                     .queryParam("accessToken", accessToken)
                     .queryParam("refreshToken", refreshToken)
                     .build().toUriString();
@@ -123,11 +124,11 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
             oAuth2UserUnlinkManager.unlink(provider, accessToken);
 
-            return UriComponentsBuilder.fromUriString("https://localhost:3000/redirectNaver")
+            return UriComponentsBuilder.fromUriString(REDIRECT_URI)
                     .build().toUriString();
         }
 
-        return UriComponentsBuilder.fromUriString("https://localhost:3000/redirectNaver")
+        return UriComponentsBuilder.fromUriString(REDIRECT_URI)
                 .queryParam("error", "Login failed")
                 .build().toUriString();
     }

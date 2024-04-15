@@ -1,7 +1,11 @@
 package univcapstone.employmentsite.oauth2;
 
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.ArrayList;
 import java.util.Map;
 
+@Slf4j
 public class KakaoOAuth2UserInfo implements OAuth2UserInfo {
 
     private final Map<String, Object> attributes;
@@ -18,13 +22,12 @@ public class KakaoOAuth2UserInfo implements OAuth2UserInfo {
         Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
         Map<String, Object> profile = (Map<String, Object>) kakaoAccount.get("profile");
 
+        log.info("attributes = {}", attributes);
+
         this.id = getIdFromResponse(attributes);
         this.name = getNameFromResponse(kakaoAccount);
         this.email = getEmailFromResponse(kakaoAccount);
         this.nickname = getNicknameFromResponse(profile);
-        this.
-
-        attributes.put("id", id); //Long to String
     }
 
     private String getIdFromResponse(Map<String, Object> attributes) {
