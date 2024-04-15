@@ -29,7 +29,7 @@ public class MailService {
             mimeMessage.setRecipient(Message.RecipientType.TO, new InternetAddress(mailDto.getReceiver()));
             mimeMessage.setFrom(new InternetAddress(sender));
             mimeMessage.setSubject(mailDto.getSubject(), "utf-8");
-            mimeMessage.setText(mailDto.getContent(), "utf-8");
+            mimeMessage.setContent(mailDto.getContent(), "text/html;charset=utf-8");
         };
 
         mailSender.send(preparator);
