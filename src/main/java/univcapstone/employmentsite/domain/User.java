@@ -3,6 +3,7 @@ package univcapstone.employmentsite.domain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import univcapstone.employmentsite.oauth2.OAuth2Provider;
 
 import java.util.List;
 
@@ -44,6 +45,9 @@ public class User {
     private String nickname;
 
     @Enumerated(EnumType.STRING)
+    private OAuth2Provider provider;
+
+    @Enumerated(EnumType.STRING)
     private Authority authority;
 
     @JsonIgnore
@@ -59,10 +63,9 @@ public class User {
         this.nickname = nickname;
     }
 
-    public User updateNameAndNickname(String name, String nickname) {
+    public String updateName(String name) {
         this.name = name;
-        this.nickname = nickname;
-        return this;
+        return name;
     }
 
 }

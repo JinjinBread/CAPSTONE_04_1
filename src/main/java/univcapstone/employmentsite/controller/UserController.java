@@ -22,6 +22,8 @@ import univcapstone.employmentsite.util.response.ErrorResponse;
 import univcapstone.employmentsite.service.UserService;
 import univcapstone.employmentsite.util.response.DefaultResponse;
 
+import java.util.Map;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -40,6 +42,20 @@ public class UserController {
     @GetMapping("/joincheck")
     public String joinCheck() {
         return "join check list";
+    }
+
+    @PostMapping("/login/kakao/changeName")
+    public ResponseEntity<User> changeName(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+                                           @RequestBody Map<String, String> data) {
+
+        User user = customUserDetails.getUser();
+
+        String updatedName = userService.updateName(user.getId(), data.get("name"));
+
+        log.info("변경된 이름 = {}", updatedName);
+
+        return ResponseEntity.ok()
+                .body(user);
     }
 
     @PostMapping("/verify/id")

@@ -8,7 +8,8 @@ import lombok.RequiredArgsConstructor;
 public enum OAuth2Provider {
 
     NAVER("naver"),
-    KAKAO("kakao");
+    KAKAO("kakao"),
+    JOBHAK("jobhak");
 
     private final String provider;
 

@@ -8,13 +8,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import univcapstone.employmentsite.domain.User;
 import univcapstone.employmentsite.dto.TokenDto;
 import univcapstone.employmentsite.dto.UserRequestDto;
 import univcapstone.employmentsite.dto.UserResponseDto;
 import univcapstone.employmentsite.service.AuthService;
+import univcapstone.employmentsite.token.CustomUserDetails;
 import univcapstone.employmentsite.token.TokenProvider;
 
 import java.io.IOException;
@@ -29,7 +32,6 @@ public class AuthController {
 
     private final AuthService authService;
     private final TokenProvider tokenProvider;
-    private final ObjectMapper mapper = new ObjectMapper();
 
     /**
      * 회원가입
@@ -78,4 +80,5 @@ public class AuthController {
 
         return ResponseEntity.ok(authService.reissue(refreshToken, authentication));
     }
+
 }

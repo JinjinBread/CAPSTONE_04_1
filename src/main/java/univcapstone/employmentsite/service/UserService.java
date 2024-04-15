@@ -60,6 +60,14 @@ public class UserService {
                 .orElse(null);
     }
 
+    public String updateName(Long id, String name) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("존재하지 않는 계정입니다."));
+
+        user.updateName(name);
+        return user.getName();
+    }
+
     /**
      * 비밀번호 변경
      *
