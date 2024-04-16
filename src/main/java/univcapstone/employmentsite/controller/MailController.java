@@ -44,7 +44,7 @@ public class MailController {
     private static String generateAuthCodeFormat(int authNumber) {
 
         return "<div style='margin:20px;'>" +
-                "<h1> 안녕하세요 Job학다식입니다. </h1>" +
+                "<h1> 안녕하세요. Job학다식입니다. </h1>" +
                 "<br>" +
                 "<p>아래 코드를 복사해 입력해주세요<p>" +
                 "<br>" +

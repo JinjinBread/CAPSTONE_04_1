@@ -15,6 +15,7 @@ import univcapstone.employmentsite.domain.User;
 import univcapstone.employmentsite.dto.TokenDto;
 import univcapstone.employmentsite.dto.UserRequestDto;
 import univcapstone.employmentsite.dto.UserResponseDto;
+import univcapstone.employmentsite.oauth2.OAuth2Provider;
 import univcapstone.employmentsite.repository.RefreshTokenRepository;
 import univcapstone.employmentsite.repository.UserRepository;
 import univcapstone.employmentsite.token.TokenProvider;
@@ -46,6 +47,7 @@ public class AuthService {
                 .nickname(userRequestDto.getNickname())
                 .email(userRequestDto.getEmail())
                 .name(userRequestDto.getName())
+                .provider(OAuth2Provider.JOBHAK)
                 .authority(Authority.USER)
                 .build();
 

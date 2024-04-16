@@ -86,10 +86,12 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             if (optionalUser.isEmpty()) {
                 User user = User.builder()
                         .loginId(userInfo.getEmail())
+                        .nickname(userInfo.getNickname())
                         .email(userInfo.getEmail())
                         .name(userInfo.getName())
+                        .provider(userInfo.getProvider())
                         .authority(Authority.USER)
-                        .nickname(userInfo.getNickname()).build();
+                        .build();
 
                 userRepository.save(user);
             }
