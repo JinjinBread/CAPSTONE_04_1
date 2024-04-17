@@ -155,13 +155,17 @@ public class ResumeController {
 
         List<Career> careers = careerService.findCareerListByUserId(user.getId());
         List<Experience> exps = expService.findExpListByUserId(user.getId());
-        if(careers == null && exps == null){
+        ExpNCareer text=expNCareerService.findTextByUserId(user.getId());
+        if(careers == null && exps == null) {
+            isText = false;
+        }else if(text == null){
             isText = false;
         }
+
         DefaultResponse<Boolean> defaultResponse = DefaultResponse.<Boolean>builder()
                 .code(HttpStatus.OK.value())
                 .httpStatus(HttpStatus.OK)
-                .message("True : 줄글로 저장 되어 있다 , False : 목록으로 저장 되어 있다")
+                .message("True : 줄글로 저장 되어 있다 , False : 목록으로 저장었거나 둘다 저장되었지않다")
                 .result(isText)
                 .build();
 
