@@ -86,7 +86,7 @@ public class ResumeController {
         User user = customUserDetails.getUser();
         careerService.saveCareer(user,careerSaveDto);
         expService.saveExp(user,expSaveDto);
-
+        expNCareerService.deleteText(user);
         DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
                 .code(HttpStatus.OK.value())
                 .httpStatus(HttpStatus.OK)
@@ -107,8 +107,13 @@ public class ResumeController {
         ExpNCareer expNcareer = expNCareerService.findTextByUserId(user.getId());
 
         Map<String, String> map = new HashMap<>();
-        map.put("userId", expNcareer.getUser().getLoginId());
-        map.put("content", expNcareer.getContent());
+        if(expNcareer == null){
+            map.put("userId", null);
+            map.put("content", null);
+        }else{
+            map.put("userId", expNcareer.getUser().getLoginId());
+            map.put("content", expNcareer.getContent());
+        }
         DefaultResponse<Map<String, String>> defaultResponse = DefaultResponse.<Map<String, String>>builder()
                 .code(HttpStatus.OK.value())
                 .httpStatus(HttpStatus.OK)
@@ -128,7 +133,8 @@ public class ResumeController {
     ){
         User user = customUserDetails.getUser();
         expNCareerService.saveText(user,content);
-
+        expService.deleteList(user);
+        careerService.deleteList(user);
         DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
                 .code(HttpStatus.OK.value())
                 .httpStatus(HttpStatus.OK)
@@ -140,22 +146,22 @@ public class ResumeController {
                 .body(defaultResponse);
     }
 
-    @GetMapping("resume/get/IsText")
+    @GetMapping("/resume/get/IsText")
     public ResponseEntity<? extends BasicResponse> isText(
             @AuthenticationPrincipal CustomUserDetails customUserDetails
     ){
         User user = customUserDetails.getUser();
-        boolean isText = false;
+        boolean isText = true;
 
         List<Career> careers = careerService.findCareerListByUserId(user.getId());
         List<Experience> exps = expService.findExpListByUserId(user.getId());
         if(careers == null && exps == null){
-            isText = true;
+            isText = false;
         }
         DefaultResponse<Boolean> defaultResponse = DefaultResponse.<Boolean>builder()
                 .code(HttpStatus.OK.value())
                 .httpStatus(HttpStatus.OK)
-                .message("경력 경험 줄글인지 아닌지 (경험 경력 목록이 아무것도 없을 때)")
+                .message("True : 줄글로 저장 되어 있다 , False : 목록으로 저장 되어 있다")
                 .result(isText)
                 .build();
 
@@ -249,3 +255,6 @@ public class ResumeController {
     }
     */
 }
+//1. Career,Experience,ExpNCareer의 Date -> String
+//2. 저장할 때 추가가 아니라 덮어쓰기로
+//3. 줄글 저장시 목록은 제거, 목록 저장시 줄글은 제거

@@ -36,4 +36,8 @@ public class ExpNCareerService {
             expNCareerRepository.updateText(user.getId(),content);
         }
     }
+
+    public void deleteText(User user) {
+        expNCareerRepository.deleteByUserId(user.getId());
+    }
 }

@@ -14,8 +14,8 @@ import java.util.Date;
 @Setter
 public class ExpSaveDto {
     private String expName;
-    private Date startDate;
-    private Date endDate;
+    private String startDate;
+    private String endDate;
     private String expContent;
 
     public Experience toEntity(User user, ExpSaveDto expSaveDto) {

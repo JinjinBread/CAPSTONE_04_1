@@ -23,7 +23,7 @@ public class Career {
     private User user;
 
     private String careerName;
-    private Date startDate;
-    private Date endDate;
+    private String startDate;
+    private String endDate;
     private String careerContent;
 }

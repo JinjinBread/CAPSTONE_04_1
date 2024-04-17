@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import univcapstone.employmentsite.domain.ExpNCareer;
+import univcapstone.employmentsite.domain.User;
 
 import java.util.List;
 
@@ -19,4 +20,8 @@ public interface ExpNCareerRepository extends JpaRepository<ExpNCareer,Long> {
     @Transactional
     @Query("UPDATE ExpNCareer e SET e.content = :content WHERE e.user.id = :id")
     void updateText(Long id,String content);
+
+    @Modifying
+    @Query("DELETE FROM ExpNCareer e WHERE e.user.id = :id")
+    void deleteByUserId(Long id);
 }

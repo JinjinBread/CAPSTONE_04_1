@@ -28,10 +28,15 @@ public class ExpService {
     }
 
     public void saveExp(User user, List<ExpSaveDto> expSaveDto) {
+        expRepository.deleteByUserId(user.getId());
         for(ExpSaveDto expData : expSaveDto){
             Experience exp = expData.toEntity(user,expData);
             expRepository.save(exp);
         }
 
+    }
+
+    public void deleteList(User user) {
+        expRepository.deleteByUserId(user.getId());
     }
 }
