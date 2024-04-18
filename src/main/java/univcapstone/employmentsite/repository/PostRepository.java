@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import univcapstone.employmentsite.domain.Post;
 
 import java.util.List;
+import java.util.Map;
 
 
 @Repository
@@ -26,4 +27,11 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     List<Post> findByTitle(String title);
     @Query("SELECT p FROM Post p WHERE p.user.loginId= :loginId ORDER BY p.date DESC")
     List<Post> findMyPost(String loginId);
+    //"SELECT LEAD(p.postId) OVER (ORDER BY p.date) AS next_post_id FROM Post p WHERE p.postId = :postId"
+
+    @Query("SELECT MIN(p.postId) FROM Post p WHERE p.date > (SELECT p1.date FROM Post p1 WHERE p1.postId = :postId)")
+    Long findNextPost(Long postId);
+
+    @Query("SELECT MAX(p.postId) FROM Post p WHERE p.date < (SELECT p1.date FROM Post p1 WHERE p1.postId = :postId)")
+    Long findPrevPost(Long postId);
 }

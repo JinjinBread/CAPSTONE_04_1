@@ -146,14 +146,15 @@ public class PostController {
             repliersProfile.put(replier.getLoginId(),replierProfile);
             reply.setReplierProfile(repliersProfile);
         }
-        Map<String, String> repliersProfile = new HashMap<>();
-        List<Map<String,String>> repliersProfileName=new ArrayList<>();
-
+        log.info("다음글 이전글을 찾으려는 postId = {} ",postDTO.getPostId());
+        Long next = postService.getNextPostId(postDTO.getPostId());
+        Long prev = postService.getPrevPostId(postDTO.getPostId());
         //게시글 작성자,댓글 작성자의 정보(아마존 S3 프로필 URL,File name을 보낼 데이터에 추가)
         PostDetailToFrontDto detail=new PostDetailToFrontDto(postDTO);
         detail.setWriterProfile(writerProfile);
         detail.setWriterRealFileName(writerProfileName);
-
+        detail.setNext(next);
+        detail.setPrev(prev);
         DefaultResponse<PostDetailToFrontDto> defaultResponse = DefaultResponse.<PostDetailToFrontDto>builder()
                 .code(HttpStatus.OK.value())
                 .httpStatus(HttpStatus.OK)

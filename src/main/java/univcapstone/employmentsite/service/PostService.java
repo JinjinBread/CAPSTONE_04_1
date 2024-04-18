@@ -14,6 +14,7 @@ import univcapstone.employmentsite.repository.PostRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Transactional
@@ -130,5 +131,17 @@ public class PostService {
     public List<Post> showMyPost(String loginId) {
         List<Post> post = postRepository.findMyPost(loginId);
         return post;
+    }
+
+    public Long getNextPostId(Long postId) {
+        Long nextPostId=postRepository.findNextPost(postId);
+        log.info("다음글 ID {}",nextPostId);
+        return nextPostId;
+    }
+
+    public Long getPrevPostId(Long postId) {
+        Long prevPostId=postRepository.findPrevPost(postId);
+        log.info("이전글 ID {}",prevPostId);
+        return prevPostId;
     }
 }

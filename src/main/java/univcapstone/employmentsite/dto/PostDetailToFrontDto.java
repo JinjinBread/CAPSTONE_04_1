@@ -25,6 +25,9 @@ public class PostDetailToFrontDto {
     private String date;
     private String writerProfile;
     private Map<String,String> WriterRealFileName;
+
+    private Long prev;
+    private Long next;
     public PostDetailToFrontDto(PostToFrontDto post) {
         this.postId = post.getPostId();
         this.replies = post.getReplies();
