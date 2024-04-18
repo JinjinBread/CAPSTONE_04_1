@@ -40,7 +40,7 @@ public class Post {
     private List<PostFile> postFile;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "userId")
     private User user;
 
     @CreatedDate

@@ -21,7 +21,7 @@ public class Reply {
     private Long replyId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id")
+    @JoinColumn(name = "post_id") //Reply에 post_id라는 fk 컬럼이 생성
     private Post post;
 
     @ManyToOne(fetch = FetchType.LAZY)

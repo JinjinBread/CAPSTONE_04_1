@@ -16,6 +16,7 @@ import univcapstone.employmentsite.oauth2.*;
 import univcapstone.employmentsite.oauth2.utils.CookieUtil;
 import univcapstone.employmentsite.repository.RefreshTokenRepository;
 import univcapstone.employmentsite.repository.UserRepository;
+import univcapstone.employmentsite.service.BookmarkService;
 import univcapstone.employmentsite.token.TokenProvider;
 
 import java.io.IOException;
@@ -29,6 +30,7 @@ import static univcapstone.employmentsite.oauth2.HttpCookieOAuth2AuthorizationRe
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final TokenProvider tokenProvider;
+    private final BookmarkService bookmarkService;
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;

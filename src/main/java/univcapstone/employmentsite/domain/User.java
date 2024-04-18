@@ -25,11 +25,15 @@ public class User {
     private String loginId;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "postId", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    private List<Bookmark> bookmarks;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<Post> posts;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "replyId", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<Reply> replies;
 
     @Column(name = "name")
@@ -51,7 +55,7 @@ public class User {
     private Authority authority;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "pictureId")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<Picture> pictures;
 
     public String updatePassword(String newPassword) {;
