@@ -106,10 +106,10 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
         } else if ("unlink".equalsIgnoreCase(mode)) {
 
-            String accessToken = customOAuth2User.getUserInfo().getAccessToken();
-            OAuth2Provider provider = customOAuth2User.getUserInfo().getProvider();
+            OAuth2UserInfo oAuth2UserInfo = customOAuth2User.getUserInfo();
+            OAuth2Provider provider = oAuth2UserInfo.getProvider();
 
-            OAuth2UserInfo oAuth2UserInfo = (OAuth2UserInfo) tokenProvider.getAuthentication(accessToken).getPrincipal();
+            String accessToken = oAuth2UserInfo.getAccessToken();
 
             User user = userRepository.findByEmail(oAuth2UserInfo.getEmail())
                     .orElseThrow(() -> new RuntimeException("존재하지 않는 유저입니다."));
@@ -126,7 +126,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
             oAuth2UserUnlinkManager.unlink(provider, accessToken);
 
-            return UriComponentsBuilder.fromUriString(REDIRECT_URI)
+            return UriComponentsBuilder.fromUriString("https://localhost:3000/")
                     .build().toUriString();
         }
 

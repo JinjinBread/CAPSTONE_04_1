@@ -18,6 +18,7 @@ import org.springframework.web.filter.CorsFilter;
 import univcapstone.employmentsite.config.filter.JwtAuthenticationFilter;
 import univcapstone.employmentsite.config.filter.JwtExceptionFilter;
 import univcapstone.employmentsite.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
+import univcapstone.employmentsite.oauth2.handler.OAuth2AuthenticationFailureHandler;
 import univcapstone.employmentsite.oauth2.handler.OAuth2AuthenticationSuccessHandler;
 import univcapstone.employmentsite.service.LogoutService;
 import univcapstone.employmentsite.oauth2.OAuth2Service;
@@ -38,6 +39,7 @@ public class SecurityConfig {
     private final OAuth2Service oAuth2Service;
     private final HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
     private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
+    private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
 
     // PasswordEncoder는 BCryptPasswordEncoder를 사용
     @Bean
@@ -103,7 +105,8 @@ public class SecurityConfig {
                                 })
                                 .redirectionEndpoint(config -> config.baseUri("/login/oauth2/code/**"))
                                 .userInfoEndpoint(config -> config.userService(oAuth2Service))
-                                .successHandler(oAuth2AuthenticationSuccessHandler));
+                                .successHandler(oAuth2AuthenticationSuccessHandler)
+                                .failureHandler(oAuth2AuthenticationFailureHandler));
 
         return httpSecurity.build();
     }
