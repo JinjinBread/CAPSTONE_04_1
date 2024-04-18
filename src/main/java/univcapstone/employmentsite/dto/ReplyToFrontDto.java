@@ -4,6 +4,7 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Map;
 
 @Data
 @Getter
@@ -18,6 +19,7 @@ public class ReplyToFrontDto {
     private Long parentReplyId;
     private String replyContent;
     private String date;
+    private Map<String,String> replierProfile;
 
     public ReplyToFrontDto(Long replyId, Long postId, Long userId, String nickname, Long parentReplyId, String replyContent, LocalDateTime date) {
         this.replyId = replyId;

@@ -23,12 +23,8 @@ public class PostDetailToFrontDto {
     private Long userId;
     private String nickname;
     private String date;
-
     private String writerProfile;
-    private Map<String,String> replierProfile;
-
     private Map<String,String> WriterRealFileName;
-    private List<Map<String,String>> ReplierRealFileName;
     public PostDetailToFrontDto(PostToFrontDto post) {
         this.postId = post.getPostId();
         this.replies = post.getReplies();

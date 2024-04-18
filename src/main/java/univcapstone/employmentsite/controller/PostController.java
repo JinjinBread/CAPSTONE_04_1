@@ -137,23 +137,22 @@ public class PostController {
 
         // 게시글에 대한 댓글 작성자의 정보를 찾음
         List<ReplyToFrontDto> replies=postDTO.getReplies();
-        Map<String, String> repliersProfile = new HashMap<>();
-        List<Map<String,String>> repliersProfileName=new ArrayList<>();
+        //Map<String,String> replierProfile 추가
         for(ReplyToFrontDto reply:replies){
             Long replierId=reply.getUserId();
             User replier=userService.findUserById(replierId);
             String replierProfile=pictureService.getProfileImage(replier);
+            Map<String, String> repliersProfile = new HashMap<>();
             repliersProfile.put(replier.getLoginId(),replierProfile);
-            repliersProfileName.add(pictureService.getProfileImageName(replier));
+            reply.setReplierProfile(repliersProfile);
         }
-        
+        Map<String, String> repliersProfile = new HashMap<>();
+        List<Map<String,String>> repliersProfileName=new ArrayList<>();
+
         //게시글 작성자,댓글 작성자의 정보(아마존 S3 프로필 URL,File name을 보낼 데이터에 추가)
         PostDetailToFrontDto detail=new PostDetailToFrontDto(postDTO);
         detail.setWriterProfile(writerProfile);
-        detail.setReplierProfile(repliersProfile);
         detail.setWriterRealFileName(writerProfileName);
-        detail.setReplierRealFileName(repliersProfileName);
-
 
         DefaultResponse<PostDetailToFrontDto> defaultResponse = DefaultResponse.<PostDetailToFrontDto>builder()
                 .code(HttpStatus.OK.value())
