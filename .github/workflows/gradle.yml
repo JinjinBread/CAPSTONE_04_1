@@ -53,14 +53,14 @@ jobs:
     #
     # - name: Build with Gradle 8.5
     #   run: gradle build
-
-      - name: Deploy
-          uses: appleboy/ssh-action@v1.0.3
-          with:
-            host: ${{ secrets.EC2_HOST }} # EC2 인스턴스 퍼블릭 DNS
-            username: ${{ secrets.EC2_USERNAME }}
-            key: ${{ secrets.EC2_SSH_KEY }} # pem 키
-            port: ${{ secrets.EC2_SSH_PORT }} # 접속포트번호 (보통 22)
-            script:
-              cd /home/ubuntu/CAPSTONE_04_1
-              git pull
+            
+      - name: SSH Remote Commands
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }} # EC2 인스턴스 퍼블릭 DNS
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }} # pem 키
+          port: ${{ secrets.EC2_SSH_PORT }} # 접속포트번호 (보통 22)
+          script:
+            cd /home/ubuntu/CAPSTONE_04_1
+            git pull
