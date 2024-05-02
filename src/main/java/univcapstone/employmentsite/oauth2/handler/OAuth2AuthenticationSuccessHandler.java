@@ -16,13 +16,15 @@ import univcapstone.employmentsite.oauth2.*;
 import univcapstone.employmentsite.oauth2.utils.CookieUtil;
 import univcapstone.employmentsite.repository.RefreshTokenRepository;
 import univcapstone.employmentsite.repository.UserRepository;
-import univcapstone.employmentsite.service.BookmarkService;
 import univcapstone.employmentsite.token.TokenProvider;
+import univcapstone.employmentsite.util.AuthConstants;
 
 import java.io.IOException;
 import java.util.Optional;
 
 import static univcapstone.employmentsite.oauth2.HttpCookieOAuth2AuthorizationRequestRepository.MODE_PARAM_COOKIE_NAME;
+import static univcapstone.employmentsite.util.AuthConstants.ACCESS_TOKEN_VALID_TIME;
+import static univcapstone.employmentsite.util.AuthConstants.REFRESH_TOKEN_VALID_TIME;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -30,7 +32,6 @@ import static univcapstone.employmentsite.oauth2.HttpCookieOAuth2AuthorizationRe
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final TokenProvider tokenProvider;
-    private final BookmarkService bookmarkService;
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
@@ -98,8 +99,8 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                 userRepository.save(user);
             }
 
-            String accessToken = tokenProvider.createAccessToken(authentication);
-            String refreshToken = tokenProvider.createRefreshToken(authentication);
+            String accessToken = tokenProvider.createAccessToken(authentication, ACCESS_TOKEN_VALID_TIME);
+            String refreshToken = tokenProvider.createRefreshToken(authentication, REFRESH_TOKEN_VALID_TIME);
 
             return UriComponentsBuilder.fromUriString(REDIRECT_URI)
                     .queryParam("accessToken", accessToken)
@@ -120,7 +121,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             userRepository.delete(user);
 
             // TODO: 리프레시 토큰 삭제
-            String strRefreshToken = tokenProvider.getRefreshTokenFromCookies(request);
+            String strRefreshToken = tokenProvider.resolveRefreshToken(request);
             RefreshToken refreshToken = refreshTokenRepository.findRefreshTokenByRefreshToken(strRefreshToken)
                     .orElseThrow(() -> new RuntimeException("Refresh Token이 존재하지 않습니다."));
 

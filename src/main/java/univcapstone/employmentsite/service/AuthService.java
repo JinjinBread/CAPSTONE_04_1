@@ -70,8 +70,8 @@ public class AuthService {
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 유저입니다"));
 
         //해당 user를 기반으로 JWT TOKEN 생성
-        String accessToken = tokenProvider.createAccessToken(authenticate);
-        String refreshToken = tokenProvider.createRefreshToken(authenticate);
+        String accessToken = tokenProvider.createAccessToken(authenticate, ACCESS_TOKEN_VALID_TIME);
+        String refreshToken = tokenProvider.createRefreshToken(authenticate, REFRESH_TOKEN_VALID_TIME);
 
         return TokenDto.builder()
                 .grantType(BEARER_PREFIX)
@@ -97,7 +97,7 @@ public class AuthService {
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 유저입니다.")); //해당 리프레쉬 토큰의 유저를 찾는다.
 
         //Access Token 재발급 진행
-        String newAccessToken = tokenProvider.createAccessToken(authentication);
+        String newAccessToken = tokenProvider.createAccessToken(authentication, ACCESS_TOKEN_VALID_TIME);
 
         log.info("재발급된 Access Token = {}", newAccessToken);
 

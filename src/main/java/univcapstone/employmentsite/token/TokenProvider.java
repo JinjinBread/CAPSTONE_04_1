@@ -67,12 +67,12 @@ public class TokenProvider implements InitializingBean {
 //                .build();
 //    }
 
-    public String createAccessToken(Authentication authentication) {
-        return createToken(authentication);
+    public String createAccessToken(Authentication authentication, Long validTime) {
+        return createToken(authentication, validTime);
     }
 //
-    public String createRefreshToken(Authentication authentication) {
-        String refreshToken = createToken(authentication);
+    public String createRefreshToken(Authentication authentication, Long validTime) {
+        String refreshToken = createToken(authentication, validTime);
 
         //RefreshToken 저장
         RefreshToken storedRefreshToken = RefreshToken.builder()
@@ -85,10 +85,10 @@ public class TokenProvider implements InitializingBean {
         return refreshToken;
     }
 
-    private String createToken(Authentication authentication) {
+    private String createToken(Authentication authentication, Long validTime) {
         Claims claims = Jwts.claims().setSubject(authentication.getName()); //토큰 제목 정보 -> 여기에 loginId 들어간다.
         Date date = new Date();
-        Date expiredDate = new Date(date.getTime() + REFRESH_TOKEN_VALID_TIME);
+        Date expiredDate = new Date(date.getTime() + validTime);
 
         return Jwts.builder()
 //                .setSubject(authentication.getName())
@@ -175,6 +175,14 @@ public class TokenProvider implements InitializingBean {
         String bearerToken = request.getHeader(AUTH_HEADER);
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
             return bearerToken.substring(7);
+        }
+        return null;
+    }
+
+    public String resolveRefreshToken(HttpServletRequest request) {
+        String refreshToken = request.getHeader(REFRESH_HEADER);
+        if (StringUtils.hasText(refreshToken) && refreshToken.startsWith(BEARER_PREFIX)) {
+            return refreshToken.substring(7);
         }
         return null;
     }

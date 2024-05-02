@@ -76,7 +76,7 @@ public class AuthController {
     @PostMapping("/reissue")
     public ResponseEntity<TokenDto> reissue(HttpServletRequest request, Authentication authentication) {
 
-        String refreshToken = tokenProvider.getRefreshTokenFromCookies(request);
+        String refreshToken = tokenProvider.resolveRefreshToken(request);
 
         return ResponseEntity.ok(authService.reissue(refreshToken, authentication));
     }

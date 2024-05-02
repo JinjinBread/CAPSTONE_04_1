@@ -31,7 +31,7 @@ public class LogoutService implements LogoutHandler {
 //        Authentication auth = tokenProvider.getAuthentication(accessToken);
 //        String loginId = auth.getName();
 
-        String refreshToken = tokenProvider.getRefreshTokenFromCookies(request);
+        String refreshToken = tokenProvider.resolveRefreshToken(request);
 
         log.info("refreshToken = {}", refreshToken);
 
