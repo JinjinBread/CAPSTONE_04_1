@@ -28,13 +28,16 @@ public class PictureController {
     private final PictureService pictureService;
     private final String dirName;
     private final String transformDir;
+    private final String beforeConversionDir;
 
     public PictureController(PictureService pictureService,
                              @Value("${aws.s3.profile.dirName}") String dirName,
-                             @Value("${aws.s3.idPhoto.dirName}") String transformDir) {
+                             @Value("${aws.s3.idPhoto.dirName}") String transformDir,
+                             @Value("${aws.s3.idPhoto.beforeConversion}") String beforeConversionDir) {
         this.pictureService = pictureService;
         this.dirName = dirName;
         this.transformDir=transformDir;
+        this.beforeConversionDir = beforeConversionDir;
     }
 
     @GetMapping("/profile/male")
@@ -104,25 +107,27 @@ public class PictureController {
     @PostMapping("/profile/edit")
     public ResponseEntity<? extends BasicResponse> editPicture(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestPart(value = "file") MultipartFile multipartFiles,
             @RequestParam("brightness") float brightness,
             @RequestParam("saturation") float saturation,
             @RequestParam("conversion") boolean conversion
-    ) {
+    ) throws IOException {
         // 1. Spring 에서 사진 아이디로 사진을 찾고,
         // 2. 찾은 사진과 Front에서 온 명도와 채도 등의 값들을 해당 사진을 Flask로 보냄
         // 3. Flask에서 GAN을 이용해서 데이터를 생성하던지, 명도 채도 값을 조절한 사진을 보냄
         // 4. Spring에서 Flask에서 온 사진을 받아 Front로 전달
 
         // 프로필 이미지 url을 가져오기
-        Picture picture=pictureService.getProfilePicture(customUserDetails.getUser());
-
+        String picturePath=pictureService.uploadProfileFile(multipartFiles, beforeConversionDir,customUserDetails.getUser());
+        picturePath= picturePath.replace("https://jobhakdasik2000-bucket.s3.ap-northeast-2.amazonaws.com/","");
         // JSON 형식으로 줄 이미지,명도,채도,옷바꾸기 기능의 여부
         MultiValueMap<String, Object> formData = new LinkedMultiValueMap<>();
-        formData.add("file", picture.getUploadFileName());
+        formData.add("file", picturePath);
         formData.add("brightness", brightness);
         formData.add("saturation", saturation);
         formData.add("conversion", conversion);
 
+        log.info("picturePath = {}",picturePath);
         // Flask server로 데이터를 주고 받기
         RestTemplate restTemplate = new RestTemplate();
         String flaskEndpoint = "http://localhost:12300/profile/edit";
