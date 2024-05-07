@@ -77,7 +77,6 @@ public class AuthController {
     public ResponseEntity<TokenDto> reissue(HttpServletRequest request, Authentication authentication) {
 
         String refreshToken = tokenProvider.resolveRefreshToken(request);
-
         return ResponseEntity.ok(authService.reissue(refreshToken, authentication));
     }
 

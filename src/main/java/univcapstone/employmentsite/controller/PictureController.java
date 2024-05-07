@@ -10,7 +10,6 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
-import univcapstone.employmentsite.domain.Picture;
 import univcapstone.employmentsite.domain.User;
 import univcapstone.employmentsite.service.PictureService;
 import univcapstone.employmentsite.token.CustomUserDetails;
@@ -19,7 +18,6 @@ import univcapstone.employmentsite.util.response.DefaultResponse;
 import univcapstone.employmentsite.util.response.ErrorResponse;
 
 import java.io.*;
-import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -36,7 +34,7 @@ public class PictureController {
                              @Value("${aws.s3.beforeConversion.dirName}") String beforeConversionDir) {
         this.pictureService = pictureService;
         this.dirName = dirName;
-        this.transformDir=transformDir;
+        this.transformDir = transformDir;
         this.beforeConversionDir = beforeConversionDir;
     }
 
@@ -45,12 +43,12 @@ public class PictureController {
             @AuthenticationPrincipal CustomUserDetails customUserDetails
     ) {
         User user = customUserDetails.getUser();
-        Map<String,String> images=pictureService.getProfileImageName(user);
+        Map<String, String> images = pictureService.getProfileImageName(user);
 
-        log.info("images = {}",images);
-        if(images.isEmpty()){
+        log.info("images = {}", images);
+        if (images.isEmpty()) {
             log.info("이미지가 없어서 default 이미지 전송");
-            String result="https://jobhakdasik2000-bucket.s3.ap-northeast-2.amazonaws.com/default/default.png";
+            String result = "https://jobhakdasik2000-bucket.s3.ap-northeast-2.amazonaws.com/default/default.png";
             DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
                     .code(HttpStatus.OK.value())
                     .httpStatus(HttpStatus.OK)
@@ -61,7 +59,7 @@ public class PictureController {
             return ResponseEntity.ok()
                     .body(defaultResponse);
         }
-        DefaultResponse<Map<String,String>> defaultResponse = DefaultResponse.<Map<String,String>>builder()
+        DefaultResponse<Map<String, String>> defaultResponse = DefaultResponse.<Map<String, String>>builder()
                 .code(HttpStatus.OK.value())
                 .httpStatus(HttpStatus.OK)
                 .message("아마존에서 온 프로필")
@@ -77,12 +75,12 @@ public class PictureController {
             @AuthenticationPrincipal CustomUserDetails customUserDetails
     ) {
         User user = customUserDetails.getUser();
-        Map<String,String> images=pictureService.getProfileImageName(user);
+        Map<String, String> images = pictureService.getProfileImageName(user);
 
-        log.info("images = {}",images);
-        if(images.isEmpty()){
+        log.info("images = {}", images);
+        if (images.isEmpty()) {
             log.info("이미지가 없어서 default 이미지 전송");
-            String result="https://jobhakdasik2000-bucket.s3.ap-northeast-2.amazonaws.com/default/default.png";
+            String result = "https://jobhakdasik2000-bucket.s3.ap-northeast-2.amazonaws.com/default/default.png";
             DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
                     .code(HttpStatus.OK.value())
                     .httpStatus(HttpStatus.OK)
@@ -93,7 +91,7 @@ public class PictureController {
             return ResponseEntity.ok()
                     .body(defaultResponse);
         }
-        DefaultResponse<Map<String,String>> defaultResponse = DefaultResponse.<Map<String,String>>builder()
+        DefaultResponse<Map<String, String>> defaultResponse = DefaultResponse.<Map<String, String>>builder()
                 .code(HttpStatus.OK.value())
                 .httpStatus(HttpStatus.OK)
                 .message("아마존에서 온 프로필")
@@ -119,17 +117,17 @@ public class PictureController {
         // 4. Spring에서 Flask에서 온 사진을 받아 Front로 전달
 
         // 프로필 이미지 url을 가져오기
-        String picturePath=pictureService.uploadProfileFile(multipartFiles, beforeConversionDir,customUserDetails.getUser());
-        picturePath= picturePath.replace("https://jobhakdasik2000-bucket.s3.ap-northeast-2.amazonaws.com/","");
+        String picturePath = pictureService.uploadProfileFile(multipartFiles, beforeConversionDir, customUserDetails.getUser());
+        picturePath = picturePath.replace("https://jobhakdasik2000-bucket.s3.ap-northeast-2.amazonaws.com/", "");
         // JSON 형식으로 줄 이미지,명도,채도,옷바꾸기 기능의 여부
         MultiValueMap<String, Object> formData = new LinkedMultiValueMap<>();
         formData.add("file", picturePath);
-        formData.add("sex",sex);
+        formData.add("sex", sex);
         formData.add("brightness", brightness);
         formData.add("saturation", saturation);
         formData.add("conversion", conversion);
 
-        log.info("picturePath = {}",picturePath);
+        log.info("picturePath = {}", picturePath);
         // Flask server로 데이터를 주고 받기
         RestTemplate restTemplate = new RestTemplate();
         String flaskEndpoint = "http://localhost:12300/profile/edit";
@@ -146,7 +144,6 @@ public class PictureController {
 
         return ResponseEntity.ok()
                 .body(defaultResponse);
-
     }
 
     // 사진 변환 혹은 합성이 된 사진을 저장하는 역할
@@ -159,7 +156,7 @@ public class PictureController {
 
         try {
             User user = customUserDetails.getUser();
-            String uploadImagesUrl = pictureService.uploadConversionFile(multipartFiles, transformDir,user);
+            String uploadImagesUrl = pictureService.uploadConversionFile(multipartFiles, dirName, user);
 
             return ResponseEntity.ok(
                     DefaultResponse.builder()
@@ -174,7 +171,5 @@ public class PictureController {
                     .body(new ErrorResponse(request.getServletPath(),
                             HttpStatus.BAD_REQUEST.value(), e.getMessage()));
         }
-
     }
-
 }
