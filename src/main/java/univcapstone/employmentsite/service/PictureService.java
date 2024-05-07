@@ -178,7 +178,17 @@ public class PictureService {
         String filename = multipartFile.getOriginalFilename();
         log.info("filename = {}", filename);
 
-        File file = new File("src/main/resources/temp/" + filename);
+        //File file = new File("src/main/resources/temp/" + filename);
+
+        String directoryPath = "src/main/resources/temp/";
+        // 경로가 존재하지 않는 경우 생성
+        File directory = new File(directoryPath);
+        if (!directory.exists()) {
+            directory.mkdirs(); // 디렉토리 생성
+            log.info("Directory created: {}", directoryPath);
+        }
+        File file = new File(directoryPath + filename);
+
         FileOutputStream fileOutputStream = new FileOutputStream(file);
         fileOutputStream.write(multipartFile.getBytes());
 

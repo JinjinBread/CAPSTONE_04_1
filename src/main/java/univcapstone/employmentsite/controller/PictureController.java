@@ -108,6 +108,7 @@ public class PictureController {
     public ResponseEntity<? extends BasicResponse> editPicture(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @RequestPart(value = "file") MultipartFile multipartFiles,
+            @RequestParam("sex") String sex,
             @RequestParam("brightness") float brightness,
             @RequestParam("saturation") float saturation,
             @RequestParam("conversion") boolean conversion
@@ -123,6 +124,7 @@ public class PictureController {
         // JSON 형식으로 줄 이미지,명도,채도,옷바꾸기 기능의 여부
         MultiValueMap<String, Object> formData = new LinkedMultiValueMap<>();
         formData.add("file", picturePath);
+        formData.add("sex",sex);
         formData.add("brightness", brightness);
         formData.add("saturation", saturation);
         formData.add("conversion", conversion);
