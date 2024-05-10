@@ -121,4 +121,9 @@ public class BasicController {
         return ResponseEntity.ok()
                 .body(defaultResponse);
     }
+
+    @GetMapping("/health")
+    public ResponseEntity<String> setHealthyStatus() {
+        return ResponseEntity.ok("healthy");
+    }
 }

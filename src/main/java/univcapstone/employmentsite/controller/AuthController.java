@@ -23,6 +23,7 @@ import univcapstone.employmentsite.token.TokenProvider;
 import java.io.IOException;
 
 import static univcapstone.employmentsite.util.AuthConstants.BEARER_PREFIX;
+import static univcapstone.employmentsite.util.AuthConstants.REFRESH_HEADER;
 
 
 @Slf4j
@@ -76,7 +77,7 @@ public class AuthController {
     @PostMapping("/reissue")
     public ResponseEntity<TokenDto> reissue(HttpServletRequest request, Authentication authentication) {
 
-        String refreshToken = tokenProvider.resolveRefreshToken(request);
+        String refreshToken = tokenProvider.resolveToken(request, REFRESH_HEADER);
         return ResponseEntity.ok(authService.reissue(refreshToken, authentication));
     }
 

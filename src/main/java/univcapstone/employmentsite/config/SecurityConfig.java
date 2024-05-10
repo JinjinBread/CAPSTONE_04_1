@@ -40,7 +40,7 @@ public class SecurityConfig {
     private final HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
     private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
     private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
-
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     // PasswordEncoder는 BCryptPasswordEncoder를 사용
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -50,10 +50,7 @@ public class SecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring()
-                .requestMatchers("/", "/join", "/joincheck",
-                        "/login", "/confirm/**",
-                        "/verify/**", "/find/**", "/reissue",
-                        "/error", "/favicon.ico", "/redirectNaver");
+                .requestMatchers("/favicon.ico", "/redirectNaver", "/health");
     }
 
     @Bean
@@ -68,11 +65,6 @@ public class SecurityConfig {
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
 
-                //예외 처리 클래스 등록
-                .exceptionHandling(requests -> requests
-                        .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
-                )
-
                 .addFilterBefore(
                         new JwtAuthenticationFilter(tokenProvider),
                         UsernamePasswordAuthenticationFilter.class)
@@ -80,12 +72,17 @@ public class SecurityConfig {
                         new JwtExceptionFilter(),
                         JwtAuthenticationFilter.class)
 
+                //예외 처리 클래스 등록
+                .exceptionHandling(requests -> requests
+                        .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
+                )
+
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
                                 //회원가입, 개인정보 동의, 로그인, 로그아웃, 이메일 인증, 아이디 중복 확인, 아이디 및 비밀번호 찾기, 파비콘
                                 .requestMatchers("/", "/join", "/joincheck",
-                                        "/login", "/confirm/**",
-                                        "/verify/**", "/find/**", "/reissue", "/favicon.ico").permitAll()
+                                        "/login", "/confirm/**", "/error",
+                                        "/verify/**", "/find/**", "/reissue").permitAll()
                                 .anyRequest().authenticated()
                 ) //위 URI 외의 URI는 모두 인증 필수
 
@@ -107,6 +104,7 @@ public class SecurityConfig {
                                 .userInfoEndpoint(config -> config.userService(oAuth2Service))
                                 .successHandler(oAuth2AuthenticationSuccessHandler)
                                 .failureHandler(oAuth2AuthenticationFailureHandler));
+
 
         return httpSecurity.build();
     }

@@ -161,9 +161,9 @@ public class TokenProvider implements InitializingBean {
         }
     }
 
-    public void setAccessTokenHeader(String accessToken, HttpServletResponse response) {
+    public void setTokenHeader(String accessToken, HttpServletResponse response, String headerKey) {
         String headerValue = BEARER_PREFIX + accessToken;
-        response.setHeader(AUTH_HEADER, headerValue);
+        response.setHeader(headerKey, headerValue);
     }
 
 //    public void refresshTokenSetHeader(String refreshToken, HttpServletResponse response) {
@@ -171,18 +171,10 @@ public class TokenProvider implements InitializingBean {
 //    }
 
     // Request Header에 Access Token 정보를 추출하는 메서드
-    public String resolveAccessToken(HttpServletRequest request) {
-        String bearerToken = request.getHeader(AUTH_HEADER);
+    public String resolveToken(HttpServletRequest request, String headerKey) {
+        String bearerToken = request.getHeader(headerKey);
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
             return bearerToken.substring(7);
-        }
-        return null;
-    }
-
-    public String resolveRefreshToken(HttpServletRequest request) {
-        String refreshToken = request.getHeader(REFRESH_HEADER);
-        if (StringUtils.hasText(refreshToken) && refreshToken.startsWith(BEARER_PREFIX)) {
-            return refreshToken.substring(7);
         }
         return null;
     }

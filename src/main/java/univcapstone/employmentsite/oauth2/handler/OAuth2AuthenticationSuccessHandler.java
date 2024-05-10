@@ -23,8 +23,7 @@ import java.io.IOException;
 import java.util.Optional;
 
 import static univcapstone.employmentsite.oauth2.HttpCookieOAuth2AuthorizationRequestRepository.MODE_PARAM_COOKIE_NAME;
-import static univcapstone.employmentsite.util.AuthConstants.ACCESS_TOKEN_VALID_TIME;
-import static univcapstone.employmentsite.util.AuthConstants.REFRESH_TOKEN_VALID_TIME;
+import static univcapstone.employmentsite.util.AuthConstants.*;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -121,7 +120,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             userRepository.delete(user);
 
             // TODO: 리프레시 토큰 삭제
-            String strRefreshToken = tokenProvider.resolveRefreshToken(request);
+            String strRefreshToken = tokenProvider.resolveToken(request, REFRESH_HEADER);
             RefreshToken refreshToken = refreshTokenRepository.findRefreshTokenByRefreshToken(strRefreshToken)
                     .orElseThrow(() -> new RuntimeException("Refresh Token이 존재하지 않습니다."));
 
