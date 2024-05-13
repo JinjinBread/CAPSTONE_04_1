@@ -1,34 +1,55 @@
 ![slice](https://capsule-render.vercel.app/api?type=slice&height=300&color=104085&text=Back-End&reversal=false&textBg=false&fontColor=ffffff&fontSize=70&fontAlignY=39&fontAlign=78&animation=blink)
 ![Group 159](https://github.com/JinjinBread/CAPSTONE_04_1/assets/143888533/3b16100a-2c60-4804-84c7-ba2634d3e279)
 
+# [Job학다식 사이트로 이동](https://jobhakdasik.site)
+
+<br>
 
 # Languages and Platforms
+## [Back-End](https://github.com/JinjinBread/CAPSTONE_04_1)
 <img src="https://img.shields.io/badge/java-%23007396.svg?&style=for-the-badge&logo=java&logoColor=white" />
 <img src="https://img.shields.io/badge/spring-%236DB33F.svg?&style=for-the-badge&logo=spring&logoColor=white" /> <br>
+
 <img src="https://img.shields.io/badge/mysql-%234479A1.svg?&style=for-the-badge&logo=mysql&logoColor=white" />
 <img src="https://img.shields.io/badge/redis-%23DC382D.svg?&style=for-the-badge&logo=redis&logoColor=white" />
-<img src="https://img.shields.io/badge/amazon%20aws-%23232F3E.svg?&style=for-the-badge&logo=amazon%20aws&logoColor=white"/> <br>
+<img src="https://img.shields.io/badge/amazon%20aws-%23232F3E.svg?&style=for-the-badge&logo=amazon%20aws&logoColor=white"/>
+
+## [Front-End](https://github.com/jiyou228/hansung_frontend_00)
+<img src="https://img.shields.io/badge/react-%2361DAFB.svg?&style=for-the-badge&logo=react&logoColor=black" />
+<img src="https://img.shields.io/badge/javascript-%23F7DF1E.svg?&style=for-the-badge&logo=javascript&logoColor=black"/>
+<img src="https://img.shields.io/badge/openai-%23412991.svg?&style=for-the-badge&logo=openai&logoColor=white" />
+
+
+## Deep Learning(GAN)
 <img src="https://img.shields.io/badge/python-%233776AB.svg?&style=for-the-badge&logo=python&logoColor=white" />
 <img src="https://img.shields.io/badge/flask-%23000000.svg?&style=for-the-badge&logo=flask&logoColor=white" />
 
-<img src="https://img.shields.io/badge/openai-%23412991.svg?&style=for-the-badge&logo=openai&logoColor=white" />
+<br>
 
-<br><br>
-<img src="https://img.shields.io/badge/react-%2361DAFB.svg?&style=for-the-badge&logo=react&logoColor=black" />
-<img src="https://img.shields.io/badge/javascript-%23F7DF1E.svg?&style=for-the-badge&logo=javascript&logoColor=black"/>
+# Social Login
+<img src ="https://oauth.net/images/oauth-2-sm.png"/>
+
+### OAuth2를 사용한 소셜 로그인
+<img src = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTlC_kMLlL1cuwqSiYidzQkcko84d8WX-UQuw&s"/>
+
+<br>
 
 # IDLE
 <img src="https://img.shields.io/badge/intellij%20idea-%23000000.svg?&style=for-the-badge&logo=intellij%20idea&logoColor=white" />
 <img src="https://img.shields.io/badge/visual%20studio%20code-%23007ACC.svg?&style=for-the-badge&logo=visual%20studio%20code&logoColor=white" />
 
+<br>
+
 # System
 ![image](https://github.com/JinjinBread/CAPSTONE_04_1/assets/108333554/f48f0042-accb-4fa3-aa76-20a36d93e282)
+
+<br>
 
 # Function
 <label for="name" style="color: #0099ff; font-size: 22px; text-align: center; display: block;">Chat GPT를 이용한 자기소개서 생성 및 첨삭</label><br>
 ![image](https://github.com/JinjinBread/CAPSTONE_04_1/assets/108333554/7cdf6068-4425-4507-baa1-18e18fa121a6)<br>
 <label for="name" style="color: #0099ff; font-size: 22px; text-align: center; display: block;">Star GAN을 이용한 사진 합성</label><br>
-![image](https://github.com/JinjinBread/CAPSTONE_04_1/assets/108333554/834769df-40db-4a6d-9695-281e9aaa3bc6)<br>
+![image](https://github.com/JinjinBread/CAPSTONE_04_1/assets/108333554/9c806f63-3d21-4912-9d42-bf09e90cb4b9)<br>
 
 ## Dependencies
 * [Python 3.5+](https://www.continuum.io/downloads)
@@ -136,7 +157,3 @@ booktitle={Proceedings of the IEEE Conference on Computer Vision and Pattern Rec
 year={2018}
 }
 ```
-
-## Acknowledgements
-This work was mainly done while the first author did a research internship at [Clova AI Research, NAVER](https://clova.ai/en/research/research-area-detail.html?id=0). We thank all the researchers at NAVER, especially Donghyun Kwak, for insightful discussions.
-
