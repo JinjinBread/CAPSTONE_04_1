@@ -2,24 +2,23 @@
 
 
 # Languages and Platforms
-<img src="https://img.shields.io/badge/HTML-ff0?style=flat&logo=로고이름&logoColor=white"/>
-<img src="https://img.shields.io/badge/CSS-ff0?style=flat&logo=로고이름&logoColor=white"/>
-<img src="https://img.shields.io/badge/React-ff0?style=flat&logo=로고이름&logoColor=white"/> 
-<img src="https://img.shields.io/badge/Node.js-ff0?style=flat&logo=로고이름&logoColor=white"/> <br>
+<img src="https://img.shields.io/badge/java-%23007396.svg?&style=for-the-badge&logo=java&logoColor=white" />
+<img src="https://img.shields.io/badge/spring-%236DB33F.svg?&style=for-the-badge&logo=spring&logoColor=white" /> <br>
+<img src="https://img.shields.io/badge/mysql-%234479A1.svg?&style=for-the-badge&logo=mysql&logoColor=white" />
+<img src="https://img.shields.io/badge/redis-%23DC382D.svg?&style=for-the-badge&logo=redis&logoColor=white" />
+<img src="https://img.shields.io/badge/amazon%20aws-%23232F3E.svg?&style=for-the-badge&logo=amazon%20aws&logoColor=white"/> <br>
+<img src="https://img.shields.io/badge/python-%233776AB.svg?&style=for-the-badge&logo=python&logoColor=white" />
+<img src="https://img.shields.io/badge/flask-%23000000.svg?&style=for-the-badge&logo=flask&logoColor=white" />
 
-<img src="https://img.shields.io/badge/Java-바탕색?style=flat&logo=로고이름&logoColor=white"/>
-<img src="https://img.shields.io/badge/Spring Boot-바탕색?style=flat&logo=로고이름&logoColor=white"/>
-<img src="https://img.shields.io/badge/Python-바탕색?style=flat&logo=로고이름&logoColor=white"/> 
-<img src="https://img.shields.io/badge/Flask-바탕색?style=flat&logo=로고이름&logoColor=white"/><br>
+<img src="https://img.shields.io/badge/openai-%23412991.svg?&style=for-the-badge&logo=openai&logoColor=white" />
 
-<img src="https://img.shields.io/badge/MySQL-007396?style=flat&logo=로고이름&logoColor=white"/>
-<img src="https://img.shields.io/badge/redis-007396?style=flat&logo=로고이름&logoColor=white"/>
-<img src="https://img.shields.io/badge/AmazonS3-007396?style=flat&logo=로고이름&logoColor=white"/>
-<img src="https://img.shields.io/badge/AmazonEC2-007396?style=flat&logo=로고이름&logoColor=white"/><br>
+<br><br>
+<img src="https://img.shields.io/badge/react-%2361DAFB.svg?&style=for-the-badge&logo=react&logoColor=black" />
+<img src="https://img.shields.io/badge/javascript-%23F7DF1E.svg?&style=for-the-badge&logo=javascript&logoColor=black"/>
 
 # IDLE
-<img src="https://img.shields.io/badge/IntelliJ-0000ff?style=flat&logo=로고이름&logoColor=white"/>
-<img src="https://img.shields.io/badge/Visual Code-0000ff?style=flat&logo=로고이름&logoColor=white"/>
+<img src="https://img.shields.io/badge/intellij%20idea-%23000000.svg?&style=for-the-badge&logo=intellij%20idea&logoColor=white" />
+<img src="https://img.shields.io/badge/visual%20studio%20code-%23007ACC.svg?&style=for-the-badge&logo=visual%20studio%20code&logoColor=white" />
 
 # System
 ![image](https://github.com/JinjinBread/CAPSTONE_04_1/assets/108333554/f48f0042-accb-4fa3-aa76-20a36d93e282)
