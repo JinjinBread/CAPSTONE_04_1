@@ -9,9 +9,7 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.stereotype.Service;
 import univcapstone.employmentsite.repository.RefreshTokenRepository;
 import univcapstone.employmentsite.token.TokenProvider;
-import univcapstone.employmentsite.util.AuthConstants;
 
-import static univcapstone.employmentsite.util.AuthConstants.REFRESH_HEADER;
 
 @Service
 @Slf4j
@@ -34,7 +32,7 @@ public class LogoutService implements LogoutHandler {
 //        Authentication auth = tokenProvider.getAuthentication(accessToken);
 //        String loginId = auth.getName();
 
-        String refreshToken = tokenProvider.resolveToken(request, REFRESH_HEADER);
+        String refreshToken = tokenProvider.resolveRefreshToken(request);
 
         log.info("refreshToken = {}", refreshToken);
 

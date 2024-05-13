@@ -130,16 +130,6 @@ public class TokenProvider implements InitializingBean {
         return parseClaims(token).getSubject();
     }
 
-    public String getRefreshTokenFromCookies(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-
-        return Arrays.stream(cookies)
-                .filter(cookie -> cookie.getName().equals(REFRESH_COOKIE_NAME))
-                .findAny()
-                .orElseThrow(() -> new RuntimeException("Refresh Token이 존재하지 않습니다."))
-                .getValue();
-    }
-
     private Claims parseClaims(String token) {
         try {
             return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
@@ -161,17 +151,13 @@ public class TokenProvider implements InitializingBean {
         }
     }
 
-    public void setTokenHeader(String accessToken, HttpServletResponse response, String headerKey) {
+    public void setAccessTokenHeader(String accessToken, HttpServletResponse response, String headerKey) {
         String headerValue = BEARER_PREFIX + accessToken;
         response.setHeader(headerKey, headerValue);
     }
 
-//    public void refresshTokenSetHeader(String refreshToken, HttpServletResponse response) {
-//        response.setHeader("Refresh", refreshToken);
-//    }
-
     // Request Header에 Access Token 정보를 추출하는 메서드
-    public String resolveToken(HttpServletRequest request, String headerKey) {
+    public String resolveAccessToken(HttpServletRequest request, String headerKey) {
         String bearerToken = request.getHeader(headerKey);
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
             return bearerToken.substring(7);
@@ -179,12 +165,14 @@ public class TokenProvider implements InitializingBean {
         return null;
     }
 
-    // Request Header에 Refresh Token 정보를 추출하는 메서드
-//    public String resolveRefreshToken(HttpServletRequest request) {
-//        String bearerToken = request.getHeader(REFRESH_HEADER);
-//        if (StringUtils.hasText(bearerToken)) {
-//            return bearerToken;
-//        }
-//        return null;
-//    }
+    // Refresh Token 정보를 추출하는 메서드
+    public String resolveRefreshToken(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+
+        return Arrays.stream(cookies)
+                .filter(cookie -> cookie.getName().equals(REFRESH_COOKIE_NAME))
+                .findAny()
+                .orElseThrow(() -> new RuntimeException("Refresh Token이 존재하지 않습니다."))
+                .getValue();
+    }
 }

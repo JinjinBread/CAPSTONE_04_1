@@ -18,12 +18,14 @@ import univcapstone.employmentsite.repository.RefreshTokenRepository;
 import univcapstone.employmentsite.repository.UserRepository;
 import univcapstone.employmentsite.token.TokenProvider;
 import univcapstone.employmentsite.util.AuthConstants;
+import univcapstone.employmentsite.util.Constants;
 
 import java.io.IOException;
 import java.util.Optional;
 
 import static univcapstone.employmentsite.oauth2.HttpCookieOAuth2AuthorizationRequestRepository.MODE_PARAM_COOKIE_NAME;
 import static univcapstone.employmentsite.util.AuthConstants.*;
+import static univcapstone.employmentsite.util.Constants.DOMAIN;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -35,7 +37,6 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     private final RefreshTokenRepository refreshTokenRepository;
     private final HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
     private final OAuth2UnlinkManager oAuth2UserUnlinkManager;
-    private final String REDIRECT_URI = "https://localhost:3000/login/callback";
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -65,7 +66,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
 
         if (customOAuth2User == null) {
-            return UriComponentsBuilder.fromUriString(REDIRECT_URI)
+            return UriComponentsBuilder.fromUriString(OAUTH_REDIRECT_URI)
                     .queryParam("error", "Login failed")
                     .build().toUriString();
         }
@@ -101,7 +102,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             String accessToken = tokenProvider.createAccessToken(authentication, ACCESS_TOKEN_VALID_TIME);
             String refreshToken = tokenProvider.createRefreshToken(authentication, REFRESH_TOKEN_VALID_TIME);
 
-            return UriComponentsBuilder.fromUriString(REDIRECT_URI)
+            return UriComponentsBuilder.fromUriString(OAUTH_REDIRECT_URI)
                     .queryParam("accessToken", accessToken)
                     .queryParam("refreshToken", refreshToken)
                     .build().toUriString();
@@ -120,7 +121,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             userRepository.delete(user);
 
             // TODO: 리프레시 토큰 삭제
-            String strRefreshToken = tokenProvider.resolveToken(request, REFRESH_HEADER);
+            String strRefreshToken = tokenProvider.resolveRefreshToken(request);
             RefreshToken refreshToken = refreshTokenRepository.findRefreshTokenByRefreshToken(strRefreshToken)
                     .orElseThrow(() -> new RuntimeException("Refresh Token이 존재하지 않습니다."));
 
@@ -128,11 +129,11 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
             oAuth2UserUnlinkManager.unlink(provider, accessToken);
 
-            return UriComponentsBuilder.fromUriString("https://localhost:3000/")
+            return UriComponentsBuilder.fromUriString(DOMAIN)
                     .build().toUriString();
         }
 
-        return UriComponentsBuilder.fromUriString(REDIRECT_URI)
+        return UriComponentsBuilder.fromUriString(OAUTH_REDIRECT_URI)
                 .queryParam("error", "Login failed")
                 .build().toUriString();
     }
@@ -177,7 +178,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 //        userRepository.save(user);
 //
 //        // 토큰 전달을 위한 redirect
-//        String redirectUrl = UriComponentsBuilder.fromUriString("https://localhost:3000/redirectNaver")
+//        String redirectUrl = UriComponentsBuilder.fromUriString(DOMAIN + "/redirectNaver")
 //                .buildAndExpand(tokenDto)
 //                .toUriString();
 //

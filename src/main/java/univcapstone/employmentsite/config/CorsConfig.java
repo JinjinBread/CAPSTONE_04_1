@@ -5,11 +5,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
-
-import java.util.List;
+import univcapstone.employmentsite.util.Constants;
 
 import static univcapstone.employmentsite.util.AuthConstants.AUTH_HEADER;
 import static univcapstone.employmentsite.util.AuthConstants.REFRESH_HEADER;
+import static univcapstone.employmentsite.util.Constants.DOMAIN;
+import static univcapstone.employmentsite.util.Constants.SERVER_DOMAIN;
 
 @Configuration
 public class CorsConfig {
@@ -19,9 +20,11 @@ public class CorsConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         config.setAllowCredentials(true); //기본적으로 요청에 대한 응답으로 JSON 형식이 나간다.
-        config.setAllowedOrigins(List.of("http://localhost:3000"));
-        config.setAllowedHeaders(List.of("*"));
-        config.setAllowedMethods(List.of("*"));
+        config.addAllowedOrigin("https://localhost:3000");
+        config.addAllowedOrigin(DOMAIN);
+        config.addAllowedOrigin(SERVER_DOMAIN);
+        config.addAllowedHeader("*");
+        config.addAllowedMethod("*");
 
         config.addExposedHeader(AUTH_HEADER);
         config.addExposedHeader(REFRESH_HEADER);
