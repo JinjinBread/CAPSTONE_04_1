@@ -172,7 +172,7 @@ public class TokenProvider implements InitializingBean {
         return Arrays.stream(cookies)
                 .filter(cookie -> cookie.getName().equals(REFRESH_COOKIE_NAME))
                 .findAny()
-                .orElseThrow(() -> new RuntimeException("Refresh Token이 존재하지 않습니다."))
+                .orElseThrow(() -> new RuntimeException("Refresh Token이 존재하지 않습니다. 재로그인 하시오."))
                 .getValue();
     }
 }

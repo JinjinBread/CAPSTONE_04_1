@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -15,6 +16,7 @@ import org.springframework.web.client.RestTemplate;
 
 import static univcapstone.employmentsite.util.AuthConstants.BEARER_PREFIX;
 
+@Slf4j
 @RequiredArgsConstructor
 @Component
 public class NaverOAuth2Unlink implements OAuth2Unlink {
@@ -33,8 +35,8 @@ public class NaverOAuth2Unlink implements OAuth2Unlink {
     @Override
     public void unlink(String accessToken) {
 
-        //연동 해제를 수행하기 전에 접근토큰의 유효성을 점검?
-//        NaverUtil.validAccessToken();
+        //연동 해제를 수행하기 전에 접근토큰 유효성 점검
+        validAccessToken(accessToken);
 
         //접근 토큰 삭제 시 service_provider, access_token 필수
         String url = URL +
@@ -64,7 +66,7 @@ public class NaverOAuth2Unlink implements OAuth2Unlink {
         private final String result;
     }
 
-    public void validAccessToken(HttpServletRequest request, String accessToken) throws JsonProcessingException {
+    public void validAccessToken(String accessToken) {
 
         String authorizationHeader = BEARER_PREFIX + accessToken;
 
@@ -75,15 +77,10 @@ public class NaverOAuth2Unlink implements OAuth2Unlink {
                 ValidAccessTokenResponse.class
         );
 
-        ObjectMapper mapper = new ObjectMapper();
-        String response = mapper.writeValueAsString(responseEntity.getBody());
-
-        ValidAccessTokenResponse result = mapper.readValue(response, ValidAccessTokenResponse.class);
-
-//        if (result )
+        log.info("resultcode = {}", responseEntity.getBody().resultcode);
     }
 
-    //리프레시 토큰을 이용하여 갱신
+    //액세스 토큰 유효성 검증
 
     @Getter
     @RequiredArgsConstructor

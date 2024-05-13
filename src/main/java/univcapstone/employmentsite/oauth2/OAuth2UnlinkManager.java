@@ -17,8 +17,7 @@ public class OAuth2UnlinkManager {
         } else if (OAuth2Provider.KAKAO.equals(provider)) {
             kakaoOAuth2Unlink.unlink(accessToken);
         } else {
-            throw new OAuth2AuthenticationException(
-                    "Unlink with " + provider.getProvider() + " is not supported");
+            throw new OAuth2AuthenticationException("Unlink with " + provider.getProvider() + " is not supported");
         }
     }
 }
