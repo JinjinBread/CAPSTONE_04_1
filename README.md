@@ -1,5 +1,5 @@
 ![slice](https://capsule-render.vercel.app/api?type=slice&height=300&color=104085&text=Back-End&reversal=false&textBg=false&fontColor=ffffff&fontSize=70&fontAlignY=39&fontAlign=78&animation=blink)
-https://github.com/JinjinBread/CAPSTONE_04_1/blob/main/Group%20159.png
+![Group 159](https://github.com/JinjinBread/CAPSTONE_04_1/assets/143888533/3b16100a-2c60-4804-84c7-ba2634d3e279)
 
 
 # Languages and Platforms
