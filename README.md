@@ -30,3 +30,4 @@
 <label for="name" style="color: #0099ff; font-size: 22px; text-align: center; display: block;">Star GAN을 이용한 사진 합성</label>
 ![image](https://github.com/JinjinBread/CAPSTONE_04_1/assets/108333554/9c806f63-3d21-4912-9d42-bf09e90cb4b9)
 
+
