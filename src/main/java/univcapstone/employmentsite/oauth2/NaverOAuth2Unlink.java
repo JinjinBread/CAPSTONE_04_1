@@ -9,11 +9,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import static univcapstone.employmentsite.util.AuthConstants.AUTH_HEADER;
 import static univcapstone.employmentsite.util.AuthConstants.BEARER_PREFIX;
 
 @Slf4j
@@ -51,6 +53,8 @@ public class NaverOAuth2Unlink implements OAuth2Unlink {
 
         UnlinkResponse response = restTemplate.getForObject(url, UnlinkResponse.class);
 
+        log.info("네이버 회원탈퇴 결과 = {}", response.result);
+
         if (response == null) { // !response.getResult().equals("success")
             throw new RuntimeException("Failed to Naver Unlink");
         }
@@ -70,10 +74,13 @@ public class NaverOAuth2Unlink implements OAuth2Unlink {
 
         String authorizationHeader = BEARER_PREFIX + accessToken;
 
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add(AUTH_HEADER, authorizationHeader);
+
         ResponseEntity<ValidAccessTokenResponse> responseEntity = restTemplate.exchange(
                 VALID_URL,
                 HttpMethod.GET,
-                new HttpEntity<>(authorizationHeader),
+                new HttpEntity<>(httpHeaders),
                 ValidAccessTokenResponse.class
         );
 

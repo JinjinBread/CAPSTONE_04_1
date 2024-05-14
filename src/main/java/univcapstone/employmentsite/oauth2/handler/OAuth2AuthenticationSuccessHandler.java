@@ -17,13 +17,12 @@ import univcapstone.employmentsite.oauth2.utils.CookieUtil;
 import univcapstone.employmentsite.repository.RefreshTokenRepository;
 import univcapstone.employmentsite.repository.UserRepository;
 import univcapstone.employmentsite.token.TokenProvider;
-import univcapstone.employmentsite.util.AuthConstants;
-import univcapstone.employmentsite.util.Constants;
 
 import java.io.IOException;
 import java.util.Optional;
 
 import static univcapstone.employmentsite.oauth2.HttpCookieOAuth2AuthorizationRequestRepository.MODE_PARAM_COOKIE_NAME;
+import static univcapstone.employmentsite.oauth2.HttpCookieOAuth2AuthorizationRequestRepository.REDIRECT_URI_PARAM_COOKIE_NAME;
 import static univcapstone.employmentsite.util.AuthConstants.*;
 import static univcapstone.employmentsite.util.Constants.DOMAIN;
 
@@ -58,6 +57,12 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     protected String determineTargetUrl(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) {
 
+        String redirectURI = CookieUtil.getCookie(request, REDIRECT_URI_PARAM_COOKIE_NAME)
+                .map(Cookie::getValue)
+                .orElse("");
+
+        log.info("REDIRECT URI = {}", redirectURI);
+
         String mode = CookieUtil.getCookie(request, MODE_PARAM_COOKIE_NAME)
                 .map(Cookie::getValue)
                 .orElse("");
@@ -66,7 +71,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
 
         if (customOAuth2User == null) {
-            return UriComponentsBuilder.fromUriString(OAUTH_REDIRECT_URI)
+            return UriComponentsBuilder.fromUriString(redirectURI)
                     .queryParam("error", "Login failed")
                     .build().toUriString();
         }
@@ -102,7 +107,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             String accessToken = tokenProvider.createAccessToken(authentication, ACCESS_TOKEN_VALID_TIME);
             String refreshToken = tokenProvider.createRefreshToken(authentication, REFRESH_TOKEN_VALID_TIME);
 
-            return UriComponentsBuilder.fromUriString(OAUTH_REDIRECT_URI)
+            return UriComponentsBuilder.fromUriString(redirectURI)
                     .queryParam("accessToken", accessToken)
                     .queryParam("refreshToken", refreshToken)
                     .build().toUriString();
@@ -122,6 +127,9 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
             // TODO: 리프레시 토큰 삭제
             String strRefreshToken = tokenProvider.resolveRefreshToken(request);
+
+//            log.info("RefreshToken = {}", strRefreshToken);
+
             RefreshToken refreshToken = refreshTokenRepository.findRefreshTokenByRefreshToken(strRefreshToken)
                     .orElseThrow(() -> new RuntimeException("Refresh Token이 존재하지 않습니다."));
 
@@ -133,7 +141,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                     .build().toUriString();
         }
 
-        return UriComponentsBuilder.fromUriString(OAUTH_REDIRECT_URI)
+        return UriComponentsBuilder.fromUriString(redirectURI)
                 .queryParam("error", "Login failed")
                 .build().toUriString();
     }

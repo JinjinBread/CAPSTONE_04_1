@@ -46,6 +46,7 @@ public class HttpCookieOAuth2AuthorizationRequestRepository implements Authoriza
         String redirectUriAfterLogin = request.getParameter(REDIRECT_URI_PARAM_COOKIE_NAME);
 
         log.info("redirectUriAfterLogin = {}", redirectUriAfterLogin);
+
         if (StringUtils.hasText(redirectUriAfterLogin)) {
             CookieUtil.addCookie(response,
                     REDIRECT_URI_PARAM_COOKIE_NAME,

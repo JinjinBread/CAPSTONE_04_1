@@ -21,16 +21,6 @@ public class LogoutService implements LogoutHandler {
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-//        //Access Token 유효성 검증
-//        String accessToken = tokenProvider.resolveAccessToken(request);
-
-//        if (!tokenProvider.validateToken(accessToken)) {
-//            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-//            throw new RuntimeException("유효하지 않은 AccessToken 입니다.");
-//        }
-
-//        Authentication auth = tokenProvider.getAuthentication(accessToken);
-//        String loginId = auth.getName();
 
         String refreshToken = tokenProvider.resolveRefreshToken(request);
 

@@ -73,6 +73,9 @@ public class AuthService {
         String accessToken = tokenProvider.createAccessToken(authenticate, ACCESS_TOKEN_VALID_TIME);
         String refreshToken = tokenProvider.createRefreshToken(authenticate, REFRESH_TOKEN_VALID_TIME);
 
+        log.info("accesstoken = {}", accessToken);
+        log.info("refreshtoken = {}", refreshToken);
+
         return TokenDto.builder()
                 .grantType(BEARER_PREFIX)
                 .accessToken(accessToken)
