@@ -1,19 +1,14 @@
 package univcapstone.employmentsite.controller;
 
-import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import univcapstone.employmentsite.domain.Bookmark;
 import univcapstone.employmentsite.domain.Picture;
@@ -24,15 +19,12 @@ import univcapstone.employmentsite.service.BookmarkService;
 import univcapstone.employmentsite.service.PictureService;
 import univcapstone.employmentsite.service.UserService;
 import univcapstone.employmentsite.token.CustomUserDetails;
-import univcapstone.employmentsite.token.TokenProvider;
 import univcapstone.employmentsite.util.response.BasicResponse;
 import univcapstone.employmentsite.util.response.DefaultResponse;
 import univcapstone.employmentsite.util.response.ErrorResponse;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -287,7 +279,7 @@ public class MyPageController {
                     .code(HttpStatus.OK.value())
                     .httpStatus(HttpStatus.OK)
                     .message("계정 삭제 완료")
-                    .result("")
+                    .result("Delete User Success")
                     .build();
 
 

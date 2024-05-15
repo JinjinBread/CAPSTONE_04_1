@@ -1,5 +1,6 @@
 package univcapstone.employmentsite.service;
 
+import io.jsonwebtoken.io.Decoders;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
@@ -90,7 +91,10 @@ public class UserService {
         User user = userRepository.findByLoginId(userDeleteDto.getLoginId())
                 .orElseThrow(() -> new IllegalStateException("삭제하려는 계정을 찾을 수 없습니다."));
 
-        if (user.getPassword().equals(userDeleteDto.getPassword())) {
+        String inputPassword = userDeleteDto.getPassword();
+        String storedPassword = user.getPassword();
+
+        if (passwordEncoder.matches(inputPassword, storedPassword)) {
             userRepository.delete(user);
         } else {
             throw new IllegalStateException("삭제하려는 계정의 패스워드가 일치하지 않습니다.");
