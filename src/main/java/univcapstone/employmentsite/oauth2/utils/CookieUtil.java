@@ -19,8 +19,9 @@ public class CookieUtil {
                         .findAny());
     }
 
-    public static void addCookie(HttpServletResponse response, String name, String value, Duration maxAge) {
-        Cookie cookie = new Cookie(name, value);
+    public static void addCookie(HttpServletRequest request, HttpServletResponse response, String name, String value, Duration maxAge) {
+
+	Cookie cookie = new Cookie(name, value);
         cookie.setPath("/");
         cookie.setHttpOnly(true);
         cookie.setMaxAge((int) maxAge.toSeconds());

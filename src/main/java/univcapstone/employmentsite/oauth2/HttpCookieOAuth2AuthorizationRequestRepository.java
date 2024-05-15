@@ -1,5 +1,6 @@
 package univcapstone.employmentsite.oauth2;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -31,14 +32,14 @@ public class HttpCookieOAuth2AuthorizationRequestRepository implements Authoriza
     // 인증 쿠키 저장
     @Override
     public void saveAuthorizationRequest(OAuth2AuthorizationRequest authorizationRequest, HttpServletRequest request, HttpServletResponse response) {
-        if (authorizationRequest == null) {
+	if (authorizationRequest == null) {
             CookieUtil.deleteCookie(request, response, OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME);
             CookieUtil.deleteCookie(request, response, REDIRECT_URI_PARAM_COOKIE_NAME);
             CookieUtil.deleteCookie(request, response, MODE_PARAM_COOKIE_NAME);
             return;
         }
 
-        CookieUtil.addCookie(response,
+        CookieUtil.addCookie(request, response,
                 OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME,
                 CookieUtil.serialize(authorizationRequest),
                 OAUTH_COOKIE_EXPIRY_TIME);
@@ -48,7 +49,7 @@ public class HttpCookieOAuth2AuthorizationRequestRepository implements Authoriza
         log.info("redirectUriAfterLogin = {}", redirectUriAfterLogin);
 
         if (StringUtils.hasText(redirectUriAfterLogin)) {
-            CookieUtil.addCookie(response,
+            CookieUtil.addCookie(request, response,
                     REDIRECT_URI_PARAM_COOKIE_NAME,
                     redirectUriAfterLogin,
                     OAUTH_COOKIE_EXPIRY_TIME);
@@ -56,7 +57,7 @@ public class HttpCookieOAuth2AuthorizationRequestRepository implements Authoriza
 
         String mode = request.getParameter(MODE_PARAM_COOKIE_NAME);
         if (StringUtils.hasText(mode)) {
-            CookieUtil.addCookie(response,
+            CookieUtil.addCookie(request, response,
                     MODE_PARAM_COOKIE_NAME,
                     mode,
                     OAUTH_COOKIE_EXPIRY_TIME);

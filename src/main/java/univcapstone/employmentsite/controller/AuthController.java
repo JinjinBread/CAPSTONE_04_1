@@ -14,7 +14,6 @@ import univcapstone.employmentsite.dto.UserResponseDto;
 import univcapstone.employmentsite.service.AuthService;
 import univcapstone.employmentsite.token.TokenProvider;
 
-import static univcapstone.employmentsite.util.AuthConstants.REFRESH_HEADER;
 
 
 @Slf4j

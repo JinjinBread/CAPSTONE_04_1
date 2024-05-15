@@ -2,6 +2,8 @@ package univcapstone.employmentsite.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.HttpStatusException;
@@ -39,7 +41,7 @@ public class BasicController {
         RestTemplate restTemplate = new RestTemplate();
         String apiUrl = "https://oapi.saramin.co.kr/job-search?access-key=pEyjyJB3XnowAZP5ImZUuNbcGwGGDbUGQXQfdDZqhSFgPkBXKWq&bbs_gb=1&sr=directhire&job_type=1,10&loc_cd=117000&sort=rc&start=0&count=12&fields=expiration-date"; // 취업 사이트의 API URL
         ResponseEntity<String> response = restTemplate.getForEntity(apiUrl, String.class);
-        log.info("응답된 내용 = {}", response);
+        //log.info("응답된 내용 = {}", response);
         String responseBody = response.getBody();
 
         ObjectMapper mapper = new ObjectMapper();
@@ -58,7 +60,7 @@ public class BasicController {
         RestTemplate restTemplate = new RestTemplate();
         String apiUrl = "https://oapi.saramin.co.kr/job-search?access-key=pEyjyJB3XnowAZP5ImZUuNbcGwGGDbUGQXQfdDZqhSFgPkBXKWq&bbs_gb=1&sr=directhire&job_type=1,10&loc_cd=117000&sort=rc&start=0&count=12&fields=expiration-date"; // 취업 사이트의 API URL
         ResponseEntity<String> response = restTemplate.getForEntity(apiUrl, String.class);
-        log.info("응답된 내용 = {}", response);
+        //log.info("응답된 내용 = {}", response);
         String responseBody = response.getBody();
 
         ObjectMapper mapper = new ObjectMapper();
@@ -100,7 +102,8 @@ public class BasicController {
 
     @GetMapping("/home")
     public ResponseEntity<? extends BasicResponse> home(
-            @AuthenticationPrincipal CustomUserDetails customUserDetails
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+	    HttpServletRequest request
     ) {
 
         User user = userService.findUserByLoginId(customUserDetails.getUsername());
@@ -110,6 +113,17 @@ public class BasicController {
         if (user == null) {
             log.info("유저를 찾을 수 없습니다.");
         }
+	
+	Cookie[] cookies = request.getCookies();
+
+	for (Cookie cookie: cookies) {
+
+		if (cookie.getName().equals("refreshToken")) {
+			log.info("refreshToken Cookie is available = {}", cookie.getValue());
+		}
+
+	}
+
 
         DefaultResponse<User> defaultResponse = DefaultResponse.<User>builder()
                 .code(HttpStatus.OK.value())

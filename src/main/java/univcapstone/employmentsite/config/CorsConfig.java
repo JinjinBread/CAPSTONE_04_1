@@ -5,10 +5,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
-import univcapstone.employmentsite.util.Constants;
 
 import static univcapstone.employmentsite.util.AuthConstants.AUTH_HEADER;
-import static univcapstone.employmentsite.util.AuthConstants.REFRESH_HEADER;
 import static univcapstone.employmentsite.util.Constants.*;
 
 @Configuration
@@ -26,7 +24,6 @@ public class CorsConfig {
         config.addAllowedMethod("*");
 
         config.addExposedHeader(AUTH_HEADER);
-        config.addExposedHeader(REFRESH_HEADER);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
