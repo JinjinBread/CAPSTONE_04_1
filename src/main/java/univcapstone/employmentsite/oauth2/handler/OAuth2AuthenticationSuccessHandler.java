@@ -90,6 +90,17 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                     userInfo.getAccessToken()
             );
 
+            String email = userInfo.getEmail();
+
+            //이메일 중복 검증
+            try {
+                userRepository.findByEmail(email).ifPresent(user -> {
+                    throw new IllegalStateException();
+                });
+            } catch (IllegalStateException e) {
+                log.info("Email: {}은 이미 사용 중입니다.", email);
+            }
+            
             //첫 회원가입 시에만 DB 저장
             if (optionalUser.isEmpty()) {
                 User user = User.builder()

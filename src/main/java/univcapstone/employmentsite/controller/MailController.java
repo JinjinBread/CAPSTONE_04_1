@@ -1,32 +1,50 @@
 package univcapstone.employmentsite.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import univcapstone.employmentsite.dto.MailDto;
 import univcapstone.employmentsite.service.MailService;
+import univcapstone.employmentsite.service.UserService;
 import univcapstone.employmentsite.util.Constants;
+import univcapstone.employmentsite.util.response.BasicResponse;
+import univcapstone.employmentsite.util.response.DefaultResponse;
+import univcapstone.employmentsite.util.response.ErrorResponse;
 
 import java.util.Map;
 
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 public class MailController {
 
-    public final MailService mailService;
-
-    @Autowired
-    public MailController(MailService mailService) {
-        this.mailService = mailService;
-    }
+    private final MailService mailService;
+    private final UserService userService;
 
     @PostMapping("/confirm/email")
-    public int confirmEmail(@RequestBody Map<String, String> receiverMap) {
-        //이메일 인증에 대한 로직
+    public ResponseEntity<? extends BasicResponse> confirmEmail(@RequestBody Map<String, String> receiverMap,
+                                                                HttpServletRequest request) {
+
         String email = receiverMap.get(Constants.EMAIL_KEY);
 
+        //이메일 중복 검증
+        try {
+            userService.validateDuplicateEmail(email);
+        } catch (IllegalStateException e) {
+            log.error("중복된 이메일 존재 = {}", email);
+            return ResponseEntity.badRequest()
+                    .body(new ErrorResponse(request.getServletPath(),
+                            HttpStatus.BAD_REQUEST.value(),
+                            "이미 사용 중인 이메일 입니다."));
+        }
+
+        //이메일 인증에 대한 로직
         int authNumber = MailService.createNumber();
 
         String content = generateAuthCodeFormat(authNumber);
@@ -38,7 +56,16 @@ public class MailController {
                 .build();
 
         mailService.sendMail(mailDto);
-        return authNumber;
+
+        DefaultResponse<Integer> defaultResponse = DefaultResponse.<Integer>builder()
+                .code(HttpStatus.OK.value())
+                .httpStatus(HttpStatus.OK)
+                .message("인증 번호 발송 완료")
+                .result(authNumber)
+                .build();
+
+        return ResponseEntity.ok()
+                .body(defaultResponse);
     }
 
     private static String generateAuthCodeFormat(int authNumber) {

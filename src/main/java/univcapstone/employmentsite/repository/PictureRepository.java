@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import univcapstone.employmentsite.domain.Picture;
-import univcapstone.employmentsite.domain.User;
 
 import java.util.List;
 
@@ -17,7 +16,7 @@ public interface PictureRepository extends JpaRepository<Picture, Long> {
     List<Picture> findAllByUserId(Long userId);
 
     @Query("SELECT p FROM Picture p WHERE p.user.id=:userId and p.isProfile=true")
-    Picture findAllByProfile(Long userId);
+    Picture findProfileByUserId(Long userId);
 
     @Query("SELECT p FROM Picture p WHERE p.user.id=:userId and p.isProfile=true")
     List<Picture> findAllByProfiles(Long userId);

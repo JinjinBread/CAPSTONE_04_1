@@ -112,7 +112,22 @@ public class UserService {
         userRepository.findByLoginId(userId)
                 .ifPresent(u -> {
                     throw new IllegalStateException(u + "은(는) 이미 존재하는 아이디입니다.");
+                });
+    }
 
+    /**
+     * Email 중복 검사 함수
+     */
+
+    public void validateDuplicateEmail(String email) {
+
+        if (email == null) {
+            throw new IllegalStateException("이메일을 입력해주세요");
+        }
+
+        userRepository.findByEmail(email)
+                .ifPresent(u -> {
+                    throw new IllegalStateException(u + "은(는) 이미 존재하는 아이디입니다.");
                 });
     }
 

@@ -26,8 +26,12 @@ public class PictureService {
 
     @Value("${aws.s3.bucket}")
     private String bucket;
+    @Value("${aws.region}")
+    private String region;
+    @Value("${aws.s3.idPhoto.dirName}")
+    private String idPhotoURL;
 
-    public String uploadProfileFile(MultipartFile multipartFile, String dirName,User user) throws IOException {
+    public String uploadProfileFile(MultipartFile multipartFile, String dirName, User user) throws IOException {
         if (multipartFile.isEmpty()) {
             log.error("업로드 할 파일이 존재하지 않습니다.");
             throw new FileNotFoundException("업로드 할 파일이 존재하지 않습니다.");
@@ -41,13 +45,14 @@ public class PictureService {
         log.info("uploadFilename = {}", uploadFilename);
 
         //S3에 업로드
-        String imagePath = uploadS3Profile(uploadFilename, file,user);
+        String imagePath = uploadS3Profile(uploadFilename, file, user);
 
         //S3 업로드 후 로컬에 저장된 사진 삭제
         removeCreatedFile(file);
         return imagePath;
     }
-    private String uploadS3Profile(String uploadFilename, File file,User user) {
+
+    private String uploadS3Profile(String uploadFilename, File file, User user) {
         log.info("uploadFilename = {}", uploadFilename);
 
         amazonS3.putObject(new PutObjectRequest(bucket, uploadFilename, file)
@@ -60,16 +65,18 @@ public class PictureService {
                 .isProfile(true)
                 .user(user)
                 .build();
-        List<Picture> formerProfiles=pictureRepository.findAllByProfiles(user.getId());
-        for(Picture profile : formerProfiles){
+
+        List<Picture> formerProfiles = pictureRepository.findAllByProfiles(user.getId());
+        for (Picture profile : formerProfiles) {
             deleteFile(profile);
         }
+
         pictureRepository.deleteFormerProfile(user.getId());
         pictureRepository.save(picture);
         return imagePath;
     }
 
-    public String uploadConversionFile(MultipartFile multipartFile, String dirName,User user) throws IOException {
+    public String uploadConversionFile(MultipartFile multipartFile, String dirName, User user) throws IOException {
         if (multipartFile.isEmpty()) {
             log.error("업로드 할 파일이 존재하지 않습니다.");
             throw new FileNotFoundException("업로드 할 파일이 존재하지 않습니다.");
@@ -80,12 +87,13 @@ public class PictureService {
         String uploadFilename = dirName + UUID.randomUUID() + file.getName();
         log.info("uploadFilename = {}", uploadFilename);
 
-        String imagePath = uploadS3ConverionFile(uploadFilename, file,user);
+        String imagePath = uploadS3ConversionFile(uploadFilename, file, user);
 
         removeCreatedFile(file);
         return imagePath;
     }
-    private String uploadS3ConverionFile(String uploadFilename, File file,User user) {
+
+    private String uploadS3ConversionFile(String uploadFilename, File file, User user) {
         log.info("uploadFilename = {}", uploadFilename);
 
         amazonS3.putObject(new PutObjectRequest(bucket, uploadFilename, file)
@@ -98,78 +106,55 @@ public class PictureService {
                 .isProfile(false)
                 .user(user)
                 .build();
+
         pictureRepository.save(picture);
         return imagePath;
     }
 
-    public Map<String,String> getProfileImageName(User user) {
-        Picture picture=pictureRepository.findAllByProfile(user.getId());
-        Map<String,String> imagesURL=new HashMap<>();
-        if(picture==null){
+    public Map<String, String> getProfileImageName(User user) {
+        Picture picture = pictureRepository.findProfileByUserId(user.getId());
+        Map<String, String> imagesURL = new HashMap<>();
+        if (picture == null) {
             imagesURL.put("https://jobhakdasik2000-bucket.s3.ap-northeast-2.amazonaws.com/default/default.png",
                     "default.png");
             log.info("이미지가 없어서 default 이미지 전송");
             return imagesURL;
         }
 
-        URL url = amazonS3.getUrl(bucket,picture.getUploadFileName());
-        imagesURL.put(url.toString(),picture.getStoreFileName());
+        URL url = amazonS3.getUrl(bucket, picture.getUploadFileName());
+        imagesURL.put(url.toString(), picture.getStoreFileName());
 
         return imagesURL;
     }
+
     public List<Picture> getAllProfileImageName(User user) {
         return pictureRepository.findAllByProfiles(user.getId());
     }
-    public String getProfileImageOne(User user) {
-        Picture picture=pictureRepository.findAllByProfile(user.getId());
-        String imagesURL;
-        if(picture==null){
-            imagesURL="https://jobhakdasik2000-bucket.s3.ap-northeast-2.amazonaws.com/default/default.png";
-            log.info("이미지가 없어서 default 이미지 전송");
-            return imagesURL;
-        }
 
-        URL url = amazonS3.getUrl(bucket,picture.getUploadFileName());
-        imagesURL=url.toString();
-        return imagesURL;
-    }
     public String getProfileImage(User user) {
-        Picture picture=pictureRepository.findAllByProfile(user.getId());
+        Picture picture = pictureRepository.findProfileByUserId(user.getId());
         String imagesURL;
-        if(picture==null){
-            imagesURL="https://jobhakdasik2000-bucket.s3.ap-northeast-2.amazonaws.com/default/default.png";
+        if (picture == null) {
+            imagesURL = "https://jobhakdasik2000-bucket.s3.ap-northeast-2.amazonaws.com/default/default.png";
             log.info("이미지가 없어서 default 이미지 전송");
             return imagesURL;
         }
 
-        URL url = amazonS3.getUrl(bucket,picture.getUploadFileName());
-        imagesURL=url.toString();
+        URL url = amazonS3.getUrl(bucket, picture.getUploadFileName());
+        imagesURL = url.toString();
 
         return imagesURL;
     }
+
     public Picture getProfilePicture(User user) {
-        Picture picture=pictureRepository.findAllByProfile(user.getId());
-        if(picture==null){
+        Picture picture = pictureRepository.findProfileByUserId(user.getId());
+        if (picture == null) {
             log.info("이미지가 없어서 default 이미지 전송");
             return null;
         }
         return picture;
     }
-    public List<Map<String,String>> getConversionImage(User user) {
-        List<Picture> pictures=pictureRepository.findAllByUserId(user.getId());
 
-        List<Map<String,String>> imagesURL=new ArrayList<>();
-        for(Picture picture : pictures){
-            if(!picture.isProfile()){
-                URL url = amazonS3.getUrl(bucket,picture.getUploadFileName());
-                Map<String,String> data=new HashMap<>();
-                data.put(url.toString(),picture.getStoreFileName());
-                imagesURL.add(data);
-            }
-        }
-
-        return imagesURL;
-    }
     //MultipartFile to File
     //업로드할때 파일이 로컬에 없으면 에러가 발생하기 때문에 입력받은 파일을 로컬에 저장하고 업로드해야 함
     //따라서 S3에 업로드 이후 로컬에 저장된 사진을 삭제해야 함
@@ -209,6 +194,47 @@ public class PictureService {
         amazonS3.deleteObject(new DeleteObjectRequest(bucket, picture.getUploadFileName()));
         pictureRepository.delete(picture);
         return "success";
+    }
+
+    public List<Map<String, String>> getConversionImage(User user) {
+        List<Picture> pictures = pictureRepository.findAllByUserId(user.getId());
+
+        List<Map<String, String>> imagesURL = new ArrayList<>();
+        for (Picture picture : pictures) {
+            if (!picture.isProfile()) {
+                URL url = amazonS3.getUrl(bucket, picture.getUploadFileName());
+                Map<String, String> data = new HashMap<>();
+                data.put(url.toString(), picture.getStoreFileName());
+                imagesURL.add(data);
+            }
+        }
+
+        return imagesURL;
+    }
+
+    public List<String> getConversionPictureURL(String loginId) {
+
+        List<String> imagesURL = new ArrayList<>();
+
+        String idPhotoDirectoryURL = idPhotoURL + loginId + "/";
+
+        ListObjectsV2Request listObjectsV2Request = new ListObjectsV2Request()
+                .withBucketName(bucket)
+                .withPrefix(idPhotoDirectoryURL);  //폴더 경로 지정
+
+        ListObjectsV2Result result = amazonS3.listObjectsV2(listObjectsV2Request);
+        List<S3ObjectSummary> objectSummaries = result.getObjectSummaries();
+
+        for (S3ObjectSummary objectSummary : objectSummaries) {
+
+            String key = objectSummary.getKey();
+
+            if (!key.equals(idPhotoDirectoryURL)) {
+                imagesURL.add("https://" + bucket + ".s3." + region + ".amazonaws.com/" + key);
+            }
+        }
+
+        return imagesURL;
     }
 
 }

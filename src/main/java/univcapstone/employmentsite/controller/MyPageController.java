@@ -52,7 +52,7 @@ public class MyPageController {
                             AuthService authService) {
         this.userService = userService;
         this.bookmarkService = bookmarkService;
-        this.pictureService=pictureService;
+        this.pictureService = pictureService;
         this.authService = authService;
     }
 
@@ -76,9 +76,9 @@ public class MyPageController {
     @GetMapping("user/image/show")
     public ResponseEntity<? extends BasicResponse> getMyProfile(
             @AuthenticationPrincipal CustomUserDetails customUserDetails
-    ){
+    ) {
         User user = customUserDetails.getUser();
-        String image=pictureService.getProfileImageOne(user);
+        String image = pictureService.getProfileImage(user);
 
         DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
                 .code(HttpStatus.OK.value())
@@ -100,7 +100,7 @@ public class MyPageController {
 
         try {
             User user = customUserDetails.getUser();
-            String uploadImagesUrl = pictureService.uploadProfileFile(multipartFiles, dirName,user);
+            String uploadImagesUrl = pictureService.uploadProfileFile(multipartFiles, dirName, user);
 
             return ResponseEntity.ok(
                     DefaultResponse.builder()
@@ -119,13 +119,13 @@ public class MyPageController {
     }
 
     //현재 프로필 사진 삭제
-    @DeleteMapping(value ="/user/image/delete")
+    @DeleteMapping(value = "/user/image/delete")
     public ResponseEntity<? extends BasicResponse> deleteProfile(
             @AuthenticationPrincipal CustomUserDetails customUserDetails
-    ){
-        List<Picture> pictures=pictureService.getAllProfileImageName(customUserDetails.getUser());
-        for(Picture picture : pictures){
-            if(picture.isProfile()){
+    ) {
+        List<Picture> pictures = pictureService.getAllProfileImageName(customUserDetails.getUser());
+        for (Picture picture : pictures) {
+            if (picture.isProfile()) {
                 pictureService.deleteFile(picture);
             }
         }
@@ -147,13 +147,13 @@ public class MyPageController {
             @RequestPart(value = "files") MultipartFile multipartFiles
     ) throws IOException {
         User user = customUserDetails.getUser();
-        List<Picture> pictures=pictureService.getAllProfileImageName(user);
-        for(Picture picture : pictures){
-            if(picture.isProfile()){
+        List<Picture> pictures = pictureService.getAllProfileImageName(user);
+        for (Picture picture : pictures) {
+            if (picture.isProfile()) {
                 pictureService.deleteFile(picture);
             }
         }
-        String uploadImagesUrl = pictureService.uploadProfileFile(multipartFiles, dirName,user);
+        String uploadImagesUrl = pictureService.uploadProfileFile(multipartFiles, dirName, user);
 
         return ResponseEntity.ok(
                 DefaultResponse.builder()
@@ -164,23 +164,7 @@ public class MyPageController {
                         .build()
         );
     }
-    //합성(만들어진) 사진 모두를 가져오기
-    @GetMapping("/user/picture")
-    public ResponseEntity<? extends BasicResponse> myPicture(
-            @AuthenticationPrincipal CustomUserDetails customUserDetails
-    ) {
-        User user = customUserDetails.getUser();
-        List<Map<String,String>> image=pictureService.getConversionImage(user);
-        DefaultResponse<List<Map<String,String>>> defaultResponse = DefaultResponse.<List<Map<String,String>>>builder()
-                .code(HttpStatus.OK.value())
-                .httpStatus(HttpStatus.OK)
-                .message("아마존에서 온 합성된 사진들")
-                .result(image)
-                .build();
 
-        return ResponseEntity.ok()
-                .body(defaultResponse);
-    }
     @GetMapping("/user/bookmark")
     public ResponseEntity<? extends BasicResponse> myBookmark(
             @AuthenticationPrincipal CustomUserDetails customUserDetails
@@ -293,54 +277,22 @@ public class MyPageController {
         }
     }
 
-//    @GetMapping(value = "/user/naver/delete")
-//    public ResponseEntity<? extends BasicResponse> deleteNaverUser(@Validated NaverDto naverDto) throws URISyntaxException {
-//
-//        RestTemplate restTemplate = new RestTemplate();
-//
-//        naverDto.setGrantType("delete");
-//
-//        URI uri = new URI(tokenUri +
-//                "?grant_type=" + naverDto.getGrantType() +
-//                "&client_id=" + naverDto.getClientId() +
-//                "&client_secret=" + naverDto.getClientSecret() +
-//                "&access_token=" + naverDto.getAccessToken());
-//
-//        ResponseEntity<Object> response = restTemplate.exchange(uri, HttpMethod.POST, null, Object.class);
-//
-//        if (response != null) {
-//            log.info("네이버 연동 해제에 성공했습니다.");
-//        }
-//
-//
-//
-//
-//    }
-
-}
-/*
-@PatchMapping(value = "/user/edit")
-public ResponseEntity<? extends BasicResponse> editUser(
-        @RequestBody @Validated UserEditDto userEditData
-) {
-    try {
-        log.info("수정려는 유저 데이터 {}", userEditData);
-        userService.editUser(userEditData);
-
-        DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
+    //합성(만들어진) 사진 모두를 가져오기
+    @GetMapping("/user/picture")
+    public ResponseEntity<? extends BasicResponse> myPicture(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
+    ) {
+        User user = customUserDetails.getUser();
+        List<String> imageURL = pictureService.getConversionPictureURL(user.getLoginId());
+        DefaultResponse<List<String>> defaultResponse = DefaultResponse.<List<String>>builder()
                 .code(HttpStatus.OK.value())
                 .httpStatus(HttpStatus.OK)
-                .message("계정 편집 완료")
-                .result("")
+                .message("아마존에서 온 합성된 사진들")
+                .result(imageURL)
                 .build();
 
-        return ResponseEntity.ok().body(defaultResponse);
-    } catch (IllegalStateException e) {
-        log.info("수정하려는 유저가 없거나 찾을 수 없습니다");
-        return ResponseEntity.badRequest()
-                .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(),
-                        "잘못된 수정 요청입니다."));
+        return ResponseEntity.ok()
+                .body(defaultResponse);
     }
 
 }
-*/
