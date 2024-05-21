@@ -34,8 +34,8 @@ public class CareerService {
 
     public void saveCareer(User user, List<CareerSaveDto> careerSaveDto) {
         careerRepository.deleteByUserId(user.getId());
-        for(CareerSaveDto careerData : careerSaveDto){
-            Career career = careerData.toEntity(user,careerData);
+        for (CareerSaveDto careerData : careerSaveDto) {
+            Career career = careerData.toEntity(user, careerData);
             careerRepository.save(career);
         }
     }

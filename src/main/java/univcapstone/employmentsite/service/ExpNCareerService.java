@@ -8,8 +8,6 @@ import univcapstone.employmentsite.domain.ExpNCareer;
 import univcapstone.employmentsite.domain.User;
 import univcapstone.employmentsite.repository.ExpNCareerRepository;
 
-import java.util.List;
-
 @Slf4j
 @Transactional
 @Service
@@ -26,14 +24,14 @@ public class ExpNCareerService {
     }
 
     public void saveText(User user, String content) {
-        if (expNCareerRepository.findTextByUserId(user.getId())== null){
+        if (expNCareerRepository.findTextByUserId(user.getId()) == null) {
             ExpNCareer expNCareer = ExpNCareer.builder()
                     .user(user)
                     .content(content)
                     .build();
             expNCareerRepository.save(expNCareer);
-        }else{
-            expNCareerRepository.updateText(user.getId(),content);
+        } else {
+            expNCareerRepository.updateText(user.getId(), content);
         }
     }
 

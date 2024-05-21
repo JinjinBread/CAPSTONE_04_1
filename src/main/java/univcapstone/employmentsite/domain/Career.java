@@ -4,11 +4,8 @@ package univcapstone.employmentsite.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.Date;
-
 @Entity
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,7 +20,10 @@ public class Career {
     private User user;
 
     private String careerName;
+    private String major;
+
     private String startDate;
     private String endDate;
+
     private String careerContent;
 }

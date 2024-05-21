@@ -23,6 +23,7 @@ import univcapstone.employmentsite.util.response.DefaultResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -47,7 +48,7 @@ public class BasicController {
         ObjectMapper mapper = new ObjectMapper();
         JobResponseDto jobResponse = mapper.readValue(responseBody, JobResponseDto.class);
         List<JobResponseDto.Job> jobs = jobResponse.getJobs().getJob();
-        for (int i=0; i<jobs.size(); i++) {
+        for (int i = 0; i < jobs.size(); i++) {
             jobs.get(i).setDday(jobs.get(i).getExpirationDate().toString());
         }
 
@@ -70,23 +71,22 @@ public class BasicController {
             ImageAPIHrefDto imageAPIResponse = mapper.readValue(responseBody, ImageAPIHrefDto.class);
 
             List<ImageAPIHrefDto.Job> jobs = imageAPIResponse.getJobs().getJob();
-            log.info("가져온 job의 갯수 = {}",jobs.size());
+            log.info("가져온 job의 갯수 = {}", jobs.size());
             for (ImageAPIHrefDto.Job job : jobs) {
                 String href = job.getCompany().getDetail().getHref();
-                log.info("href = {}",href);
+                log.info("href = {}", href);
                 try {
                     if (href != null) {
                         Document document = Jsoup.connect(href).get();
                         Element imgElement = document.select(".box_logo img").first(); // box_logo class를 가지는 첫번째 div 태그 선택
-                        if(imgElement!=null){
+                        if (imgElement != null) {
                             String src = imgElement.attr("src");
-                            log.info("img 태그 = {}",imgElement);
+                            log.info("img 태그 = {}", imgElement);
                             imageUrlList.add(src);
-                        }else{
+                        } else {
                             imageUrlList.add(null);
                         }
-                    }
-                    else{
+                    } else {
                         imageUrlList.add(null);
                     }
                 } catch (HttpStatusException e) {
@@ -103,7 +103,7 @@ public class BasicController {
     @GetMapping("/home")
     public ResponseEntity<? extends BasicResponse> home(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
-	    HttpServletRequest request
+            HttpServletRequest request
     ) {
 
         User user = userService.findUserByLoginId(customUserDetails.getUsername());
@@ -113,16 +113,16 @@ public class BasicController {
         if (user == null) {
             log.info("유저를 찾을 수 없습니다.");
         }
-	
-	Cookie[] cookies = request.getCookies();
 
-	for (Cookie cookie: cookies) {
+        Cookie[] cookies = request.getCookies();
 
-		if (cookie.getName().equals("refreshToken")) {
-			log.info("refreshToken Cookie is available = {}", cookie.getValue());
-		}
+        for (Cookie cookie : cookies) {
 
-	}
+            if (cookie.getName().equals("refreshToken")) {
+                log.info("refreshToken Cookie is available = {}", cookie.getValue());
+            }
+
+        }
 
 
         DefaultResponse<User> defaultResponse = DefaultResponse.<User>builder()

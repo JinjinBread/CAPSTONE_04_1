@@ -29,7 +29,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ResumeController {
 
-    private final ResumeService resumeService;
     private final CareerService careerService;
     private final ExpService expService;
     private final ExpNCareerService expNCareerService;
@@ -37,24 +36,28 @@ public class ResumeController {
     // 경력 경험 목록으로 가져오기
     @GetMapping("/resume/get/myList")
     public ResponseEntity<? extends BasicResponse> getList(
-            @AuthenticationPrincipal CustomUserDetails customUserDetails
-    ) throws JsonProcessingException {
+            @AuthenticationPrincipal CustomUserDetails customUserDetails)
+    {
         User user = customUserDetails.getUser();
         List<Career> careers = careerService.findCareerListByUserId(user.getId());
         List<Experience> exps = expService.findExpListByUserId(user.getId());
 
         List<CareerSaveDto> careerToFront = new ArrayList<>();
         List<ExpSaveDto> expToFront = new ArrayList<>();
-        for(Career career : careers){
-            CareerSaveDto data=new CareerSaveDto();
+
+        for (Career career : careers) {
+            CareerSaveDto data = new CareerSaveDto();
             data.setCareerName(career.getCareerName());
+            data.setMajor(career.getMajor());
             data.setStartDate(career.getStartDate());
             data.setEndDate(career.getEndDate());
             data.setCareerContent(career.getCareerContent());
             careerToFront.add(data);
+            log.info("career = {}", career);
         }
-        for(Experience exp : exps){
-            ExpSaveDto data=new ExpSaveDto();
+
+        for (Experience exp : exps) {
+            ExpSaveDto data = new ExpSaveDto();
             data.setExpName(exp.getExpName());
             data.setStartDate(exp.getStartDate());
             data.setEndDate(exp.getEndDate());
@@ -80,12 +83,13 @@ public class ResumeController {
     @PostMapping("/resume/post/myList")
     public ResponseEntity<? extends BasicResponse> saveList(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
-            @RequestPart(value="careerSaveDto") List<CareerSaveDto> careerSaveDto,
-            @RequestPart(value="expSaveDto") List<ExpSaveDto> expSaveDto
-    ){
+            @RequestPart(value = "careerSaveDto") List<CareerSaveDto> careerSaveDto,
+            @RequestPart(value = "expSaveDto") List<ExpSaveDto> expSaveDto
+    ) {
+
         User user = customUserDetails.getUser();
-        careerService.saveCareer(user,careerSaveDto);
-        expService.saveExp(user,expSaveDto);
+        careerService.saveCareer(user, careerSaveDto);
+        expService.saveExp(user, expSaveDto);
         expNCareerService.deleteText(user);
         DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
                 .code(HttpStatus.OK.value())
@@ -102,15 +106,15 @@ public class ResumeController {
     @GetMapping("/resume/get/myText")
     public ResponseEntity<? extends BasicResponse> getText(
             @AuthenticationPrincipal CustomUserDetails customUserDetails
-    ){
+    ) {
         User user = customUserDetails.getUser();
         ExpNCareer expNcareer = expNCareerService.findTextByUserId(user.getId());
 
         Map<String, String> map = new HashMap<>();
-        if(expNcareer == null){
+        if (expNcareer == null) {
             map.put("userId", null);
             map.put("content", null);
-        }else{
+        } else {
             map.put("userId", expNcareer.getUser().getLoginId());
             map.put("content", expNcareer.getContent());
         }
@@ -130,9 +134,9 @@ public class ResumeController {
     public ResponseEntity<? extends BasicResponse> saveText(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @RequestBody String content
-    ){
+    ) {
         User user = customUserDetails.getUser();
-        expNCareerService.saveText(user,content);
+        expNCareerService.saveText(user, content);
         expService.deleteList(user);
         careerService.deleteList(user);
         DefaultResponse<String> defaultResponse = DefaultResponse.<String>builder()
@@ -149,16 +153,16 @@ public class ResumeController {
     @GetMapping("/resume/get/IsText")
     public ResponseEntity<? extends BasicResponse> isText(
             @AuthenticationPrincipal CustomUserDetails customUserDetails
-    ){
+    ) {
         User user = customUserDetails.getUser();
         boolean isText = true;
 
         List<Career> careers = careerService.findCareerListByUserId(user.getId());
         List<Experience> exps = expService.findExpListByUserId(user.getId());
-        ExpNCareer text=expNCareerService.findTextByUserId(user.getId());
-        if(careers == null && exps == null) {
+        ExpNCareer text = expNCareerService.findTextByUserId(user.getId());
+        if (careers == null && exps == null) {
             isText = false;
-        }else if(text == null){
+        } else if (text == null) {
             isText = false;
         }
 
