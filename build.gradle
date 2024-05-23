@@ -17,6 +17,12 @@ configurations {
 	}
 }
 
+bootJar{
+	archivesBaseName = 'Jobhakdasik-server'
+	archiveFileName = 'jobhakdasik-server.jar'
+	archiveVersion = "0.0.1"
+}
+
 jar {
 	enabled = true
 }
