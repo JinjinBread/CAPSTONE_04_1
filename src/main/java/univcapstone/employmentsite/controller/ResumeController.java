@@ -28,7 +28,7 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 public class ResumeController {
-
+    private final UserService userService;
     private final CareerService careerService;
     private final ExpService expService;
     private final ExpNCareerService expNCareerService;
@@ -68,6 +68,9 @@ public class ResumeController {
         Map<String, Object> map = new HashMap<>();
         map.put("careerToFront", careerToFront);
         map.put("expToFront", expToFront);
+        String major = user.getMajor();
+        map.put("major",major);
+
         DefaultResponse<Map<String, Object>> defaultResponse = DefaultResponse.<Map<String, Object>>builder()
                 .code(HttpStatus.OK.value())
                 .httpStatus(HttpStatus.OK)
@@ -84,10 +87,12 @@ public class ResumeController {
     public ResponseEntity<? extends BasicResponse> saveList(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @RequestPart(value = "careerSaveDto") List<CareerSaveDto> careerSaveDto,
-            @RequestPart(value = "expSaveDto") List<ExpSaveDto> expSaveDto
+            @RequestPart(value = "expSaveDto") List<ExpSaveDto> expSaveDto,
+            @RequestPart(value = "major") String major
     ) {
-
         User user = customUserDetails.getUser();
+        userService.saveUserMajor(user.getId(),major);
+
         careerService.saveCareer(user, careerSaveDto);
         expService.saveExp(user, expSaveDto);
         expNCareerService.deleteText(user);

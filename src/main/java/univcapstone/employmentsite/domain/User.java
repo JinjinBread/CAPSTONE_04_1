@@ -48,6 +48,9 @@ public class User {
     @Column(name = "nickname")
     private String nickname;
 
+    @Column(name = "major")
+    private String major;
+
     @Enumerated(EnumType.STRING)
     private OAuth2Provider provider;
 

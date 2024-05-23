@@ -152,4 +152,7 @@ public class UserService {
         findUser.updateNickname(newNickname);
     }
 
+    public void saveUserMajor(Long id, String major) {
+        userRepository.saveUserMajor(id,major);
+    }
 }
