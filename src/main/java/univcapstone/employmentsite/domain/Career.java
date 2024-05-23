@@ -20,7 +20,6 @@ public class Career {
     private User user;
 
     private String careerName;
-    private String major;
 
     private String startDate;
     private String endDate;
