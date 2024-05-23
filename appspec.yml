@@ -5,15 +5,9 @@ os: linux
 
 files:
   - source:  /
-    destination: /home/ubuntu/CAPSTONE_04_1
+    destination: /home/ubuntu/CAPSTONE_04_1 #EC2내부에 저장 될 경로
     overwrite: yes
 file_exists_behavior: OVERWRITE
-
-permissions:
-  - object: /
-    pattern: "**"
-    owner: ubuntu
-    group: ubuntu
 
 hooks:
   AfterInstall:

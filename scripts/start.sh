@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 PROJECT_ROOT="/home/ubuntu/CAPSTONE_04_1"
-JAR_FILE="$PROJECT_ROOT/build/libs/jobhakdasik-server.jar"
+JAR_FILE="$PROJECT_ROOT/jobhakdasik-server.jar"
 
 APP_LOG="$PROJECT_ROOT/application.log"
 ERROR_LOG="$PROJECT_ROOT/error.log"
