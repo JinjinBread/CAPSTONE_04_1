@@ -48,7 +48,6 @@ public class ResumeController {
         for (Career career : careers) {
             CareerSaveDto data = new CareerSaveDto();
             data.setCareerName(career.getCareerName());
-            data.setMajor(career.getMajor());
             data.setStartDate(career.getStartDate());
             data.setEndDate(career.getEndDate());
             data.setCareerContent(career.getCareerContent());
