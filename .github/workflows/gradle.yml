@@ -1,77 +1,82 @@
-## This workflow uses actions that are not certified by GitHub.
-## They are provided by a third-party and are governed by
-## separate terms of service, privacy policy, and support
-## documentation.
-## This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
-## For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle
-#
-#name: Java CI with Gradle
-#
-#on:
-#  push:
-#    branches: [ "main" ]
-#  pull_request:
-#    branches: [ "main" ]
-#
-##워크 플로우가 깃 레포에 대한 권한을 읽기 만 가능하게 설정한다.
-#permissions:
-#  contents: read
-#
-#jobs:
-#
-#  build:
-#    runs-on: ubuntu-latest
-#
-#    steps:
-#      - uses: actions/checkout@v4
-#      - name: Set up JDK 17
-#        uses: actions/setup-java@v4
-#        with:
-#          java-version: '17'
-#          distribution: 'temurin'
-#
-#      - uses: actions/checkout@v4
-#      - run: touch ./src/main/resources/application.properties
-#      - run: echo "${{ secrets.APPLICATION_PROPERTIES }}" > ./src/main/resources/application.properties
-#      - run: cat ./src/main/resources/application.properties
-#        # Configure Gradle for optimal use in GiHub Actions, including caching of downloaded dependencies.
-#        # See: https://github.com/gradle/actions/blob/main/setup-gradle/README.md
-#        # - name: Setup Gradle
-#        #   uses: gradle/actions/setup-gradle@v3
-#
-#      - name: Setup MySQL
-#        uses: mirromutth/mysql-action@v1.1
-#        with:
-#          character set server: 'utf8'
-#          collation server: 'utf8_general_ci'
-#          mysql database: 'capstone_04_1' # Optional, default value is "test". The specified database which will be create
-#          mysql root password: ${{ secrets.MYSQL_ROOT_PASSWORD }} # Required if "mysql user" is empty, default is empty. The root superuser password
-#          mysql user: 'capstone' # Required if "mysql root password" is empty, default is empty. The superuser for the specified database. Can use secrets, too
-#          mysql password: ${{ secrets.MYSQL_USER_PASSWORD }} # Required if "mysql user" exists. The password for the "mysql user"
-#
-#      - name: Grant execute permission for gradlew
-#        run: chmod +x ./gradlew
-#
-#      - name: Build with Gradle
-#        uses: gradle/gradle-build-action@v3
-#        with:
-#          arguments: build
-#
-#      - name: Docker build
-#        run: |
-#          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-#          docker build -t spring-cicd .
-#          docker tag spring-cicd ${{ secrets.DOCKER_USERNAME }}/spring-cicd:${GITHUB_SHA::7}
-#          docker push ${{ secrets.DOCKER_USERNAME }}/spring-cicd:${GITHUB_SHA::7}
-#
-#      - name: Deploy
-#        uses: appleboy/ssh-action@v1.0.3
-#        with:
-#          host: ${{ secrets.EC2_HOST }} # EC2 인스턴스 퍼블릭 DNS
-#          username: ${{ secrets.EC2_USERNAME }}
-#          key: ${{ secrets.EC2_SSH_KEY }} # pem 키
-#          port: ${{ secrets.EC2_SSH_PORT }} # 접속포트번호 (보통 22)
-#          envs: GITHUB_SHA
-#          script:
-#            cd /home/ubuntu/CAPSTONE_04_1
-#            git pull
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+# This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle
+
+name: Java CI with Gradle
+
+on:
+  push:
+    branches: [ "main" ]
+
+env:
+  AWS_REGION: ${{ secrets.AWS_REGION }} #리전
+  S3_BUCKET_NAME: ${{ secrets.AWS_S3_BUCKET_NAME }} #버킷 이름
+  CODE_DEPLOY_APPLICATION_NAME: ${{ secrets.AWS_CODE_DEPLOY_APPLICATION_NAME }} #CodeDeploy 애플리케이션 이름
+  CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: ${{ secrets.AWS_CODE_DEPLOY_DEPLOYMENT_GROUP_NAME }} #CodeDeploy 배포 그룹 이름
+
+#워크 플로우가 깃 레포에 대한 권한을 읽기만 가능하게 설정한다.
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      # (1) 기본 체크아웃
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # (2) application.properties 설정
+      - uses : actions/checkout@v4
+      - run: touch ./src/main/resources/application.properties
+      - run: echo "${{ secrets.APPLICATION_PROPERTIES }}" > ./src/main/resources/application.properties
+      - run: cat ./src/main/resources/application.properties
+
+      # (3) gradlew 권한 추가
+      - name: Run chmod to make gradlew executable
+        run: chmod +x ./gradlew
+
+      # (4) JDK 17 세팅
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      # (5) Gradle build (Test 제외)
+      - name: Build with Gradle
+        uses: gradle/gradle-build-action@v3
+        with:
+          arguments: clean build -x test
+
+      # (6) AWS 인증 (IAM 사용자 Access Key, Secret Key 활용)
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }} #위에서 정의한 AWS_REGION
+
+      # (7) 빌드 결과물을 S3 버킷에 업로드
+      - name: Upload to AWS S3
+        run: |
+          aws deploy push \
+            --application-name ${{ env.CODE_DEPLOY_APPLICATION_NAME }} \
+            --ignore-hidden-files \
+            --s3-location s3://$S3_BUCKET_NAME/server/$GITHUB_SHA.zip \
+            --source .
+
+      # (8) S3 버킷에 있는 파일을 대상으로 CodeDeploy 실행
+      - name: Deploy to AWS EC2 from S3
+        run: |
+          aws deploy create-deployment \
+            --application-name ${{ env.CODE_DEPLOY_APPLICATION_NAME }} \
+            --deployment-config-name CodeDeployDefault.AllAtOnce \
+            --deployment-group-name ${{ env.CODE_DEPLOY_DEPLOYMENT_GROUP_NAME }} \
+            --s3-location bucket=$S3_BUCKET_NAME/server, key=$GITHUB_SHA.zip, bundleType=zip
