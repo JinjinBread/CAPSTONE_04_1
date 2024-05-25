@@ -50,7 +50,7 @@ public class SecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring()
-                .requestMatchers("/", "/favicon.ico", "/redirectNaver", "/reissue");
+                .requestMatchers("/", "/favicon.ico", "/redirectNaver", "/reissue", "/health");
     }
 
     @Bean
