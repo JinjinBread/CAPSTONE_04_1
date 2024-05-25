@@ -16,6 +16,8 @@ import univcapstone.employmentsite.oauth2.*;
 import univcapstone.employmentsite.oauth2.utils.CookieUtil;
 import univcapstone.employmentsite.repository.RefreshTokenRepository;
 import univcapstone.employmentsite.repository.UserRepository;
+import univcapstone.employmentsite.token.CustomUserDetails;
+import univcapstone.employmentsite.token.CustomUserDetailsService;
 import univcapstone.employmentsite.token.TokenProvider;
 
 import java.io.IOException;
@@ -115,8 +117,9 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                 userRepository.save(user);
             }
 
-            String accessToken = tokenProvider.createAccessToken(authentication, ACCESS_TOKEN_VALID_TIME);
-            String refreshToken = tokenProvider.createRefreshToken(authentication, REFRESH_TOKEN_VALID_TIME);
+            // 소셜 로그인 시, email 뿐만 아니라 loginId 에도 email 이 들어가므로 user Repo 에서 user 찾을 수 있음.
+            String accessToken = tokenProvider.generateAccessToken(email, ACCESS_TOKEN_VALID_TIME);
+            String refreshToken = tokenProvider.generateRefreshToken(email, REFRESH_TOKEN_VALID_TIME);
 
             return UriComponentsBuilder.fromUriString(redirectURI)
                     .queryParam("accessToken", accessToken)

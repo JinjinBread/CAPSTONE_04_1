@@ -12,6 +12,7 @@ import univcapstone.employmentsite.dto.TokenDto;
 import univcapstone.employmentsite.dto.UserRequestDto;
 import univcapstone.employmentsite.dto.UserResponseDto;
 import univcapstone.employmentsite.service.AuthService;
+import univcapstone.employmentsite.token.CustomUserDetailsService;
 import univcapstone.employmentsite.token.TokenProvider;
 
 
@@ -22,6 +23,7 @@ import univcapstone.employmentsite.token.TokenProvider;
 public class AuthController {
 
     private final AuthService authService;
+    private final CustomUserDetailsService customUserDetailsService;
     private final TokenProvider tokenProvider;
 
     /**
@@ -65,10 +67,11 @@ public class AuthController {
      * @return
      */
     @PostMapping("/reissue")
-    public ResponseEntity<TokenDto> reissue(HttpServletRequest request, Authentication authentication) {
+    public ResponseEntity<TokenDto> reissue(HttpServletRequest request) {
 
         String refreshToken = tokenProvider.resolveRefreshToken(request);
-        return ResponseEntity.ok(authService.reissue(refreshToken, authentication));
+        String loginId = tokenProvider.getLoginId(refreshToken);//refreshToken에 저장된 subject 클레임(loginId 넣어 둠)을 뽑아옴
+        return ResponseEntity.ok(authService.reissue(refreshToken, loginId));
     }
 
 }

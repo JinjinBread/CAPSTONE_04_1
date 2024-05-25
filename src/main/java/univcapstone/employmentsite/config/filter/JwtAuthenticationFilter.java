@@ -29,7 +29,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String accessToken = tokenProvider.resolveAccessToken(request, AUTH_HEADER);
 
         //정상 토큰이면 해당 토큰으로 Authentication을 가져와서 시큐리티 컨텍스트에 저장
-        if (StringUtils.hasText(accessToken)) {
+        if (accessToken != null) {
             Authentication authentication = tokenProvider.getAuthentication(accessToken);
             tokenProvider.setAccessTokenHeader(accessToken, response, AUTH_HEADER);
             SecurityContextHolder.getContext().setAuthentication(authentication);

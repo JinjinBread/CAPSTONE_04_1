@@ -52,7 +52,6 @@ public class ResumeController {
             data.setEndDate(career.getEndDate());
             data.setCareerContent(career.getCareerContent());
             careerToFront.add(data);
-            log.info("career = {}", career);
         }
 
         for (Experience exp : exps) {

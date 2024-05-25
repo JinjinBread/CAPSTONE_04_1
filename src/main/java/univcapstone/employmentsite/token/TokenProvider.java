@@ -67,17 +67,17 @@ public class TokenProvider implements InitializingBean {
 //                .build();
 //    }
 
-    public String createAccessToken(Authentication authentication, Long validTime) {
-        return createToken(authentication, validTime);
+    public String generateAccessToken(String loginId, Long validTime) {
+        return generateToken(loginId, validTime);
     }
 //
-    public String createRefreshToken(Authentication authentication, Long validTime) {
-        String refreshToken = createToken(authentication, validTime);
+    public String generateRefreshToken(String loginId, Long validTime) {
+        String refreshToken = generateToken(loginId, validTime);
 
         //RefreshToken 저장
         RefreshToken storedRefreshToken = RefreshToken.builder()
                 .refreshToken(refreshToken)
-                .loginId(authentication.getName())
+                .loginId(loginId)
                 .build();
 
         refreshTokenRepository.save(storedRefreshToken);
@@ -85,13 +85,12 @@ public class TokenProvider implements InitializingBean {
         return refreshToken;
     }
 
-    private String createToken(Authentication authentication, Long validTime) {
-        Claims claims = Jwts.claims().setSubject(authentication.getName()); //토큰 제목 정보 -> 여기에 loginId 들어간다.
+    private String generateToken(String loginId, Long validTime) {
+        Claims claims = Jwts.claims().setSubject(loginId); //토큰 제목 정보
         Date date = new Date();
         Date expiredDate = new Date(date.getTime() + validTime);
 
         return Jwts.builder()
-//                .setSubject(authentication.getName())
                 .setClaims(claims)
                 .claim(AUTHORITIES_KEY, Collections.singleton(new SimpleGrantedAuthority(Authority.USER.getRole()))) // 정보 저장
                 .setIssuedAt(date)

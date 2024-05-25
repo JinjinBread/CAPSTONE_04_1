@@ -3,6 +3,7 @@ package univcapstone.employmentsite.config.filter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.MalformedJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -40,6 +41,10 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
         if (exception instanceof ExpiredJwtException) {
             errorResponse = new ErrorResponse(request.getServletPath(),
                     999,
+                    exception.getMessage());
+        } else if (exception instanceof MalformedJwtException) {
+            errorResponse = new ErrorResponse(request.getServletPath(),
+                    1004,
                     exception.getMessage());
         } else {
             errorResponse = new ErrorResponse(request.getServletPath(),

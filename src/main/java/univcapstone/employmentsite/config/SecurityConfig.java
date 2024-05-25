@@ -50,7 +50,7 @@ public class SecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring()
-                .requestMatchers("/", "/favicon.ico", "/redirectNaver", "/health");
+                .requestMatchers("/", "/favicon.ico", "/redirectNaver", "/reissue");
     }
 
     @Bean
@@ -82,7 +82,7 @@ public class SecurityConfig {
                                 //회원가입, 개인정보 동의, 로그인, 로그아웃, 이메일 인증, 아이디 중복 확인, 아이디 및 비밀번호 찾기, 파비콘
                                 .requestMatchers("/", "/join", "/joincheck",
                                         "/login", "/confirm/**", "/error",
-                                        "/verify/**", "/find/**", "/reissue").permitAll()
+                                        "/verify/**", "/find/**").permitAll()
                                 .anyRequest().authenticated()
                 ) //위 URI 외의 URI는 모두 인증 필수
 

@@ -56,9 +56,11 @@ public class AuthService {
 
     public TokenDto login(UserRequestDto userRequestDto) {
 
+        String loginId = userRequestDto.getLoginId();
+
         //요청으로 넘어온 로그인 아이디와 비밀번호를 통해 인증 객체 생성
         UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(userRequestDto.getLoginId(), userRequestDto.getPassword());
+                new UsernamePasswordAuthenticationToken(loginId, userRequestDto.getPassword());
 
         //비밀번호가 일치하는지 검증
         //authenticate 메서드가 실행될 때 CustomUserDetailsService에 만든 loadUserByUsername 메서드가 실행된다.
@@ -69,9 +71,11 @@ public class AuthService {
         User user = userRepository.findByLoginId(authenticate.getName())
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 유저입니다"));
 
+
+
         //해당 user를 기반으로 JWT TOKEN 생성
-        String accessToken = tokenProvider.createAccessToken(authenticate, ACCESS_TOKEN_VALID_TIME);
-        String refreshToken = tokenProvider.createRefreshToken(authenticate, REFRESH_TOKEN_VALID_TIME);
+        String accessToken = tokenProvider.generateAccessToken(loginId, ACCESS_TOKEN_VALID_TIME);
+        String refreshToken = tokenProvider.generateRefreshToken(loginId, REFRESH_TOKEN_VALID_TIME);
 
         log.info("accesstoken = {}", accessToken);
         log.info("refreshtoken = {}", refreshToken);
@@ -90,7 +94,7 @@ public class AuthService {
      * @param refreshToken
      * @return
      */
-    public TokenDto reissue(String refreshToken, Authentication authentication) {
+    public TokenDto reissue(String refreshToken, String loginId) {
 
         //RefreshToken 유효성 검증 (RefreshToken의 TTL로 인해 refreshToken이 만료되면 데이터가 자동 삭제됨)
         RefreshToken findRefreshToken = refreshTokenRepository.findRefreshTokenByRefreshToken(refreshToken)
@@ -100,7 +104,7 @@ public class AuthService {
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 유저입니다.")); //해당 리프레쉬 토큰의 유저를 찾는다.
 
         //Access Token 재발급 진행
-        String newAccessToken = tokenProvider.createAccessToken(authentication, ACCESS_TOKEN_VALID_TIME);
+        String newAccessToken = tokenProvider.generateAccessToken(loginId, ACCESS_TOKEN_VALID_TIME);
 
         log.info("재발급된 Access Token = {}", newAccessToken);
 
