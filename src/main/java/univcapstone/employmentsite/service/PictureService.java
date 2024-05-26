@@ -165,7 +165,7 @@ public class PictureService {
 
         //File file = new File("src/main/resources/temp/" + filename);
 
-        String directoryPath = "./temp/";
+        String directoryPath = "/home/ubuntu/temp/";
         // 경로가 존재하지 않는 경우 생성
         File directory = new File(directoryPath);
         if (!directory.exists()) {
