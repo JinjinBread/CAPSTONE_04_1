@@ -115,6 +115,11 @@ public class AuthService {
                 .build();
     }
 
+    public RefreshToken getRefreshToken(String refreshToken) {
+        return refreshTokenRepository.findRefreshTokenByRefreshToken(refreshToken)
+                .orElse(null);
+    }
+
     public void deleteRefreshToken(String loginId) {
         refreshTokenRepository.deleteById(loginId);
     }

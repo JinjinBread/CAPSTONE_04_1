@@ -102,28 +102,12 @@ public class BasicController {
 
     @GetMapping("/home")
     public ResponseEntity<? extends BasicResponse> home(
-            @AuthenticationPrincipal CustomUserDetails customUserDetails,
-            HttpServletRequest request
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
     ) {
 
         User user = userService.findUserByLoginId(customUserDetails.getUsername());
 
         log.info("current user = {}", user.getLoginId());
-
-        if (user == null) {
-            log.info("유저를 찾을 수 없습니다.");
-        }
-
-        Cookie[] cookies = request.getCookies();
-
-        for (Cookie cookie : cookies) {
-
-            if (cookie.getName().equals("refreshToken")) {
-                log.info("refreshToken Cookie is available = {}", cookie.getValue());
-            }
-
-        }
-
 
         DefaultResponse<User> defaultResponse = DefaultResponse.<User>builder()
                 .code(HttpStatus.OK.value())

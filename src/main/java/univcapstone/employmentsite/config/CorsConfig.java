@@ -19,7 +19,6 @@ public class CorsConfig {
         config.setAllowCredentials(true); //기본적으로 요청에 대한 응답으로 JSON 형식이 나간다.
         config.addAllowedOrigin(LOCAL_REACT_URL);
         config.addAllowedOrigin(DOMAIN);
-        config.addAllowedOrigin(SERVER_DOMAIN);
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
 

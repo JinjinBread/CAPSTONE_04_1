@@ -126,7 +126,8 @@ public class TokenProvider implements InitializingBean {
     }
 
     public String getLoginId(String token) {
-        return parseClaims(token).getSubject();
+        Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+        return claims.getSubject();
     }
 
     private Claims parseClaims(String token) {
@@ -167,10 +168,10 @@ public class TokenProvider implements InitializingBean {
     // Refresh Token 정보를 추출하는 메서드
     public String resolveRefreshToken(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
-	
-	for (Cookie cookie : cookies) {
-		log.info("Cookie = {}", cookie.getName());
-	}
+
+        if (cookies == null) {
+            throw new RuntimeException("쿠키를 읽을 수 없습니다.");
+        }
 
         return Arrays.stream(cookies)
                 .filter(cookie -> cookie.getName().equals(REFRESH_COOKIE_NAME))
