@@ -100,7 +100,7 @@ public class PostFileService {
         String filename = multipartFile.getOriginalFilename();
         log.info("filename = {}", filename);
 
-        File file = new File("src/main/resources/temp/" + filename);
+        File file = new File("/home/ubuntu/temp/" + filename);
         FileOutputStream fileOutputStream = new FileOutputStream(file);
         fileOutputStream.write(multipartFile.getBytes());
 
