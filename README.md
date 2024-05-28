@@ -1,5 +1,5 @@
 ![slice](https://capsule-render.vercel.app/api?type=slice&height=300&color=104085&text=Back-End&reversal=false&textBg=false&fontColor=ffffff&fontSize=70&fontAlignY=39&fontAlign=78&animation=blink)
-![Group 159](https://github.com/JinjinBread/CAPSTONE_04_1/assets/143888533/3b16100a-2c60-4804-84c7-ba2634d3e279)
+![Group 159](https://github.com/jiyou228/hansung_frontend_00/assets/143888533/79d08b7d-93e9-483a-be9f-25e5c014da03)
 
 # [Job학다식 사이트로 이동](https://jobhakdasik.site)
 
@@ -32,6 +32,11 @@
 ### OAuth2를 사용한 소셜 로그인
 <img src = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTlC_kMLlL1cuwqSiYidzQkcko84d8WX-UQuw&s"/>
 
+![social](https://github.com/jiyou228/hansung_frontend_00/assets/143888533/ffd533a6-65cb-4992-8880-07d65d0b25b6)
+
+
+
+
 <br>
 
 # IDLE
@@ -41,15 +46,22 @@
 <br>
 
 # System
-![image](https://github.com/JinjinBread/CAPSTONE_04_1/assets/108333554/f48f0042-accb-4fa3-aa76-20a36d93e282)
+![아키텍처0](https://github.com/jiyou228/hansung_frontend_00/assets/143888533/6d19255c-9471-4817-8967-e9df66134827)
 
 <br>
 
 # Function
-<label for="name" style="color: #0099ff; font-size: 22px; text-align: center; display: block;">Chat GPT를 이용한 자기소개서 생성 및 첨삭</label><br>
-![image](https://github.com/JinjinBread/CAPSTONE_04_1/assets/108333554/7cdf6068-4425-4507-baa1-18e18fa121a6)<br>
-<label for="name" style="color: #0099ff; font-size: 22px; text-align: center; display: block;">Star GAN을 이용한 사진 합성</label><br>
-![image](https://github.com/JinjinBread/CAPSTONE_04_1/assets/108333554/9c806f63-3d21-4912-9d42-bf09e90cb4b9)<br>
+<label for="name" style="color: #0099ff; font-size: 22px; text-align: center; display: block;"> **Chat GPT를 이용한 자기소개서 생성 및 첨삭** </label><br>
+
+![자기소개서](https://github.com/jiyou228/hansung_frontend_00/assets/143888533/db65cf90-8b55-466d-b986-32f5856402fd)
+
+
+<label for="name" style="color: #0099ff; font-size: 22px; text-align: center; display: block;"> **Star GAN을 이용한 사진 합성** </label><br>
+
+![gan](https://github.com/jiyou228/hansung_frontend_00/assets/143888533/59aa35c0-33a7-4ff9-b420-de4cbc2eab87)
+
+![minji](https://github.com/jiyou228/hansung_frontend_00/assets/143888533/26c0bb03-a357-4325-9a99-ed24482fd0bf)
+
 
 ## Dependencies
 * [Python 3.5+](https://www.continuum.io/downloads)
