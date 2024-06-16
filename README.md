@@ -4,7 +4,7 @@
 # [Job학다식 사이트로 이동](https://jobhakdasik.site)
 
 <br>
-# [캡스톤 수상]([https://jobhakdasik.site](https://github.com/JinjinBread/CAPSTONE_04_1/assets/108333554/09dbf02e-409f-4d78-bbbb-2417da060501))
+![캡스톤_최우수상](https://github.com/JinjinBread/CAPSTONE_04_1/assets/108333554/1f68c762-9441-40f8-a442-501b473f57f6)
 <br>
 
 # Languages and Platforms
